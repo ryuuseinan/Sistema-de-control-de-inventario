@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>{% block title %}{% endblock %} - Sistema de control de inventario</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+</head>
+<body>
+	<nav class="navbar is-primary" role="navigation" aria-label="main navigation">
+	  <div class="navbar-brand">
+	    <a class="navbar-item" href="{{ url_for('index') }}">
+	      <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo">
+	    </a>
+	    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarMenu">
+	      <span aria-hidden="true"></span>
+	      <span aria-hidden="true"></span>
+	      <span aria-hidden="true"></span>
+	    </a>
+	  </div>
+	  <div id="navbarMenu" class="navbar-menu">
+	    <div class="navbar-start">
+	      <a class="navbar-item" href="{{ url_for('menu') }}">Menú</a>
+	      <a class="navbar-item" href="{{ url_for('inventario') }}">Inventario</a>
+	      <a class="navbar-item" href="{{ url_for('ventas') }}">Ventas</a>
+	    </div>
+	    <div class="navbar-end">
+	      {% if session.logged_in %}
+	      	<p class="navbar-item">{{ session.username }}</p>
+	      	<a class="navbar-item" href="{{ url_for('logout') }}">Cerrar sesión</a>
+	      {% else %}
+	      	<a class="navbar-item" href="{{ url_for('login') }}">Iniciar sesión</a>
+	      	<a class="navbar-item" href="{{ url_for('register') }}">Registrarse</a>
+	      {% endif %}
+	    </div>
+	  </div>
+	</nav>
+
+	{% with messages = get_flashed_messages() %}
+	{% if messages %}
+	<div class="container">
+		{% for message in messages %}
+		<div class="notification is-{{ message[0] }}">
+			<button class="delete"></button>
+			{{ message[1] }}
+		</div>
+		{% endfor %}
+	</div>
+	{% endif %}
+	{% endwith %}
+
+	{% block content %}{% endblock %}
+
+	<script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/js/bulma.min.js"></script>
+</body>
+</html>
