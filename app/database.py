@@ -1,15 +1,20 @@
-from sqlalchemy import create_engine, Column, Integer, String, DateTime, ForeignKey, Float, Boolean
+from sqlalchemy import create_engine, Column, Integer, String, DateTime, ForeignKey, Boolean, Text, Float
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
+from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
+
+# Crear objeto de base de datos SQLAlchemy
+db = SQLAlchemy()
 
 # Cambia las variables según tu configuración
 usuario = 'root'
-contraseña = ''
+contrasena = ''
 host = 'localhost'
 puerto = 3306
-nombre_base_datos = 'pizzeria_fratelli'
+nombre_base_datos = 'invxd'
 
 # Crea la URL de conexión a la base de datos MySQL
-url = f'mysql://{usuario}:{contraseña}@{host}:{puerto}/{nombre_base_datos}'
+url = f'mysql://{usuario}:{contrasena}@{host}:{puerto}/{nombre_base_datos}'
 
 # Crea una instancia de la clase create_engine
 engine = create_engine(url)
@@ -22,69 +27,135 @@ session = Session()
 
 Base = declarative_base()
 
-class Sucursal(Base):
-    __tablename__ = 'sucursal'
+class User(Base):
+    __tablename__ = 'user'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    nombre = Column(String(50))
-    direccion = Column(String(100))
-    telefono = Column(String(20))
-    inventario = relationship('Inventario', back_populates='sucursal')
-    ventas = relationship('Venta', back_populates='sucursal')
+    name = Column(String(50))
+    lastname = Column(String(50))
+    username = Column(String(50))
+    email = Column(String(255))
+    password = Column(String(60))
+    image = Column(String(255))
+    is_active = Column(Boolean, default=True)
+    is_admin = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.now())
+    activo = Column(Boolean, default=True)
 
-class Ingrediente(Base):
-    __tablename__ = 'ingrediente'
+class Category(Base):
+    __tablename__ = 'category'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    nombre = Column(String(50))
-    stock = Column(Integer)
-    precio_unitario = Column(Integer)
+    image = Column(String(255))
+    name = Column(String(50))
+    description = Column(Text)
+    created_at = Column(DateTime, default=datetime.now())
+    activo = Column(Boolean, default=True)
 
-class Inventario(Base):
-    __tablename__ = 'inventario'
+class Product(Base):
+    __tablename__ = 'product'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    sucursal_id = Column(Integer, ForeignKey('sucursal.id'))
-    ingrediente_id = Column(Integer, ForeignKey('ingrediente.id'))
-    cantidad = Column(Integer)
-    sucursal = relationship('Sucursal', back_populates='inventario')
-    ingrediente = relationship('Ingrediente', back_populates='inventario')
+    image = Column(String(255))
+    barcode = Column(String(50))
+    name = Column(String(50))
+    description = Column(Text)
+    inventary_min = Column(Integer, default=10)
+    price_in = Column(Integer)
+    price_out = Column(Integer)
+    unit = Column(String(255))
+    presentation = Column(String(255))
+    user_id = Column(Integer, ForeignKey('user.id'))
+    category_id = Column(Integer, ForeignKey('category.id'))
+    created_at = Column(DateTime, default=datetime.now())
+    activo = Column(Boolean, default=True)
 
-class Persona(Base):
-    __tablename__ = 'persona'
-    rut = Column(String(12), primary_key=True)
-    nombre = Column(String(50))
-    apellido = Column(String(50))
-    email = Column(String(50))
-    ventas = relationship('Venta', back_populates='cliente')
+    user = relationship('User')
+    category = relationship('Category')
 
-class Usuario(Base):
-    __tablename__ = 'usuario'
+class Person(Base):
+    __tablename__ = 'person'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    nombre_usuario = Column(String(50))
-    contrasena = Column(String(50))
-    es_administrador = Column(Boolean)
-    ventas = relationship('Venta', back_populates='vendedor')
+    image = Column(String(255))
+    name = Column(String(255))
+    lastname = Column(String(50))
+    company = Column(String(50))
+    address1 = Column(String(50))
+    address2 = Column(String(50))
+    phone1 = Column(String(50))
+    phone2 = Column(String(50))
+    email1 = Column(String(50))
+    email2 = Column(String(50))
+    kind = Column(Integer)
+    created_at = Column(DateTime, default=datetime.now())
+    activo = Column(Boolean, default=True)
 
-class Venta(Base):
-    __tablename__ = 'venta'
+class OperationType(Base):
+    __tablename__ = 'operation_type'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    sucursal_id = Column(Integer, ForeignKey('sucursal.id'))
-    cliente_rut = Column(String(12), ForeignKey('persona.rut'))
-    vendedor_id = Column(Integer, ForeignKey('usuario.id'))
-    fecha = Column(DateTime)
+    name = Column(String(50))
+    activo = Column(Boolean, default=True)
+
+class Box(Base):
+    __tablename__ = 'box'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    created_at = Column(DateTime, default=datetime.now())
+    activo = Column(Boolean, default=True)
+
+class Sell(Base):
+    __tablename__ = 'sell'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    person_id = Column(Integer, ForeignKey('person.id'))
+    user_id = Column(Integer, ForeignKey('user.id'))
+    operation_type_id = Column(Integer, ForeignKey('operation_type.id'), default=2)
+    box_id = Column(Integer, ForeignKey('box.id'))
     total = Column(Integer)
-    detalles = relationship('DetalleVenta', back_populates='venta')
-    sucursal = relationship('Sucursal', back_populates='ventas')
-    cliente = relationship('Persona', back_populates='ventas')
-    vendedor = relationship('Usuario', back_populates='ventas')
+    cash = Column(Integer)
+    discount = Column(Float)
+    sell_date = Column(DateTime, default=datetime.now())
+    created_at = Column(DateTime, default=datetime.now())
+    box = relationship('Box')
+    operation_type = relationship('OperationType')
+    user = relationship('User')
+    person = relationship('Person')
+    products = relationship('SellProduct', backref='sell', lazy=True)
+    activo = Column(Boolean, default=True)
 
-class DetalleVenta(Base):
-    __tablename__ = 'detalle_venta'
+class Operation(Base):
+    __tablename__ = 'operation'
+    id = Column(Integer, primary_key=True)
+    product_id = Column(Integer, ForeignKey('product.id'))
+    q = Column(Float)
+    operation_type_id = Column(Integer, ForeignKey('operation_type.id'))
+    sell_id = Column(Integer, ForeignKey('sell.id'))
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    product = relationship('Product')
+    operation_type = relationship('OperationType')
+    sell = relationship('Sell')
+    activo = Column(Boolean, default=True)
+
+class SellProduct(Base):
+    __tablename__ = 'sell_product'
+    id = Column(Integer, primary_key=True)
+    sell_id = Column(Integer, ForeignKey('sell.id'), nullable=False)
+    product_id = Column(Integer, ForeignKey('product.id'), nullable=False)
+    quantity = Column(Float, nullable=False)
+    price = Column(Float, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    activo = Column(Boolean, default=True)
+
+class PaymentMethod(Base):
+    __tablename__ = 'payment_method'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    activo = Column(Boolean, default=True)
+
+class Configuration(Base):
+    __tablename__ = 'configuration'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    venta_id = Column(Integer, ForeignKey('venta.id'))
-    ingrediente_id = Column(Integer, ForeignKey('ingrediente.id'))
-    cantidad = Column(Integer)
-    precio_unitario = Column(Integer)
-    venta = relationship('Venta', back_populates='detalles')
-    ingrediente = relationship('Ingrediente')
+    short = Column(String(255), unique=True)
+    name = Column(String(255), unique=True)
+    kind = Column(Integer)
+    val = Column(String(255))
+    activo = Column(Boolean, default=True)
 
-# crear las tablas en caso que no existan
 Base.metadata.create_all(engine)

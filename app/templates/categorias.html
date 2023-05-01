@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Categorías{% endblock %}
+
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="columns">
+      <div class="column">
+        <div class="column">
+          <div class="buttons is-pulled-right">
+            <a href="{{ url_for('categoria_nueva') }}" class="button is-success">Agregar Categoría</a>
+          </div>
+        </div>
+        {% if hay_activas %}
+        <div class="columns">
+          <div class="column">
+            <h1 class="title">Categorías</h1>
+          </div>
+        </div>
+        <table class="table is-bordered is-hoverable">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for categoria in categorias %}
+              {% if categoria.activo %}
+                <tr>
+                  <td>{{ categoria.name }}</td>
+                  <td>
+                    <a href="{{ url_for('categoria_editar', id=categoria.id) }}" class="button is-warning is-small">Editar</a>
+                    <a href="{{ url_for('categoria_eliminar', id=categoria.id) }}" class="button is-danger is-small">Eliminar</a>
+                  </td>
+                </tr>
+              {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+        <!-- End "if hay_activas" -->
+        {% if not hay_activas %}
+        <h1 class="title is-1">Lista de Categorías</h1>
+					<div class="box">
+						<div class="notification is-warning">
+							<h2 class="subtitle is-2">No hay Categorías</h2>
+							<p>No se han agregado Categorías a la base de datos, puedes agregar uno dando click en el boton <b>"Agregar Producto"</b>.</p>
+						</div>
+					</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

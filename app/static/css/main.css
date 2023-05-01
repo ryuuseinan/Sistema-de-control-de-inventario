@@ -1,0 +1,15 @@
+.menu-list li a {
+  padding: 10px 20px;
+  color:#ccc;
+  background-color: #242424;
+}
+.menu-label {
+    color: #111;
+  }
+.navbar-pink {
+  background-color: #242424;
+}
+.navbar-item{
+    color: #ccc;
+}
+  
