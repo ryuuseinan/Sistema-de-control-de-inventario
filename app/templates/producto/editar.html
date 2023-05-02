@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Categoría{% endblock %}
+
+{% block content %}
+
+<section class="section">
+    <div class="container">
+        <h1 class="title is-1">Editar Categoría</h1>
+        <form method="post" action="">
+            <div class="field">
+                <label class="label">Nombre de la Categoría</label>
+                <div class="control">
+                    <input class="input" type="text" name="nombre" value="{{ categoria.name }}">
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <button class="button is-primary" type="submit">Guardar Cambios</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container">
+    <div class="columns">
+      <div class="column is-10 is-offset-1">
+        <h1 class="title is-1">Nuevo Producto</h1>
+        <br>
+        <form method="post" enctype="multipart/form-data" id="producto_nuevo" action="{{ url_for('producto_nuevo') }}" role="form">
+          <div class="field">
+            <label class="label">Imagen</label>
+            <div class="control">
+              <input type="file" name="image" id="image" class="input" placeholder="">
+            </div>
+          </div>
+          <div class="field">
+            <label class="label">Codigo de Barras*</label>
+            <div class="control">
+              <input type="text" name="barcode" id="product_code" class="input" placeholder="Codigo de Barras del Producto">
+            </div>
+          </div>
+          <div class="field">
+            <label class="label">Nombre*</label>
+            <div class="control">
+              <input type="text" name="name" required="" class="input" id="name" placeholder="Nombre del Producto">
+            </div>
+          </div>
+          <div class="field">
+            <label class="label">Categoria</label>
+            <div class="control">
+              <div class="select is-fullwidth">
+                <select name="category_id">
+                  <option value="">Sin categorizar</option>
+                  {% for categoria in categorias %}
+                    {% if categoria.activo %}
+                    <option value="{{ categoria.id }}">{{ categoria.name }}</option>
+                    {% endif %}
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label class="label">Descripcion</label>
+            <div class="control">
+              <textarea name="description" class="textarea" id="description" placeholder="Descripcion del Producto"></textarea>
+            </div>
+          </div>
+          <div class="field">
+            <label class="label">Precio Mediana*</label>
+            <div class="control">
+              <input type="text" name="price_in" required="" class="input" id="price_in" placeholder="Precio de entrada">
+            </div>
+          </div>
+          <div class="field">
+            <label class="label">Precio Familiar*</label>
+            <div class="control">
+              <input type="text" name="price_out" required="" class="input" id="price_out" placeholder="Precio de salida">
+            </div>
+          </div>
+          <div class="field">
+            <div class="control">
+              <button type="submit" class="button is-success">Agregar Producto</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

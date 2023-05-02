@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Productos{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="columns">
+      <div class="column">
+        <div class="column">
+          <div class="buttons is-pulled-right">
+            <a href="{{ url_for('producto_nuevo') }}" class="button is-success">Agregar Producto</a>
+          </div>
+        </div>
+        {% if hay_activas %}
+        <div class="columns">
+          <div class="column">
+            <h1 class="title">Lista de Productos</h1>
+          </div>
+        </div>
+        <table class="table is-bordered is-hoverable">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Imagen</th>
+              <th>Nombre</th>
+              <th>Descripción</th>
+              <th>Mediana</th>
+              <th>Familiar</th>
+              <th>Categoría</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for producto in productos %}
+              <tr>
+                <td>{{ producto.barcode }}</td>
+                <td><img src="{{ url_for('static', filename='img/') }}{{producto.image}}" alt="{{ producto.name }}" style="max-height: 50px;">
+                </td>
+                <td>{{ producto.name }}</td>
+                <td>{{ producto.description }}</td>
+                <td>${{ producto.price_in }}</td>
+                <td>${{ producto.price_out }}</td>
+                <td>{{ producto.category.name }}</td>
+                <td>
+                  <a href="{{ url_for('producto_editar', id=producto.id) }}" class="button is-warning is-small">Editar</a>
+                  <a href="{{ url_for('producto_eliminar', id=producto.id) }}" class="button is-danger is-small">Eliminar</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <!-- End if hay_activas -->
+        {% endif %}
+        {% if not hay_activas %}
+        <h1 class="title is-1">Lista de Productos</h1>
+        <div class="box">
+          <div class="notification is-warning">
+            <h2 class="subtitle is-2">No hay Productos</h2>
+            <p>No se han agregado Productos a la base de datos, puedes agregar uno dando click en el boton <b>"Agregar Producto"</b>.</p>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
