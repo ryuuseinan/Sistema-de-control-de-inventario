@@ -1,25 +1,77 @@
-{% extends "base.html" %}
-
-{% block title %}Editar Categoría{% endblock %}
+{% extends 'base.html' %}
 
 {% block content %}
-
 <section class="section">
-    <div class="container">
-        <h1 class="title is-1">Editar Categoría</h1>
-        <form method="post" action="">
-            <div class="field">
-                <label class="label">Nombre de la Categoría</label>
-                <div class="control">
-                    <input class="input" type="text" name="nombre" value="{{ categoria.name }}">
-                </div>
-            </div>
-            <div class="field">
-                <div class="control">
-                    <button class="button is-primary" type="submit">Guardar Cambios</button>
-                </div>
-            </div>
-        </form>
-    </div>
+  <div class="container">
+    <h1 class="title">Editar Producto</h1>
+    <form method="post" enctype="multipart/form-data">
+      <div class="field">
+        <label class="label">Código de barras</label>
+        <div class="control">
+          <input class="input" type="text" name="codigo_barra" value="{{ producto.codigo_barra }}">
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Nombre</label>
+        <div class="control">
+          <input class="input" type="text" name="nombre" value="{{ producto.nombre }}">
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Categoría</label>
+        <div class="control">
+          <div class="select">
+            <select name="categoria_id">
+              {% for categoria in categorias %}
+              {% if categoria.id == producto.categoria_id %}
+              <option value="{{ categoria.id }}" selected>{{ categoria.nombre }}</option>
+              {% else %}
+              <option value="{{ categoria.id }}">{{ categoria.nombre }}</option>
+              {% endif %}
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Descripción</label>
+        <div class="control">
+          <textarea class="textarea" name="descripcion">{{ producto.descripcion }}</textarea>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Precio</label>
+        <div class="control">
+          <input class="input" type="text" name="precio" value="{{ producto.precio }}">
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Imagen</label>
+        <div class="control">
+          <div class="file">
+            <label class="file-label">
+              <input class="file-input" type="file" name="imagen">
+              <span class="file-cta">
+                <span class="file-icon">
+                  <i class="fas fa-upload"></i>
+                </span>
+                <span class="file-label">
+                  Elige un archivo…
+                </span>
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="field is-grouped">
+        <div class="control">
+          <button type="submit" class="button is-link">Guardar</button>
+        </div>
+        <div class="control">
+          <a href="{{ url_for('productos') }}" class="button is-link is-light">Cancelar</a>
+        </div>
+      </div>
+    </form>
+  </div>
 </section>
 {% endblock %}
