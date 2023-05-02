@@ -1,76 +1,25 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
+<section class="section">
   <div class="container">
-    <div class="columns">
-      <div class="column is-10 is-offset-1">
-        <h1 class="title is-1">Editar Producto</h1>
-        <br>
-        <form method="post" enctype="multipart/form-data" id="producto_nuevo" action="{{ url_for('editar_producto', producto_id=producto.id) }}" role="form">
-          <div class="field">
-            <label class="label">Imagen</label>
-            <div class="control">
-              {% if producto.image %}
-              <img src="{{ url_for('static', filename='uploads/' + producto.image) }}" width="150">
-              {% endif %}
-              <input type="file" name="image" id="image" class="input" placeholder="">
-            </div>
-          </div>
-          <div class="field">
-            <label class="label">Codigo de Barras*</label>
-            <div class="control">
-              <input type="text" name="barcode" id="product_code" class="input" placeholder="Codigo de Barras del Producto" value="{{ producto.barcode }}">
-            </div>
-          </div>
-          <div class="field">
-            <label class="label">Nombre*</label>
-            <div class="control">
-              <input type="text" name="name" required="" class="input" id="name" placeholder="Nombre del Producto" value="{{ producto.name }}">
-            </div>
-          </div>
-          <div class="field">
-            <label class="label">Categoria</label>
-            <div class="control">
-              <div class="select is-fullwidth">
-                <select name="category_id">
-                  <option value="">Sin categorizar</option>
-                  {%continuation %}
-                  {% for category in categories %}
-                  {% if category.id == producto.category_id %}
-                  <option value="{{ category.id }}" selected>{{ category.name }}</option>
-                  {% else %}
-                  <option value="{{ category.id }}">{{ category.name }}</option>
-                  {% endif %}
-                  {% endfor %}
-                  </select>
-                  </div>
-                  </div>
-                  </div>
-                  <div class="field">
-                  <label class="label">Descripcion</label>
-                  <div class="control">
-                  <textarea name="description" id="description" class="textarea" placeholder="Descripcion del Producto">{{ producto.description }}</textarea>
-                  </div>
-                  </div>
-                  <div class="field">
-                  <label class="label">Precio*</label>
-                  <div class="control">
-                  <input type="number" name="price" id="price" class="input" placeholder="Precio del Producto" value="{{ producto.price }}" required="">
-                  </div>
-                  </div>
-                  <br>
-                  <div class="field is-grouped">
-                  <div class="control">
-                  <button class="button is-link" type="submit">Guardar</button>
-                  </div>
-                  <div class="control">
-                  <a class="button is-link is-light" href="{{ url_for('productos') }}">Cancelar</a>
-                  </div>
-                  </div>
-                  </form>
-                  </div>
-                  </div>
-                  
-                    </div>
-                  {% endblock %}
+    <h1 class="title">Editar Categoría</h1>
+    <form method="post">
+      <div class="field">
+        <label class="label">Nombre</label>
+        <div class="control">
+          <input class="input" type="text" name="nombre" value="{{ categoria.nombre }}">
+        </div>
+      </div>
+      <div class="field is-grouped">
+        <div class="control">
+          <button type="submit" class="button is-link">Guardar</button>
+        </div>
+        <div class="control">
+          <a href="{{ url_for('categorias') }}" class="button is-link is-light">Cancelar</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

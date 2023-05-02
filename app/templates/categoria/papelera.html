@@ -9,14 +9,13 @@
       <div class="column">
         <div class="column">
           <div class="buttons is-pulled-right">
-            <a href="{{ url_for('categoria_papelera') }}" class="button is-link is-light">Ir a papelera</a>
-            <a href="{{ url_for('categoria_nueva') }}" class="button is-link">Agregar Categoría</a>
+            <a href="{{ url_for('categorias') }}" class="button is-link is-light">Volver</a>
           </div>
         </div>
         {% if hay_activas %}
         <div class="columns">
           <div class="column">
-            <h1 class="title">Categorías</h1>
+            <h1 class="title">Lista de categorias en la papelera</h1>
           </div>
         </div>
         <table class="table is-bordered is-hoverable">
@@ -28,15 +27,12 @@
           </thead>
           <tbody>
             {% for categoria in categorias %}
-              {% if categoria.activo %}
+              {% if not categoria.activo %}
                 <tr>
                   <td>{{ categoria.nombre }}</td>
                   <td>
-                    <a href="{{ url_for('categoria_editar', id=categoria.id) }}" class="button is-warning is-small">
-                      <span class="icon is-small"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></i></span>
-                    </a>
-                    <a href="{{ url_for('categoria_eliminar', id=categoria.id) }}" class="button is-danger is-small">
-                      <span class="icon is-small"><i class="fas fa-trash" aria-hidden="true"></i></span>
+                    <a href="{{ url_for('categoria_restaurar', id=categoria.id) }}" class="button is-link is-light is-small">
+                      <i class="fa fa-undo" aria-hidden="true"></i>
                     </a>
                   </td>
                 </tr>
@@ -47,11 +43,11 @@
         {% endif %}
         <!-- End "if hay_activas" -->
         {% if not hay_activas %}
-        <h1 class="title is-1">Lista de Categorías</h1>
+        <h1 class="title is-1">Lista de categorias en la papelera</h1>
 					<div class="box">
 						<div class="notification is-warning">
 							<h2 class="subtitle is-2">No hay Categorías</h2>
-							<p>No se han agregado Categorías a la base de datos, puedes agregar uno dando click en el boton <b>"Agregar Producto"</b>.</p>
+							<p>No hay categorias en la papelera.</p>
 						</div>
 					</div>
         {% endif %}
@@ -59,5 +55,4 @@
     </div>
   </div>
 </section>
-
 {% endblock %}
