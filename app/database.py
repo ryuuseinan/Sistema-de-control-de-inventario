@@ -11,7 +11,7 @@ usuario = 'root'
 contrasena = ''
 host = 'localhost'
 puerto = 3306
-nombre_base_datos = 'invxd'
+nombre_base_datos = 'xd'
 
 # Crea la URL de conexión a la base de datos MySQL
 url = f'mysql://{usuario}:{contrasena}@{host}:{puerto}/{nombre_base_datos}'
@@ -27,135 +27,78 @@ session = Session()
 
 Base = declarative_base()
 
-class User(Base):
-    __tablename__ = 'user'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(50))
-    lastname = Column(String(50))
-    username = Column(String(50))
-    email = Column(String(255))
-    password = Column(String(60))
-    image = Column(String(255))
-    is_active = Column(Boolean, default=True)
-    is_admin = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=datetime.now())
-    activo = Column(Boolean, default=True)
-
-class Category(Base):
-    __tablename__ = 'category'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    image = Column(String(255))
-    name = Column(String(50))
-    description = Column(Text)
-    created_at = Column(DateTime, default=datetime.now())
-    activo = Column(Boolean, default=True)
-
-class Product(Base):
-    __tablename__ = 'product'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    image = Column(String(255))
-    barcode = Column(String(50))
-    name = Column(String(50))
-    description = Column(Text)
-    inventary_min = Column(Integer, default=10)
-    price_in = Column(Integer)
-    price_out = Column(Integer)
-    unit = Column(String(255))
-    presentation = Column(String(255))
-    user_id = Column(Integer, ForeignKey('user.id'))
-    category_id = Column(Integer, ForeignKey('category.id'))
-    created_at = Column(DateTime, default=datetime.now())
-    activo = Column(Boolean, default=True)
-
-    user = relationship('User')
-    category = relationship('Category')
-
-class Person(Base):
-    __tablename__ = 'person'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    image = Column(String(255))
-    name = Column(String(255))
-    lastname = Column(String(50))
-    company = Column(String(50))
-    address1 = Column(String(50))
-    address2 = Column(String(50))
-    phone1 = Column(String(50))
-    phone2 = Column(String(50))
-    email1 = Column(String(50))
-    email2 = Column(String(50))
-    kind = Column(Integer)
-    created_at = Column(DateTime, default=datetime.now())
-    activo = Column(Boolean, default=True)
-
-class OperationType(Base):
-    __tablename__ = 'operation_type'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(50))
-    activo = Column(Boolean, default=True)
-
-class Box(Base):
-    __tablename__ = 'box'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    created_at = Column(DateTime, default=datetime.now())
-    activo = Column(Boolean, default=True)
-
-class Sell(Base):
-    __tablename__ = 'sell'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    person_id = Column(Integer, ForeignKey('person.id'))
-    user_id = Column(Integer, ForeignKey('user.id'))
-    operation_type_id = Column(Integer, ForeignKey('operation_type.id'), default=2)
-    box_id = Column(Integer, ForeignKey('box.id'))
-    total = Column(Integer)
-    cash = Column(Integer)
-    discount = Column(Float)
-    sell_date = Column(DateTime, default=datetime.now())
-    created_at = Column(DateTime, default=datetime.now())
-    box = relationship('Box')
-    operation_type = relationship('OperationType')
-    user = relationship('User')
-    person = relationship('Person')
-    products = relationship('SellProduct', backref='sell', lazy=True)
-    activo = Column(Boolean, default=True)
-
-class Operation(Base):
-    __tablename__ = 'operation'
+# Creamos tabla para almacenar usuarios
+class Usuario(Base):
+    __tablename__ = 'usuario'
     id = Column(Integer, primary_key=True)
-    product_id = Column(Integer, ForeignKey('product.id'))
-    q = Column(Float)
-    operation_type_id = Column(Integer, ForeignKey('operation_type.id'))
-    sell_id = Column(Integer, ForeignKey('sell.id'))
-    created_at = Column(DateTime, default=datetime.utcnow)
+    nombre_usuario = Column(String(50), unique=True, nullable=False)
+    correo = Column(String(255), unique=True, nullable=False)
+    contrasena = Column(String(60), nullable=False)
+    es_administrador = Column(Boolean, default=False, nullable=False)
+    fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
+    ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
+    activo = Column(Boolean, default=True, nullable=False)
 
-    product = relationship('Product')
-    operation_type = relationship('OperationType')
-    sell = relationship('Sell')
-    activo = Column(Boolean, default=True)
-
-class SellProduct(Base):
-    __tablename__ = 'sell_product'
+# Creamos tabla para almacenar categorias
+class Categoria(Base):
+    __tablename__ = 'categoria'
     id = Column(Integer, primary_key=True)
-    sell_id = Column(Integer, ForeignKey('sell.id'), nullable=False)
-    product_id = Column(Integer, ForeignKey('product.id'), nullable=False)
-    quantity = Column(Float, nullable=False)
-    price = Column(Float, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    activo = Column(Boolean, default=True)
+    nombre = Column(String(50), unique=True, nullable=False)
+    fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
+    ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
+    activo = Column(Boolean, default=True, nullable=False)
 
-class PaymentMethod(Base):
-    __tablename__ = 'payment_method'
+# Creamos tabla para almacenar productos
+class Producto(Base):
+    __tablename__ = 'producto'
     id = Column(Integer, primary_key=True)
-    name = Column(String(50), nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    activo = Column(Boolean, default=True)
+    imagen = Column(String(255))
+    codigo_barra = Column(String(50), unique=True, nullable=False)
+    nombre = Column(String(50), nullable=False)
+    descripcion = Column(Text)
+    precio = Column(Integer, nullable=False)
+    stock = Column(Integer)
+    usuario_id = Column(Integer, ForeignKey('usuario.id'))
+    categoria_id = Column(Integer, ForeignKey('categoria.id'))
+    fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
+    ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
+    activo = Column(Boolean, default=True, nullable=False)
+    # Crea la relación con Categoría
+    categoria = relationship('Categoria')
 
-class Configuration(Base):
-    __tablename__ = 'configuration'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    short = Column(String(255), unique=True)
-    name = Column(String(255), unique=True)
-    kind = Column(Integer)
-    val = Column(String(255))
-    activo = Column(Boolean, default=True)
+# Creamos tabla para almacenar personas
+class Persona(Base):
+    __tablename__ = 'persona'
+    id = Column(Integer, primary_key=True)
+    rut = Column(String(12), unique=True, nullable=False)
+    nombre = Column(String(30), nullable=False)
+    apellido = Column(String(30), nullable=False)
+    direccion = Column(String(50), nullable=False)
+    celular = Column(String(22), nullable=False)
+    fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
+    ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
+    activo = Column(Boolean, default=True, nullable=False)
+
+# Creamos tabla para almacenar cajas
+class Caja(Base):
+    __tablename__ = 'caja'
+    id = Column(Integer, primary_key=True)
+    fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
+    ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
+    activo = Column(Boolean, default=True, nullable=False)
+
+# Creamos tabla para almacenar ingredientes
+class Ingrediente(Base):
+    __tablename__ = 'ingrediente'
+    id = Column(Integer, primary_key=True)
+    nombre = Column(String(50), nullable=False)
+    precio = Column(Integer, nullable=False)
+
+# Creamos tabla para almacenar los ingredientes de los productos
+class ProductoIngrediente(Base):
+    __tablename__ = 'producto_ingrediente'
+    id = Column(Integer, primary_key=True)
+    producto_id = Column(Integer, ForeignKey('producto.id'))
+    ingrediente_id = Column(Integer, ForeignKey('ingrediente.id'))
 
 Base.metadata.create_all(engine)
