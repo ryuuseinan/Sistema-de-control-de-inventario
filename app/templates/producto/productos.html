@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Productos{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="columns">
+      <div class="column">
+        <div class="column">
+          <div class="buttons is-pulled-right">
+            <a href="{{ url_for('producto_papelera') }}" class="button is-link is-light">Ir a papelera</a>
+            <a href="{{ url_for('producto_nuevo') }}" class="button is-link">Agregar Producto</a>
+          </div>
+        </div>
+        {% if hay_activas %}
+        <div class="columns">
+          <div class="column">
+            <h1 class="title">Lista de Productos</h1>
+          </div>
+        </div>
+        <table class="table is-striped is-hoverable">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Imagen</th>
+              <th>Nombre</th>
+              <th>Categoría</th>
+              <th>Precio</th>
+              <th>Descripción</th>
+              <th>Stock</th>
+              <th>Editar/Eliminar</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for producto in productos %}
+            {% if producto.activo %}
+              <tr>
+                <td>{{ producto.codigo_barra }}</td>
+                <td><img src="{{ url_for('static', filename='img/') }}{{ producto.imagen }}" alt="{{ producto.nombre }}" style="max-height: 50px;">
+                </td>
+                <td>{{ producto.nombre }}</td>
+                <td>{{ producto.categoria.nombre }}</td>
+                <td>${{ producto.precio }}</td>
+                <td class="descripcion">{{ producto.descripcion }}</td>
+                <td>{{ producto.stock }}</td>
+                <td>
+                  <a href="{{ url_for('producto_editar', id=producto.id) }}" class="button is-info is-light">
+                    <span class="icon is-small"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></i></span>
+                  </a>
+                  <a href="{{ url_for('producto_eliminar', id=producto.id) }}" class="button is-danger is-light">
+                    <span class="icon is-small"><i class="fas fa-trash" aria-hidden="true"></i></span>
+                  </a>
+                </td>
+              </tr>
+            {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+        <!-- End if hay_activas -->
+        {% endif %}
+        {% if not hay_activas %}
+        <h1 class="title is-1">Lista de Productos</h1>
+        <div class="box">
+          <div class="notification is-warning">
+            <h2 class="subtitle is-2">No hay Productos</h2>
+            <p>No se han agregado Productos a la base de datos, puedes agregar uno dando click en el boton <b>"Agregar Producto"</b>.</p>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
