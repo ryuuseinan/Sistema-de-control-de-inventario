@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <h1 class="title">Editar Producto</h1>
+    <form method="post" enctype="multipart/form-data">
+      <div class="field">
+        <label class="label">Código de barras</label>
+        <div class="control">
+          <input class="input" type="text" name="barcode" value="{{ producto.barcode }}">
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Nombre</label>
+        <div class="control">
+          <input class="input" type="text" name="name" value="{{ producto.name }}">
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Categoría</label>
+        <div class="control">
+          <div class="select">
+            <select name="category_id">
+              {% for categoria in categorias %}
+              {% if categoria.id == producto.category_id %}
+              <option value="{{ categoria.id }}" selected>{{ categoria.name }}</option>
+              {% else %}
+              <option value="{{ categoria.id }}">{{ categoria.name }}</option>
+              {% endif %}
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Descripción</label>
+        <div class="control">
+          <textarea class="textarea" name="description">{{ producto.description }}</textarea>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Precio mediana</label>
+        <div class="control">
+          <input class="input" type="text" name="price_in" value="{{ producto.price_in }}">
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Precio familiar</label>
+        <div class="control">
+          <input class="input" type="text" name="price_out" value="{{ producto.price_out }}">
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Imagen</label>
+        <div class="control">
+          <div class="file">
+            <label class="file-label">
+              <input class="file-input" type="file" name="image">
+              <span class="file-cta">
+                <span class="file-icon">
+                  <i class="fas fa-upload"></i>
+                </span>
+                <span class="file-label">
+                  Elige un archivo…
+                </span>
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="field is-grouped">
+        <div class="control">
+          <button type="submit" class="button is-link">Guardar</button>
+        </div>
+        <div class="control">
+          <a href="{{ url_for('productos') }}" class="button is-link is-light">Cancelar</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

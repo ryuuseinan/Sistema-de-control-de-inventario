@@ -12,4 +12,35 @@
 .navbar-item{
     color: #ccc;
 }
-  
+.button.is-small {
+  font-size: 0.70rem;
+}
+th{
+  font-size: 75%;
+}
+td{
+  font-size: 85%;
+}
+td.descripcion {
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+aside{
+  color:#ccc;
+  background-color: #242424;
+  min-height: max-content;
+  height:100%
+}
+#admin{
+  color:#ccc;
+}
+#lista_de_opciones{
+  width: 15%;
+}
+#columnas{
+  height:100%
+}
+#cuerpo_lista_opciones{
+  height:100%
+}

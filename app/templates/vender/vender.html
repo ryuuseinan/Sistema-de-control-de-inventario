@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Vender{% endblock %}
+
+{% block content %}
+
+<section class="section">
+<div class="container">
+    <div class="columns">
+        <div class="column">
+            <div class="column">
+                <h1 class="title">Venta</h1>
+                <p><b>Buscar producto por nombre o por código de barras:</b></p>
+                <form id="searchp" method="POST">
+                    <div class="field is-grouped">
+                        <div class="control is-expanded">
+                            <input type="text" name="producto_busqueda" class="input" placeholder="Nombre o código de barras">
+                        </div>
+                        <div class="control">
+                            <button type="submit" class="button is-primary"><i class="fas fa-search"></i> Buscar</button>
+                        </div>
+                    </div>
+                </form>                
+            </div>
+        {% if productos %}
+            <table class="table is-bordered is-hoverable">
+                <thead>
+                    <tr>
+                        <th>Código de barras</th>
+                        <th>Imagen</th>
+                        <th>Nombre</th>
+                        <th>Categoria</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for producto in productos %}
+                    <tr>
+                        <td>{{ producto.codigo_barra }}</td>
+                        <td><img src="{{ url_for('static', filename='img/') }}{{ producto.imagen }}" alt="{{ producto.nombre }}" style="max-height: 50px;">
+                        </td>
+                        <td>{{ producto.nombre }}</td>
+                        <td>{{ producto.categoria.nombre }}</td>
+                        <td>{{ producto.precio }}</td>
+                        <td>{{ producto.stock }}</td>
+                        <td>
+                            <form method="post" action="{{ url_for('agregar_producto') }}">
+                                <input type="hidden" name="producto_id" value="{{ producto.id }}">
+                                <div class="field is-grouped">
+                                    <div class="control">
+                                        <input type="number" name="cantidad" class="input" value="1" min="1" max="{{ producto.stock }}">
+                                    </div>
+                                    <div class="control">
+                                        <button type="submit" class="button is-primary"><i class="fas fa-cart-plus"></i> Añadir</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                <p>No se han encontrado resultados.</p>
+        {% endif %}
+        </div>
+    </div>
+</div>
+</section>
+{% endblock %}

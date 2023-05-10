@@ -1,14 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html style="height:100%">
 <head>
 	<meta charset="UTF-8">
 	<title>{% block title %}{% endblock %} - Sistema de control de inventario</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
 </head>
-<body>
+<body id="cuerpo_lista_opciones">
 	<nav class="navbar navbar-pink" role="navigation" aria-label="main navigation">
-	  <div id=pizzeriafratellinavbar class="navbar-brand">
+	  <div class="navbar-brand">
 	    <a class="navbar-item" href="{{ url_for('index') }}">
 			<h2 style="color: #ccc;">Pizzería Fratelli</h2>
 	    </a>
@@ -29,26 +30,13 @@
 	    </div>
 	  </div>
 	</nav>
-
-	{% with messages = get_flashed_messages() %}
-	{% if messages %}
-	<div class="container">
-		{% for message in messages %}
-		<div class="notification is-{{ message[0] }}">
-			<button class="delete"></button>
-			{{ message[1] }}
-		</div>
-		{% endfor %}
-	</div>
-	{% endif %}
-	{% endwith %}
 	<body>
-		<div class="columns">
-		  <div class="column is-one-fifth">
+		<div id="columnas" class="columns">
+		  <div id="lista_de_opciones" class="column is-one-fifth">
 			<aside class="menu">
 			  <ul class="menu-list">
 				<li>
-				  <a href="{{ url_for('menu') }}">
+				  <a href="{{ url_for('index') }}">
 					<span class="icon is-small"><i class="fas fa-home"></i></span>
 					<span>Inicio</span>
 				  </a>
@@ -96,7 +84,7 @@
 				  </a>
 				</li>
 			  </ul>
-			  <p class="menu-label">Administración</p>
+			  <p id=admin class="menu-label">Administración</p>
 			  <ul class="menu-list">
 				<li>
 				  <a href="{{ url_for('usuarios') }}">

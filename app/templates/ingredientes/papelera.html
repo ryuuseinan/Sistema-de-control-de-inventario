@@ -9,16 +9,16 @@
       <div class="column">
         <div class="column">
           <div class="buttons is-pulled-right">
-            <a href="{{ url_for('producto_nuevo') }}" class="button is-success">Agregar Producto</a>
+            <a href="{{ url_for('productos') }}" class="button is-link is-light">Volver</a>
           </div>
         </div>
         {% if hay_activas %}
         <div class="columns">
           <div class="column">
-            <h1 class="title">Lista de Productos</h1>
+            <h1 class="title">Lista de productos en la papelera</h1>
           </div>
         </div>
-        <table class="table is-bordered is-hoverable">
+        <table class="table is-bordered is-hoverable is-narrow">
           <thead>
             <tr>
               <th>Código</th>
@@ -33,31 +33,34 @@
           </thead>
           <tbody>
             {% for producto in productos %}
+            {% if not producto.activo %}
               <tr>
                 <td>{{ producto.barcode }}</td>
                 <td><img src="{{ url_for('static', filename='img/') }}{{producto.image}}" alt="{{ producto.name }}" style="max-height: 50px;">
                 </td>
                 <td>{{ producto.name }}</td>
-                <td>{{ producto.description }}</td>
+                <td class="descripcion">{{ producto.description }}</td>
                 <td>${{ producto.price_in }}</td>
                 <td>${{ producto.price_out }}</td>
                 <td>{{ producto.category.name }}</td>
                 <td>
-                  <a href="{{ url_for('producto_editar', id=producto.id) }}" class="button is-warning is-small">Editar</a>
-                  <a href="{{ url_for('producto_eliminar', id=producto.id) }}" class="button is-danger is-small">Eliminar</a>
+                  <a href="{{ url_for('producto_restaurar', id=producto.id) }}" class="button is-link is-light is-small">
+                    <i class="fa fa-undo" aria-hidden="true"></i>
+                  </a>
                 </td>
               </tr>
+            {% endif %}
             {% endfor %}
           </tbody>
         </table>
         <!-- End if hay_activas -->
         {% endif %}
         {% if not hay_activas %}
-        <h1 class="title is-1">Lista de Productos</h1>
+        <h1 class="title is-1">Lista de productos en la papelera</h1>
         <div class="box">
           <div class="notification is-warning">
-            <h2 class="subtitle is-2">No hay Productos</h2>
-            <p>No se han agregado Productos a la base de datos, puedes agregar uno dando click en el boton <b>"Agregar Producto"</b>.</p>
+            <h2 class="subtitle is-2">No hay productos</h2>
+            <p>No hay productos en la papelera.</p>
           </div>
         </div>
         {% endif %}
