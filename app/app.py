@@ -1,10 +1,9 @@
 # Importamos las librerías necesarias
-from werkzeug.utils import secure_filename
-from werkzeug.security import generate_password_hash
+import bcrypt
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_, func
-from database import Usuario, Producto, Categoria, db, usuario, contrasena, host, puerto, nombre_base_datos, session
+from database import Usuario, Producto, Categoria, Ingrediente, UnidadMedida, Rol, Persona, db, usuario, contrasena, host, puerto, nombre_base_datos, session
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user
 import os
 from db_init import init_db
@@ -188,38 +187,46 @@ def categoria_restaurar(id):
     else:
         return render_template('categoria/restaurar.html', categoria=categoria)
 
+
+
 @app.route('/clientes')
 def clientes():
     return render_template('clientes.html')
 
-@app.route('/proveedores')
-def proveedores():
-    return render_template('proveedores.html')
+@app.route('/personas')
+def personas():
+    usuario = session.query(Usuario).all()
+    personas = session.query(Persona).all()
+    for usuario in personas:
+        fecha_creacion = arrow.get(usuario.fecha_creacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if usuario.fecha_creacion else None
+        ultima_modificacion = arrow.get(usuario.ultima_modificacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if usuario.ultima_modificacion else None
+    return render_template('personas/personas.html', personas=personas, usuario=usuario)
 
 @app.route('/usuarios')
 def usuarios():
-    
+    rol = session.query(Rol).all()
     usuarios = session.query(Usuario).all()
     for usuario in usuarios:
         fecha_creacion = arrow.get(usuario.fecha_creacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if usuario.fecha_creacion else None
         ultima_modificacion = arrow.get(usuario.ultima_modificacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if usuario.ultima_modificacion else None
-    return render_template('usuario/usuarios.html', usuarios=usuarios)
+    return render_template('usuario/usuarios.html', usuarios=usuarios, rol=rol)
 
 @app.route('/usuario/nuevo', methods=['GET', 'POST'])
 def usuario_nuevo():
     error = None
+    rol = session.query(Rol).all()
     if request.method == 'POST':
         nombre_usuario = request.form['nombre_usuario']
         correo = request.form['correo']
         contrasena = request.form['contrasena']
         confirmar_contrasena = request.form['confirmar_contrasena']
-        es_administrador = True if request.form.get('es_administrador') == '1' else False
+        rol_id = request.form['rol_id']
 
         if contrasena != confirmar_contrasena:
             error = "Las contraseñas no coinciden"
         else:
-            hashed_password = generate_password_hash(contrasena)
-            usuario = Usuario(nombre_usuario=nombre_usuario, correo=correo, contrasena=hashed_password, es_administrador=es_administrador)
+            contrasena_hash = bcrypt.hashpw(contrasena.encode(), bcrypt.gensalt())
+            usuario = Usuario(nombre_usuario=nombre_usuario, correo=correo, contrasena=contrasena_hash, rol_id=rol_id)
             try:
                 session.add(usuario)
                 session.commit()
@@ -228,7 +235,7 @@ def usuario_nuevo():
             except IntegrityError:
                 session.rollback()
                 error = "El nombre de usuario o correo electrónico ya están en uso"
-    return render_template('usuario/nuevo.html', error=error)
+    return render_template('usuario/nuevo.html', error=error, rol=rol)
     
 @app.route('/usuarios/papelera')
 def usuario_papelera():
@@ -340,45 +347,6 @@ def login():
 
     # Renderizar la plantilla del formulario de inicio de sesión
     return render_template('login.html')
-
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-
-    error = None
-    '''if request.method == 'POST':
-        # Obtener datos del formulario
-        email = request.form['email']
-        password = request.form['password']
-        
-        try:
-            # Verificar si el correo electrónico ya está registrado
-            db_session = Session()
-            email_exists = db_session.query(exists().where(Gestor.email == email)).scalar()
-            if email_exists:
-                error = 'El correo electrónico ya está registrado. Intente con otro.'
-                return render_template('register.html', error=error)
-
-            # Crear nueva instancia de Gestor con los datos del formulario
-            nuevo_gestor = Gestor(email=email, password=password)
-            
-            # Guardar nuevo_gestor en la base de datos
-            db_session.add(nuevo_gestor)
-            db_session.commit()
-            
-            flash('Registro exitoso. Inicie sesión para continuar.')
-            return redirect(url_for('login'))
-            
-        except Exception as e:
-            # Mostrar mensaje de error si ocurre algún problema con la base de datos
-            flash('Ocurrió un error al procesar la solicitud. Inténtelo de nuevo.')
-            print(str(e))
-        
-        finally:
-            # Cerrar la sesión de la base de datos
-            db_session.close()
-    
-    # Renderizar la plantilla del formulario de registro'''
-    return render_template('register.html', error=error)
 
 @app.route('/productos')
 def productos():
@@ -522,6 +490,60 @@ def producto_eliminar(id):
         return redirect(url_for('productos'))
     else:
         return render_template('producto/eliminar.html', producto=producto)
+
+@app.route('/ingredientes')
+def ingredientes():
+    # Obtenemos todas los ingredientes de la base de datos
+    ingredientes = session.query(Ingrediente).all()
+    # Verificamos si hay al menos un producto activo
+    hay_activas = any(ingrediente.activo for ingrediente in ingredientes)
+    i = 0
+    for ingrediente in ingredientes:
+        if ingrediente.activo:
+            i=i+1
+    if i>=1:
+        hay_activas = True
+    if i == 0:
+        hay_activas = False
+    return render_template('ingredientes/ingredientes.html', ingredientes=ingredientes, hay_activas=hay_activas)
+
+@app.route('/ingrediente_papelera')
+def ingrediente_papelera():
+    return render_template('ingredientes/papelera.html')
+
+@app.route('/ingrediente_nuevo', methods=['GET', 'POST'])
+def ingrediente_nuevo():
+    # Obtener las categorías para mostrarlas en el formulario
+    unidadmedida = session.query(UnidadMedida).all()
+    if request.method == 'POST':
+        # Obtener los datos del formulario
+        nombre = request.files['nombre']
+        cantidad = request.form['cantidad']
+        unidadmedida_id = request.form['unidadmedida_id']
+        # Crear una nueva instancia de Producto con los datos del formulario
+        nuevo_ingrediente = Ingrediente(nombre=nombre, 
+                                  cantidad=cantidad, 
+                                  unidadmedida_id=unidadmedida_id,
+                                  fecha_creacion=datetime.now(),
+                                  ultima_modificacion=datetime.now())
+        
+        # Agregar el producto a la base de datos
+        session.add(nuevo_ingrediente)
+        session.commit()
+        
+        # Redireccionar al listado de productos
+        return redirect(url_for('ingredientes'))
+    
+    # Renderizar la plantilla ingredientes
+    return render_template('ingredientes/nuevo.html', unidadmedida=unidadmedida)
+
+@app.route('/ingrediente_editar')
+def ingrediente_editar():
+    return render_template('ingredientes/editar.html')
+
+@app.route('/ingrediente_eliminar')
+def ingrediente_eliminar():
+    return render_template('ingredientes/eliminar.html')
 
 if __name__ == '__main__':
     app.debug = True

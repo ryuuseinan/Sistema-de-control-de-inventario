@@ -1,120 +1,107 @@
 <!DOCTYPE html>
 <html style="height:100%">
 <head>
-	<meta charset="UTF-8">
-	<title>{% block title %}{% endblock %} - Sistema de control de inventario</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
-	<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-	<link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
+    {% include 'header.html' %}
 </head>
-<body id="cuerpo_lista_opciones">
-	<nav class="navbar navbar-pink" role="navigation" aria-label="main navigation">
-	  <div class="navbar-brand">
-	    <a class="navbar-item" href="{{ url_for('index') }}">
-			<h2 style="color: #ccc;">Pizzería Fratelli</h2>
-	    </a>
-	    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarMenu">
-	      <span aria-hidden="true"></span>
-	      <span aria-hidden="true"></span>
-	      <span aria-hidden="true"></span>
-	    </a>
-	  </div>
-	    <div class="navbar-end">
-	      {% if session.logged_in %}
-	      	<p class="navbar-item">{{ session.username }}</p>
-	      	<a class="navbar-item" href="{{ url_for('logout') }}">Cerrar sesión</a>
-	      {% else %}
-	      	<a class="navbar-item" href="{{ url_for('login') }}">Iniciar sesión</a>
-	      	<a class="navbar-item" href="{{ url_for('register') }}">Registrarse</a>
-	      {% endif %}
-	    </div>
-	  </div>
-	</nav>
-	<body>
-		<div id="columnas" class="columns">
-		  <div id="lista_de_opciones" class="column is-one-fifth">
-			<aside class="menu">
-			  <ul class="menu-list">
-				<li>
-				  <a href="{{ url_for('index') }}">
-					<span class="icon is-small"><i class="fas fa-home"></i></span>
-					<span>Inicio</span>
-				  </a>
-				</li>
-				<li>
-				  <a href="{{ url_for('vender') }}">
-					<span class="icon is-small"><i class="fas fa-dollar-sign"></i></span>
-					<span>Vender</span>
-				  </a>
-				</li>
-				<li>
-				  <a href="{{ url_for('ventas') }}">
-					<span class="icon is-small"><i class="fas fa-shopping-cart"></i></span>
-					<span>Ventas</span>
-				  </a>
-				</li>
-				<li>
-				  <a href="{{ url_for('caja') }}">
-					<span class="icon is-small"><i class="fas fa-box"></i></span>
-					<span>Caja</span>
-				  </a>
-				</li>
-				<li>
-				  <a href="{{ url_for('productos') }}">
-					<span class="icon is-small"><i class="fas fa-glass"></i></span>
-					<span>Productos</span>
-				  </a>
-				</li>
-				<li>
-				  <a href="{{ url_for('categorias') }}">
-					<span class="icon is-small"><i class="fas fa-list"></i></span>
-					<span>Categorías</span>
-				  </a>
-				</li>
-				<li>
-				  <a href="{{ url_for('clientes') }}">
-					<span class="icon is-small"><i class="fas fa-smile"></i></span>
-					<span>Clientes</span>
-				  </a>
-				</li>
-				<li>
-				  <a href="{{ url_for('proveedores') }}">
-					<span class="icon is-small"><i class="fas fa-truck"></i></span>
-					<span>Proveedores</span>
-				  </a>
-				</li>
-			  </ul>
-			  <p id=admin class="menu-label">Administración</p>
-			  <ul class="menu-list">
-				<li>
-				  <a href="{{ url_for('usuarios') }}">
-					<span class="icon is-small"><i class="fas fa-users"></i></span>
-					<span>Usuarios</span>
-				  </a>
-				</li>
-				<li>
-				  <a href="{{ url_for('reportes') }}">
-					<span class="icon is-small"><i class="fas fa-clipboard-list"></i></span>
-					<span>Reportes</span>
-				  </a>
-				</li>
-				<li>
-				  <a href="{{ url_for('configuracion') }}">
-					<span class="icon is-small"><i class="fas fa-cog"></i></span>
-					<span>Configuración</span>
-				  </a>
-				</li>
-			  </ul>
-			</aside>
-		  </div>
-		  <div class="column">
-			{% block content %}{% endblock %}
-		  </div>
+<body>
+	<body id="cuerpo_lista_opciones">
+		<nav class="navbar navbar-pink" role="navigation" aria-label="main navigation">
+		<div class="navbar-brand">
+			<a class="navbar-item" href="{{ url_for('index') }}">
+				<h2 style="color: #ccc;">Pizzería Fratelli</h2>
+			</a>
+			<a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarMenu">
+			<span aria-hidden="true"></span>
+			<span aria-hidden="true"></span>
+			<span aria-hidden="true"></span>
+			</a>
 		</div>
-	  </body>
-	  
-	<script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/js/bulma.min.js"></script>
+			<div class="navbar-end">
+			{% if session.logged_in %}
+				<p class="navbar-item">{{ session.username }}</p>
+				<a class="navbar-item" href="{{ url_for('logout') }}">Cerrar sesión</a>
+			{% else %}
+				<a class="navbar-item" href="{{ url_for('login') }}">Iniciar sesión</a>
+			{% endif %}
+			</div>
+		</div>
+		</nav>
+		<body>
+			<div id="columnas" class="columns">
+			<div id="lista_de_opciones" class="column is-one-fifth">
+				<aside class="menu">
+				<ul class="menu-list">
+					<li>
+					<a href="{{ url_for('index') }}">
+						<span class="icon is-small"><i class="fas fa-home"></i></span>
+						<span>Inicio</span>
+					</a>
+					</li>
+					<li>
+					<a href="{{ url_for('vender') }}">
+						<span class="icon is-small"><i class="fas fa-dollar-sign"></i></span>
+						<span>Vender</span>
+					</a>
+					</li>
+					<li>
+					<a href="{{ url_for('ventas') }}">
+						<span class="icon is-small"><i class="fas fa-shopping-cart"></i></span>
+						<span>Ventas</span>
+					</a>
+					</li>
+					<li>
+					<a href="{{ url_for('productos') }}">
+						<span class="icon is-small"><i class="fas fa-glass"></i></span>
+						<span>Productos</span>
+					</a>
+					</li>
+					<li>
+					<a href="{{ url_for('categorias') }}">
+						<span class="icon is-small"><i class="fas fa-list"></i></span>
+						<span>Categorías</span>
+					</a>
+					</li>
+					<li>
+						<a href="{{ url_for('ingredientes') }}">
+							<span class="icon is-small"><i class="fas fa-list"></i></span>
+							<span>Ingredientes</span>
+						</a>
+					</li>
+				</ul>
+				<p id=admin class="menu-label">Administración</p>
+				<ul class="menu-list">
+					<li>
+					<a href="{{ url_for('usuarios') }}">
+						<span class="icon is-small"><i class="fas fa-users"></i></span>
+						<span>Usuarios</span>
+					</a>
+					</li>
+					<li>
+						<a href="{{ url_for('personas') }}">
+							<span class="icon is-small"><i class="fas fa-users"></i></span>
+							<span>Personas</span>
+						</a>
+						</li>
+					<li>
+					<a href="{{ url_for('reportes') }}">
+						<span class="icon is-small"><i class="fas fa-clipboard-list"></i></span>
+						<span>Reportes</span>
+					</a>
+					</li>
+					<li>
+					<a href="{{ url_for('configuracion') }}">
+						<span class="icon is-small"><i class="fas fa-cog"></i></span>
+						<span>Configuración</span>
+					</a>
+					</li>
+				</ul>
+				</aside>
+			</div>
+			<div class="column">
+				{% block content %}{% endblock %}
+			</div>
+			</div>
+		</body>
+	</body>
 </body>
 </html>

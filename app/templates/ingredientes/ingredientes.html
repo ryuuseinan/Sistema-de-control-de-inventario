@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Ingredientes{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="columns">
+      <div class="column">
+        <div class="column">
+          <div class="buttons is-pulled-right">
+            <a href="{{ url_for('ingrediente_papelera') }}" class="button is-link is-light">Ir a papelera</a>
+            <a href="{{ url_for('ingrediente_nuevo') }}" class="button is-link">Agregar Ingrediente</a>
+          </div>
+        </div>
+        {% if hay_activas %}
+        <div class="columns">
+          <div class="column">
+            <h1 class="title">Lista de Ingredientes</h1>
+          </div>
+        </div>
+        <table class="table is-striped is-hoverable">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Cantidad</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ingrediente in ingredientes %}
+              {% if ingrediente.activo %}
+                <tr>
+                  <td>{{ ingrediente.nombre }}</td>
+                  <td>{{ ingrediente.cantidad }} {{ ingrediente.unidadmedida.nombre }}</td>
+                  <td>
+                    <a href="{{ url_for('ingrediente_editar', id=ingrediente.id) }}" class="button is-warning is-small">
+                      <span class="icon is-small"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></i></span>
+                    </a>
+                    <a href="{{ url_for('ingrediente_eliminar', id=ingrediente.id) }}" class="button is-danger is-small">
+                      <span class="icon is-small"><i class="fas fa-trash" aria-hidden="true"></i></span>
+                    </a>
+                  </td>
+                </tr>
+              {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+        <!-- End "if hay_activas" -->
+        {% if not hay_activas %}
+        <h1 class="title is-1">Lista de Ingredientes</h1>
+					<div class="box">
+						<div class="notification is-warning">
+							<h1 class="subtitle is-2">No hay Ingredientes</h2>
+							<p>No se han agregado Ingredientes a la base de datos, puedes agregar uno dando click en el boton <b>"Agregar Producto"</b>.</p>
+						</div>
+					</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

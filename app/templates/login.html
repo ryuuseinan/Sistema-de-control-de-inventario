@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "header.html" %}
 
 {% block title %}Inicio de sesión{% endblock %}
 
@@ -44,7 +44,6 @@
         </div>
       </div>
     </form>
-    <p class="has-text-centered">¿No tienes una cuenta? <a href="{{ url_for('register') }}">Regístrate aquí</a></p>
   </div>
 </section>
 {% endblock %}
