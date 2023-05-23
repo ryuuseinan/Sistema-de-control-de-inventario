@@ -9,8 +9,12 @@
 # Instalacion de env
 
 `python -m venv venv`
-`venv\Scripts\activate` en Windows
-`source venv/bin/activate` en Linux/MacOS
+
++ Windows
+`venv\Scripts\activate`
+
++ Linux/MacOS
+`source venv/bin/activate`
 
 # Instalacion de dependencias
 `pip install -r requirements.txt`
