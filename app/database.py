@@ -171,7 +171,7 @@ else:
     rol = session.query(Rol).filter_by(id=1).first()
 
     if rol:
-        usuario = Usuario(nombre_usuario='galvezluis', correo='galvezluis72@gmail.com', contrasena='admin', rol_id=rol.id, fecha_creacion=datetime.now(), ultima_modificacion=datetime.now(), activo=True)
+        usuario = Usuario(nombre_usuario='galvezluis', correo='galvezluis72@gmail.com', contrasena='$2b$12$NJ/4JWBugLVU0pJjIfMcne9NqDk/.zLpotKLUAqXUes4FG7GZ/..O', rol_id=rol.id, fecha_creacion=datetime.now(), ultima_modificacion=datetime.now(), activo=True)
         session.merge(usuario)
         session.commit()
     else:
