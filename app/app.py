@@ -239,6 +239,7 @@ def usuario_nuevo():
     
 @app.route('/usuarios/papelera')
 def usuario_papelera():
+    rol = session.query(Rol).all()
     # Obtenemos todos los usuarios de la base de datos
     usuarios = session.query(Usuario).all()
 
@@ -257,6 +258,7 @@ def usuario_papelera():
 
 @app.route('/usuario/restaurar/<int:id>', methods=['GET', 'POST'])
 def usuario_restaurar(id):
+    rol = session.query(Rol).all()
     usuario = session.query(Usuario).filter_by(id=id).one()
     if request.method == 'POST':
         usuario.activo = 1
@@ -267,6 +269,7 @@ def usuario_restaurar(id):
 
 @app.route('/usuario/editar/<int:id>', methods=['GET', 'POST'])
 def usuario_editar(id):
+    rol = session.query(Rol).all()
     usuario = session.query(Usuario).get(id)
 
     if not usuario:
@@ -278,7 +281,7 @@ def usuario_editar(id):
         correo = request.form['correo']
         contrasena = request.form['contrasena']
         confirmar_contrasena = request.form['confirmar_contrasena']
-        es_administrador = request.form.get('es_administrador') == '1'
+        rol_id = request.form['rol_id']
         
         # Validar formulario
         if not nombre_usuario:
@@ -291,14 +294,16 @@ def usuario_editar(id):
             # Actualizar usuario
             usuario.nombre_usuario = nombre_usuario
             usuario.correo = correo
-            usuario.es_administrador = es_administrador
+            usuario.rol_id = rol_id
             if contrasena:
-                usuario.contrasena = generate_password_hash(contrasena)
+                contrasena_hash = bcrypt.hashpw(contrasena.encode(), bcrypt.gensalt())
+                usuario.contrasena = contrasena_hash
+            usuario.ultima_modificacion = datetime.now()
             session.commit()
-
+            
             flash('Usuario actualizado exitosamente', 'success')
             return redirect(url_for('usuarios'))
-    return render_template('usuario/editar.html', usuario=usuario)
+    return render_template('usuario/editar.html', usuario=usuario, rol=rol)
 
 @app.route('/usuario/eliminar/<int:id>', methods=['GET', 'POST'])
 def usuario_eliminar(id):
@@ -472,6 +477,7 @@ def producto_editar(id):
         
         # Registrar ultima modificación
         producto.ultima_modificacion = datetime.now()
+        
         # Guardar los cambios en la base de datos
         session.commit()
 

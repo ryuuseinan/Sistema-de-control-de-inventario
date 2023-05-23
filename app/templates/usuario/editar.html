@@ -54,18 +54,17 @@
                         </div>
                     </div>
                     <div class="field">
-                        <label class="label">Es administrador:</label>
+                        <label class="label">Rol</label>
                         <div class="control">
-                            <label class="radio">
-                                <input type="radio" name="es_administrador" value="1" {{ 'checked' if usuario.es_administrador else '' }}>
-                                Sí
-                            </label>
-                            <label class="radio">
-                                <input type="radio" name="es_administrador" value="0" {{ 'checked' if not usuario.es_administrador else '' }}>
-                                No
-                            </label>
+                          <div class="select">
+                            <select name="rol_id">
+                              {% for rol in rol %}
+                                <option value="{{ rol.id }}">{{ rol.nombre }}</option>
+                              {% endfor %}
+                            </select>
+                          </div>
                         </div>
-                    </div>
+                      </div>
                     <div class="field">
                         <div class="control">
                             <button class="button is-primary" type="submit">Guardar</button>
