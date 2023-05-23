@@ -4,4 +4,6 @@
 
 `env\Scripts\activate.ps1`
 
+`pip install --upgrade pip`
+
 `python .\app\app.py`
