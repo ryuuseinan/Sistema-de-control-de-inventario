@@ -9,10 +9,10 @@
             <div class="column">
                 <div class="column">
                     <div class="buttons is-pulled-right">
-                        <a href="{{ url_for('usuario_papelera') }}" class="button is-link is-light">Ir a papelera</a>
-                        <a href="{{ url_for('usuario_nuevo') }}" class="button is-link">Agregar Usuario</a>
+                        <a href="{{ url_for('usuarios') }}" class="button is-link is-light">Volver</a>
                     </div>
-                    <h1 class="title">Usuarios</h1>
+                    {% if not hay_activas %}
+                    <h1 class="title">Lista de usuarios en la papelera</h1>
                     {% with messages = get_flashed_messages() %}
                     {% if messages %}
                         {% for message in messages %}
@@ -38,7 +38,7 @@
                         </thead>
                         <tbody>
                             {% for usuario in usuarios %}
-                            {% if usuario.activo %}
+                            {% if not usuario.activo %}
                             <tr>
                                 <td>{{ usuario.id }}</td>
                                 <td>{{ usuario.nombre_usuario }}</td>
@@ -48,19 +48,27 @@
                                 <td>{{ arrow.get(usuario.ultima_modificacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if usuario.ultima_modificacion != usuario.fecha_creacion else 'Nunca modificado' }}</td>
                                 <td>{{ 'Sí' if usuario.activo else 'No' }}</td>
                                 <td>
-                                    <a href="{{ url_for('usuario_editar', id=usuario.id) }}" class="button is-info is-light">
-                                      <span class="icon is-small"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></i></span>
+                                    <a href="{{ url_for('usuario_restaurar', id=usuario.id) }}" class="button is-link is-light is-small">
+                                      <i class="fa fa-undo" aria-hidden="true"></i>
                                     </a>
-                                    <a href="{{ url_for('usuario_eliminar', id=usuario.id) }}" class="button is-danger is-light">
-                                      <span class="icon is-small"><i class="fas fa-trash" aria-hidden="true"></i></span>
-                                    </a>
-                                  </td>
+                                </td>
                             </tr>
-                        {% endif %}
-                        {% endfor %}
+                            {% endif %}
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
+                <!-- End if not hay_activas -->
+                {% endif %}
+                {% if hay_activas %}
+                <h1 class="title is-1">Lista de usuarios en la papelera</h1>
+                <div class="box">
+                <div class="notification is-warning">
+                    <h1 class="subtitle is-2">No hay usuarios</h2>
+                    <p>No hay usuarios en la papelera.</p>
+                </div>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>

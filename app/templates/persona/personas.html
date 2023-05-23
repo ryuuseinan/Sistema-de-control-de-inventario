@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Usuarios{% endblock %}
+{% block title %}Personas{% endblock %}
 
 {% block content %}
 <section class="section">
@@ -9,10 +9,10 @@
             <div class="column">
                 <div class="column">
                     <div class="buttons is-pulled-right">
-                        <a href="{{ url_for('usuario_papelera') }}" class="button is-link is-light">Ir a papelera</a>
-                        <a href="{{ url_for('usuario_nuevo') }}" class="button is-link">Agregar Usuario</a>
+                        <a href="{{ url_for('persona_papelera') }}" class="button is-link is-light">Ir a papelera</a>
+                        <a href="{{ url_for('persona_nuevo') }}" class="button is-link">Agregar persona</a>
                     </div>
-                    <h1 class="title">Usuarios</h1>
+                    <h1 class="title">Personas</h1>
                     {% with messages = get_flashed_messages() %}
                     {% if messages %}
                         {% for message in messages %}
@@ -26,32 +26,34 @@
                     <table class="table is-striped is-hoverable">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Nombre de usuario</th>
-                                <th>Correo</th>
-                                <th>Rol</th>
-                                <th>Fecha de creación</th>
+                                <th>Usuario</th>
+                                <th>RUT</th>
+                                <th>Nombre</th>
+                                <th>Apellidos</th>
+                                <th>Celular</th>
+                                <th>Fecha creación</th>
                                 <th>Última modificación</th>
                                 <th>Activo</th>
                                 <th>Editar/Eliminar</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for usuario in usuarios %}
-                            {% if usuario.activo %}
+                            {% for persona in personas %}
+                            {% if persona.activo %}
                             <tr>
-                                <td>{{ usuario.id }}</td>
-                                <td>{{ usuario.nombre_usuario }}</td>
-                                <td>{{ usuario.correo }}</td>
-                                <td>{{ usuario.rol.nombre }}</td>
-                                <td>{{ arrow.get(usuario.fecha_creacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if usuario.fecha_creacion else None }}</td>
-                                <td>{{ arrow.get(usuario.ultima_modificacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if usuario.ultima_modificacion != usuario.fecha_creacion else 'Nunca modificado' }}</td>
-                                <td>{{ 'Sí' if usuario.activo else 'No' }}</td>
+                                <td>{{ persona.usuario.nombre_usuario }}</td>
+                                <td>{{ persona.rut }}</td>
+                                <td>{{ persona.nombre }}</td>
+                                <td>{{ persona.apellido_paterno }} {{ persona.apellido_materno }}</td>
+                                <td>{{ persona.celular }}</td>
+                                <td>{{ arrow.get(persona.fecha_creacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if persona.fecha_creacion else None }}</td>
+                                <td>{{ arrow.get(persona.ultima_modificacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if persona.ultima_modificacion != persona.fecha_creacion else 'Nunca modificado' }}</td>
+                                <td>{{ 'Sí' if persona.activo else 'No' }}</td>
                                 <td>
-                                    <a href="{{ url_for('usuario_editar', id=usuario.id) }}" class="button is-info is-light">
+                                    <a href="{{ url_for('persona_editar', id=persona.id) }}" class="button is-info is-light">
                                       <span class="icon is-small"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></i></span>
                                     </a>
-                                    <a href="{{ url_for('usuario_eliminar', id=usuario.id) }}" class="button is-danger is-light">
+                                    <a href="{{ url_for('persona_eliminar', id=persona.id) }}" class="button is-danger is-light">
                                       <span class="icon is-small"><i class="fas fa-trash" aria-hidden="true"></i></span>
                                     </a>
                                   </td>

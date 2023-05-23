@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Editar usuario{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="columns">
+            <div class="column is-half">
+                <h1 class="title">Editar usuario</h1>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                    <div class="notification is-success">
+                        <button class="delete"></button>
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+                {% endwith %}
+
+                {% if error %}
+                <div class="notification is-danger">
+                    <button class="delete"></button>
+                    {{ error }}
+                </div>
+                {% endif %}
+
+                <form method="POST">
+                    <div class="field">
+                        <label class="label">Nombre de usuario:</label>
+                        <div class="control">
+                            <input class="input" type="text" name="nombre_usuario" value="{{ usuario.nombre_usuario }}" required>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Correo electrónico:</label>
+                        <div class="control">
+                            <input class="input" type="email" name="correo" value="{{ usuario.correo }}" required>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Contraseña:</label>
+                        <div class="control">
+                            <input class="input" type="password" name="contrasena">
+                            <p class="help">Dejar en blanco si no desea cambiar la contraseña</p>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Confirmar contraseña:</label>
+                        <div class="control">
+                            <input class="input" type="password" name="confirmar_contrasena">
+                            <p class="help">Dejar en blanco si no desea cambiar la contraseña</p>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Rol</label>
+                        <div class="control">
+                          <div class="select">
+                            <select name="rol_id">
+                              {% for rol in rol %}
+                                <option value="{{ rol.id }}">{{ rol.nombre }}</option>
+                              {% endfor %}
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    <div class="field">
+                        <div class="control">
+                            <button class="button is-primary" type="submit">Guardar</button>
+                            <a class="button is-light" href="{{ url_for('usuarios') }}">Cancelar</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
