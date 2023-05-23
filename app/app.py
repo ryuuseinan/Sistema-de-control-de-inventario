@@ -3,8 +3,8 @@ import bcrypt
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_, func
-from database import Usuario, Producto, Categoria, Ingrediente, UnidadMedida, Rol, Persona, db, usuario, contrasena, host, puerto, nombre_base_datos, session
-from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user
+from database import Usuario, Producto, Categoria, Ingrediente, UnidadMedida, Rol, Persona, db, usuario_db, contrasena_db, host_db, puerto_db, nombre_base_datos_db, session
+from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
 import os
 from db_init import init_db
 from datetime import datetime
@@ -13,7 +13,7 @@ from sqlalchemy.exc import IntegrityError
 
 # Configurar la aplicación
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{usuario}:{contrasena}@{host}:{puerto}/{nombre_base_datos}"
+app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{usuario_db}:{contrasena_db}@{host_db}:{puerto_db}/{nombre_base_datos_db}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.secret_key = os.urandom(24)
 

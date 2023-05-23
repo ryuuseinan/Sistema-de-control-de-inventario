@@ -7,14 +7,14 @@ from datetime import datetime
 db = SQLAlchemy()
 
 # Cambia las variables según tu configuración
-usuario = 'root'
-contrasena = ''
-host = 'localhost'
-puerto = 3306
-nombre_base_datos = 'test'
+usuario_db = 'root'
+contrasena_db = ''
+host_db = 'localhost'
+puerto_db = 3306
+nombre_base_datos_db = 'test'
 
 # Crea la URL de conexión a la base de datos MySQL
-url = f'mysql://{usuario}:{contrasena}@{host}:{puerto}/{nombre_base_datos}'
+url = f'mysql://{usuario_db}:{contrasena_db}@{host_db}:{puerto_db}/{nombre_base_datos_db}'
 
 # Crea una instancia de la clase create_engine
 engine = create_engine(url)
