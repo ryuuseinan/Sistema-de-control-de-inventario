@@ -6,10 +6,10 @@
 
 `pip install --upgrade pip`
 
-# Instalacion de env
-
+# Instalacion de venv
 `python -m venv venv`
 
+# Iniciar venv
 + Windows
 `venv\Scripts\activate`
 
