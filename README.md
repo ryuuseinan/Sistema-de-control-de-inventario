@@ -19,6 +19,11 @@
 # Instalacion de dependencias
 `pip install -r requirements.txt`
 
+# Dependencias
+```
+mysqlclient
+```
+
 # Ejecutar app
 Windows: 
 `python .\app\app.py`
