@@ -33,7 +33,7 @@ FLUSH PRIVILEGES;
 ```
 
 # Ejecutar app
-Windows: 
++ Windows: 
 `python .\app\app.py`
-Linux: 
++ Linux: 
 `python ./app/app.py`
