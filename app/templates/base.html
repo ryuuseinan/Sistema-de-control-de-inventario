@@ -3,6 +3,7 @@
 <head>
     {% include 'header.html' %}
 </head>
+{% if session.logged_in %}
 <body>
 	<body id="cuerpo_lista_opciones">
 		<nav class="navbar navbar-pink" role="navigation" aria-label="main navigation">
@@ -17,12 +18,8 @@
 			</a>
 		</div>
 			<div class="navbar-end">
-			{% if session.logged_in %}
 				<p class="navbar-item">{{ session.user_nombre }}</p>
 				<a class="navbar-item" href="{{ url_for('logout') }}">Cerrar sesión</a>
-			{% else %}
-				<a class="navbar-item" href="{{ url_for('login') }}">Iniciar sesión</a>
-			{% endif %}
 			</div>
 		</div>
 		</nav>
@@ -104,4 +101,7 @@
 		</body>
 	</body>
 </body>
+{% else %}
+	<script>window.location.href = "{{ url_for('login') }}";</script>
+{% endif %}
 </html>
