@@ -20,4 +20,7 @@
 `pip install -r requirements.txt`
 
 # Ejecutar app
+Windows: 
 `python .\app\app.py`
+Linux: 
+`python ./app/app.py`
