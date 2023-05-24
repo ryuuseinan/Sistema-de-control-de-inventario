@@ -18,7 +18,7 @@
 		</div>
 			<div class="navbar-end">
 			{% if session.logged_in %}
-				<p class="navbar-item">{{ session.username }}</p>
+				<p class="navbar-item">{{ session.user_nombre }}</p>
 				<a class="navbar-item" href="{{ url_for('logout') }}">Cerrar sesión</a>
 			{% else %}
 				<a class="navbar-item" href="{{ url_for('login') }}">Iniciar sesión</a>

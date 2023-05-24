@@ -1,9 +1,9 @@
 # Importamos las librerías necesarias
 import bcrypt
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_, func
-from database import Usuario, Producto, Categoria, Ingrediente, UnidadMedida, Rol, Persona, db, usuario_db, contrasena_db, host_db, puerto_db, nombre_base_datos_db, session
+from database import Usuario, Producto, Categoria, Ingrediente, UnidadMedida, Rol, Persona, db, usuario_db, contrasena_db, host_db, puerto_db, nombre_base_datos_db, db_session
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
 import os
 from db_init import init_db
@@ -45,7 +45,7 @@ def vender():
     producto_busqueda = request.form.get('producto_busqueda')
     if request.method == 'POST':
         if producto_busqueda:
-            productos = productos = session.query(Producto).join(Categoria).filter(or_(Producto.nombre.ilike(f'%{producto_busqueda}%'),
+            productos = productos = db_session.query(Producto).join(Categoria).filter(or_(Producto.nombre.ilike(f'%{producto_busqueda}%'),
                                                                                        Categoria.nombre.ilike(f'%{producto_busqueda}%'),
                                                                                        Producto.codigo_barra == producto_busqueda)).all()
         else:
@@ -70,7 +70,7 @@ def agregar_producto():
         return redirect(url_for('vender'))
     
     # Crear una nueva venta o actualizar una existente en la sesión
-    venta = session.get('venta')
+    venta = db_session.get('venta')
     if not venta:
         venta = {'productos': {}, 'total': 0}
     
@@ -87,7 +87,7 @@ def agregar_producto():
     
     venta['total'] += float(producto.precio) * int(cantidad)
     
-    session['venta'] = venta
+    db_session['venta'] = venta
     
     flash('Producto agregado a la venta', 'success')
     
@@ -104,7 +104,7 @@ def caja():
 @app.route('/categorias')
 def categorias():
     # Obtenemos todas las categorías de la base de datos
-    categorias = session.query(Categoria).all()
+    categorias = db_session.query(Categoria).all()
     
     # Verificamos si hay al menos una categoría activa
     hay_activas = any(categoria.activo for categoria in categorias)
@@ -131,30 +131,30 @@ def categoria_nueva():
         nueva_categoria = Categoria(nombre=nombre)
 
         # Guardar la nueva categoría en la base de datos
-        db.session.add(nueva_categoria)
-        db.session.commit()
+        db_session.add(nueva_categoria)
+        db_session.commit()
 
         return redirect(url_for('categorias'))
     return render_template('categoria/nueva.html')
 
 @app.route('/categoria/editar/<int:id>', methods=['GET', 'POST'])
 def categoria_editar(id):
-    categoria = session.query(Categoria).filter_by(id=id).one()
+    categoria = db_session.query(Categoria).filter_by(id=id).one()
     if request.method == 'POST':
         nombre = request.form['nombre']
         categoria.ultima_modificacion = datetime.now()
         categoria.nombre = nombre
-        session.commit()
+        db_session.commit()
         return redirect(url_for('categorias'))
     else:
         return render_template('categoria/editar.html', categoria=categoria)
 
 @app.route('/categoria/eliminar/<int:id>', methods=['GET', 'POST'])
 def categoria_eliminar(id):
-    categoria = session.query(Categoria).filter_by(id=id).one()
+    categoria = db_session.query(Categoria).filter_by(id=id).one()
     if request.method == 'POST':
         categoria.activo = 0
-        session.commit()
+        db_session.commit()
         return redirect(url_for('categorias'))
     else:
         return render_template('categoria/eliminar.html', categoria=categoria)
@@ -162,7 +162,7 @@ def categoria_eliminar(id):
 @app.route('/categorias/papelera')
 def categoria_papelera():
     # Obtenemos todas los categorias de la base de datos
-    categorias = session.query(Categoria).all()
+    categorias = db_session.query(Categoria).all()
     
     # Verificamos si hay al menos un categoria no activo
     hay_activas = any(categoria.activo for categoria in categorias)
@@ -179,10 +179,10 @@ def categoria_papelera():
 
 @app.route('/categoria/restaurar/<int:id>', methods=['GET', 'POST'])
 def categoria_restaurar(id):
-    categoria = session.query(Categoria).filter_by(id=id).one()
+    categoria = db_session.query(Categoria).filter_by(id=id).one()
     if request.method == 'POST':
         categoria.activo = 1
-        session.commit()
+        db_session.commit()
         return redirect(url_for('categorias'))
     else:
         return render_template('categoria/restaurar.html', categoria=categoria)
@@ -195,8 +195,8 @@ def clientes():
 
 @app.route('/personas')
 def personas():
-    usuario = session.query(Usuario).all()
-    personas = session.query(Persona).all()
+    usuario = db_session.query(Usuario).all()
+    personas = db_session.query(Persona).all()
     for usuario in personas:
         fecha_creacion = arrow.get(usuario.fecha_creacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if usuario.fecha_creacion else None
         ultima_modificacion = arrow.get(usuario.ultima_modificacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if usuario.ultima_modificacion else None
@@ -205,7 +205,7 @@ def personas():
 @app.route('/persona/nuevo', methods=['GET', 'POST'])
 def persona_nuevo():
     error = None
-    usuario = session.query(Usuario).all()
+    usuario = db_session.query(Usuario).all()
     if request.method == 'POST':
         nombre_persona = request.form['nombre_persona']
         correo = request.form['correo']
@@ -219,20 +219,20 @@ def persona_nuevo():
             contrasena_hash = bcrypt.hashpw(contrasena.encode(), bcrypt.gensalt())
             persona = persona(nombre_persona=nombre_persona, correo=correo, contrasena=contrasena_hash, rol_id=rol_id)
             try:
-                session.add(persona)
-                session.commit()
+                db_session.add(persona)
+                db_session.commit()
                 flash('El persona ha sido creado exitosamente.', 'success')
                 return redirect(url_for('personas'))
             except IntegrityError:
-                session.rollback()
+                db_session.rollback()
                 error = "El nombre de persona o correo electrónico ya están en uso"
     return render_template('persona/nuevo.html', error=error, rol=rol)
     
 @app.route('/personas/papelera')
 def persona_papelera():
-    rol = session.query(Rol).all()
+    rol = db_session.query(Rol).all()
     # Obtenemos todos los personas de la base de datos
-    personas = session.query(persona).all()
+    personas = db_session.query(persona).all()
 
     # Verificamos si hay al menos un persona no activo
     hay_activos = any(persona.activo for persona in personas)
@@ -249,19 +249,19 @@ def persona_papelera():
 
 @app.route('/persona/restaurar/<int:id>', methods=['GET', 'POST'])
 def persona_restaurar(id):
-    rol = session.query(Rol).all()
-    persona = session.query(persona).filter_by(id=id).one()
+    rol = db_session.query(Rol).all()
+    persona = db_session.query(persona).filter_by(id=id).one()
     if request.method == 'POST':
         persona.activo = 1
-        session.commit()
+        db_session.commit()
         return redirect(url_for('personas'))
     else:
         return render_template('persona/restaurar.html', persona=persona)
 
 @app.route('/persona/editar/<int:id>', methods=['GET', 'POST'])
 def persona_editar(id):
-    rol = session.query(Rol).all()
-    persona = session.query(persona).get(id)
+    rol = db_session.query(Rol).all()
+    persona = db_session.query(persona).get(id)
 
     if not persona:
         flash('El persona no existe', 'error')
@@ -290,7 +290,7 @@ def persona_editar(id):
                 contrasena_hash = bcrypt.hashpw(contrasena.encode(), bcrypt.gensalt())
                 persona.contrasena = contrasena_hash
             persona.ultima_modificacion = datetime.now()
-            session.commit()
+            db_session.commit()
             
             flash('persona actualizado exitosamente', 'success')
             return redirect(url_for('personas'))
@@ -298,18 +298,18 @@ def persona_editar(id):
 
 @app.route('/persona/eliminar/<int:id>', methods=['GET', 'POST'])
 def persona_eliminar(id):
-    persona = session.query(persona).filter_by(id=id).one()
+    persona = db_session.query(persona).filter_by(id=id).one()
     if request.method == 'POST':
         persona.activo = 0
-        session.commit()
+        db_session.commit()
         return redirect(url_for('personas'))
     else:
         return render_template('persona/eliminar.html', persona=persona)
 
 @app.route('/usuarios')
 def usuarios():
-    rol = session.query(Rol).all()
-    usuarios = session.query(Usuario).all()
+    rol = db_session.query(Rol).all()
+    usuarios = db_session.query(Usuario).all()
     for usuario in usuarios:
         fecha_creacion = arrow.get(usuario.fecha_creacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if usuario.fecha_creacion else None
         ultima_modificacion = arrow.get(usuario.ultima_modificacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if usuario.ultima_modificacion else None
@@ -318,34 +318,55 @@ def usuarios():
 @app.route('/usuario/nuevo', methods=['GET', 'POST'])
 def usuario_nuevo():
     error = None
-    rol = session.query(Rol).all()
+    rol = db_db_session.query(Rol).all()
+
     if request.method == 'POST':
         nombre_usuario = request.form['nombre_usuario']
         correo = request.form['correo']
         contrasena = request.form['contrasena']
         confirmar_contrasena = request.form['confirmar_contrasena']
         rol_id = request.form['rol_id']
+        rut = request.form['rut']
+        nombre = request.form['nombre']
+        apellido_paterno = request.form['apellido_paterno']
+        apellido_materno = request.form['apellido_materno']
+        celular = request.form['celular']
 
         if contrasena != confirmar_contrasena:
             error = "Las contraseñas no coinciden"
         else:
             contrasena_hash = bcrypt.hashpw(contrasena.encode(), bcrypt.gensalt())
-            usuario = Usuario(nombre_usuario=nombre_usuario, correo=correo, contrasena=contrasena_hash, rol_id=rol_id)
-            try:
-                session.add(usuario)
-                session.commit()
-                flash('El usuario ha sido creado exitosamente.', 'success')
-                return redirect(url_for('usuarios'))
-            except IntegrityError:
-                session.rollback()
-                error = "El nombre de usuario o correo electrónico ya están en uso"
+
+            # Verificar si el RUT ya existe en la base de datos
+            persona_existente = db_db_session.query(Persona).filter_by(rut=rut).first()
+
+            if persona_existente:
+                error = 'El RUT ya existe en la base de datos.'
+            else:
+                usuario = Usuario(nombre_usuario=nombre_usuario, correo=correo, contrasena=contrasena_hash, rol_id=rol_id)
+                try:
+                    db_db_session.add(usuario)
+                    db_db_session.commit()
+
+                    # Asignar el ID del usuario creado a persona.usuario_id
+                    nueva_persona = Persona(usuario_id=usuario.id, rut=rut, nombre=nombre, apellido_paterno=apellido_paterno,
+                                            apellido_materno=apellido_materno, celular=celular)
+                    db_db_session.add(nueva_persona)
+                    db_db_session.commit()
+
+                    flash('El usuario ha sido creado exitosamente.', 'success')
+                    return redirect(url_for('usuarios'))
+                except IntegrityError:
+                    db_db_session.rollback()
+                    error = "El nombre de usuario o correo electrónico ya están en uso"
+
     return render_template('usuario/nuevo.html', error=error, rol=rol)
     
 @app.route('/usuarios/papelera')
 def usuario_papelera():
-    rol = session.query(Rol).all()
+    rol = db_session.query(Rol).all()
     # Obtenemos todos los usuarios de la base de datos
-    usuarios = session.query(Usuario).all()
+    usuarios = db_session.query(Usuario).all()
 
     # Verificamos si hay al menos un usuario no activo
     hay_activos = any(usuario.activo for usuario in usuarios)
@@ -362,19 +383,19 @@ def usuario_papelera():
 
 @app.route('/usuario/restaurar/<int:id>', methods=['GET', 'POST'])
 def usuario_restaurar(id):
-    rol = session.query(Rol).all()
-    usuario = session.query(Usuario).filter_by(id=id).one()
+    rol = db_session.query(Rol).all()
+    usuario = db_session.query(Usuario).filter_by(id=id).one()
     if request.method == 'POST':
         usuario.activo = 1
-        session.commit()
+        db_session.commit()
         return redirect(url_for('usuarios'))
     else:
         return render_template('usuario/restaurar.html', usuario=usuario)
 
 @app.route('/usuario/editar/<int:id>', methods=['GET', 'POST'])
 def usuario_editar(id):
-    rol = session.query(Rol).all()
-    usuario = session.query(Usuario).get(id)
+    rol = db_session.query(Rol).all()
+    usuario = db_session.query(Usuario).get(id)
 
     if not usuario:
         flash('El usuario no existe', 'error')
@@ -403,7 +424,7 @@ def usuario_editar(id):
                 contrasena_hash = bcrypt.hashpw(contrasena.encode(), bcrypt.gensalt())
                 usuario.contrasena = contrasena_hash
             usuario.ultima_modificacion = datetime.now()
-            session.commit()
+            db_session.commit()
             
             flash('Usuario actualizado exitosamente', 'success')
             return redirect(url_for('usuarios'))
@@ -411,10 +432,10 @@ def usuario_editar(id):
 
 @app.route('/usuario/eliminar/<int:id>', methods=['GET', 'POST'])
 def usuario_eliminar(id):
-    usuario = session.query(Usuario).filter_by(id=id).one()
+    usuario = db_session.query(Usuario).filter_by(id=id).one()
     if request.method == 'POST':
         usuario.activo = 0
-        session.commit()
+        db_session.commit()
         return redirect(url_for('usuarios'))
     else:
         return render_template('usuario/eliminar.html', usuario=usuario)
@@ -433,34 +454,41 @@ def perfil():
 
 @app.route('/logout')
 def logout():
-    return render_template('logout.html')
+    # Cerrar sesión asignando False a la sesión 
+    session['logged_in'] = False
+    # Agregar mensaje de "Has cerrado sesión"
+    flash('Has cerrado sesión', 'success')
+    # Redirecciona al usuario a la página de inicio de sesión después de cerrar sesión
+    return redirect(url_for('login'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        # Obtener datos del formulario
-        username = request.form['username']
-        password = request.form['password']
+        nombre_usuario = request.form['nombre_usuario']
+        contrasena = request.form['contrasena']
 
-        # Verificar si las credenciales son válidas
-        db_session = session
-        user = db_session.query(Usuario).filter_by(username=username).first()
-        if user is not None and user.password == password:
-            # Iniciar sesión y redirigir a la página de inicio
-            db.session['logged_in'] = True
-            db.session['user_id'] = user.id
-            flash('Inicio de sesión exitoso.', 'success')
+        # Verificar si el nombre_usuario y la contraseña coinciden con un usuario en la base de datos
+        usuario = db_session.query(Usuario).filter_by(nombre_usuario=nombre_usuario).first()
+        persona = db_session.query(Persona).filter_by(usuario_id=usuario.id).first()
+
+        if usuario and bcrypt.checkpw(contrasena.encode(), usuario.contrasena.encode()):
+            # Establecer la sesión del usuario como iniciada
+            session['logged_in'] = True
+            session['user_id'] = usuario.id
+            session['user_nombre'] = persona.nombre  # Guardar el nombre de usuario en la sesión
+
+            flash('Sesión iniciada correctamente', 'success')
             return redirect(url_for('index'))
-        
-        flash('Credenciales inválidas. Por favor, intente de nuevo.', 'danger')
+        else:
+            flash('Credenciales inválidas', 'error')
+            return redirect(url_for('login'))
 
-    # Renderizar la plantilla del formulario de inicio de sesión
-    return render_template('login.html')
+    return render_template('sesion/login.html')
 
 @app.route('/productos')
 def productos():
     # Obtenemos todas los productos de la base de datos
-    productos = session.query(Producto).all()
+    productos = db_session.query(Producto).all()
     # Verificamos si hay al menos un producto activo
     hay_activas = any(producto.activo for producto in productos)
     i = 0
@@ -476,7 +504,7 @@ def productos():
 @app.route('/productos/papelera')
 def producto_papelera():
     # Obtenemos todas los productos de la base de datos
-    productos = session.query(Producto).all()
+    productos = db_session.query(Producto).all()
     
     # Verificamos si hay al menos un producto no activo
     hay_activas = any(producto.activo for producto in productos)
@@ -493,7 +521,7 @@ def producto_papelera():
 @app.route('/producto/nuevo', methods=['GET', 'POST'])
 def producto_nuevo():
     # Obtener las categorías para mostrarlas en el formulario
-    categorias = session.query(Categoria).all()
+    categorias = db_session.query(Categoria).all()
     
     if request.method == 'POST':
         # Obtener los datos del formulario
@@ -523,8 +551,8 @@ def producto_nuevo():
             nuevo_producto.imagen = None
         
         # Agregar el producto a la base de datos
-        session.add(nuevo_producto)
-        session.commit()
+        db_session.add(nuevo_producto)
+        db_session.commit()
         
         # Redireccionar al listado de productos
         return redirect(url_for('productos'))
@@ -534,10 +562,10 @@ def producto_nuevo():
 
 @app.route('/producto/restaurar/<int:id>', methods=['GET', 'POST'])
 def producto_restaurar(id):
-    producto = session.query(Producto).filter_by(id=id).one()
+    producto = db_session.query(Producto).filter_by(id=id).one()
     if request.method == 'POST':
         producto.activo = 1
-        session.commit()
+        db_session.commit()
         return redirect(url_for('productos'))
     else:
         return render_template('producto/restaurar.html', producto=producto)
@@ -549,8 +577,8 @@ def producto_reporte():
 @app.route('/producto/editar/<int:id>', methods=['GET', 'POST'])
 def producto_editar(id):
     # Obtener el producto a editar de la base de datos
-    producto = session.query(Producto).filter_by(id=id).one()
-    categorias = session.query(Categoria).all()
+    producto = db_session.query(Producto).filter_by(id=id).one()
+    categorias = db_session.query(Categoria).all()
     if request.method == 'POST':
         # Obtener los datos del formulario
         codigo_barra = request.form['codigo_barra']
@@ -583,7 +611,7 @@ def producto_editar(id):
         producto.ultima_modificacion = datetime.now()
         
         # Guardar los cambios en la base de datos
-        session.commit()
+        db_session.commit()
 
         # Redireccionar al listado de productos
         return redirect(url_for('productos'))
@@ -593,10 +621,10 @@ def producto_editar(id):
 
 @app.route('/producto/eliminar/<int:id>', methods=['GET', 'POST'])
 def producto_eliminar(id):
-    producto = session.query(Producto).filter_by(id=id).one()
+    producto = db_session.query(Producto).filter_by(id=id).one()
     if request.method == 'POST':
         producto.activo = 0
-        session.commit()
+        db_session.commit()
         return redirect(url_for('productos'))
     else:
         return render_template('producto/eliminar.html', producto=producto)
@@ -604,7 +632,7 @@ def producto_eliminar(id):
 @app.route('/ingredientes')
 def ingredientes():
     # Obtenemos todas los ingredientes de la base de datos
-    ingredientes = session.query(Ingrediente).all()
+    ingredientes = db_session.query(Ingrediente).all()
     # Verificamos si hay al menos un producto activo
     hay_activas = any(ingrediente.activo for ingrediente in ingredientes)
     i = 0
@@ -624,7 +652,7 @@ def ingrediente_papelera():
 @app.route('/ingrediente_nuevo', methods=['GET', 'POST'])
 def ingrediente_nuevo():
     # Obtener las categorías para mostrarlas en el formulario
-    unidadmedida = session.query(UnidadMedida).all()
+    unidadmedida = db_session.query(UnidadMedida).all()
     if request.method == 'POST':
         # Obtener los datos del formulario
         nombre = request.files['nombre']
@@ -638,8 +666,8 @@ def ingrediente_nuevo():
                                   ultima_modificacion=datetime.now())
         
         # Agregar el producto a la base de datos
-        session.add(nuevo_ingrediente)
-        session.commit()
+        db_session.add(nuevo_ingrediente)
+        db_session.commit()
         
         # Redireccionar al listado de productos
         return redirect(url_for('ingredientes'))

@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Editar usuario{% endblock %}
+{% block title %}Editar usuario y persona{% endblock %}
 
 {% block content %}
 <section class="section">
     <div class="container">
         <div class="columns">
             <div class="column is-half">
-                <h1 class="title">Editar usuario</h1>
+                <h1 class="title">Editar usuario y persona</h1>
                 {% with messages = get_flashed_messages() %}
                 {% if messages %}
                     {% for message in messages %}
@@ -25,8 +25,9 @@
                     {{ error }}
                 </div>
                 {% endif %}
-
+                
                 <form method="POST">
+                    <!-- Usuario -->
                     <div class="field">
                         <label class="label">Nombre de usuario:</label>
                         <div class="control">
@@ -54,17 +55,49 @@
                         </div>
                     </div>
                     <div class="field">
-                        <label class="label">Rol</label>
+                        <label class="label">Rol:</label>
                         <div class="control">
-                          <div class="select">
-                            <select name="rol_id">
-                              {% for rol in rol %}
-                                <option value="{{ rol.id }}">{{ rol.nombre }}</option>
-                              {% endfor %}
-                            </select>
-                          </div>
+                            <div class="select">
+                                <select name="rol_id">
+                                    {% for rol in rol %}
+                                    <option value="{{ rol.id }}" {% if rol.id == usuario.rol_id %}selected{% endif %}>{{ rol.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
                         </div>
-                      </div>
+                    </div>
+                    
+                    <!-- Persona -->
+                    <div class="field">
+                        <label class="label">RUT:</label>
+                        <div class="control">
+                            <input class="input" type="text" name="rut" value="{{ persona.rut }}" required>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Nombre:</label>
+                        <div class="control">
+                            <input class="input" type="text" name="nombre" value="{{ persona.nombre }}" required>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Apellido paterno:</label>
+                        <div class="control">
+                            <input class="input" type="text" name="apellido_paterno" value="{{ persona.apellido_paterno }}" required>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Apellido materno:</label>
+                        <div class="control">
+                            <input class="input" type="text" name="apellido_materno" value="{{ persona.apellido_materno }}" required>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Celular:</label>
+                        <div class="control">
+                            <input class="input" type="text" name="celular" value="{{ persona.celular }}" required>
+                        </div>
+                    </div>                   
                     <div class="field">
                         <div class="control">
                             <button class="button is-primary" type="submit">Guardar</button>

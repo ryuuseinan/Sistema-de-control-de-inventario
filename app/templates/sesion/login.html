@@ -13,29 +13,17 @@
 
 <section class="section">
   <div class="container">
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <div class="notification is-danger">
-          <ul>
-            {% for message in messages %}
-              <li>{{ message }}</li>
-            {% endfor %}
-          </ul>
-        </div>
-      {% endif %}
-    {% endwith %}
-    
     <form action="{{ url_for('login') }}" method="POST">
       <div class="field">
         <div class="control">
 			<label class="label">Nombre de usuario</label>
-        <input class="input" type="text" name="username">
+        <input class="input" type="text" name="nombre_usuario">
         </div>
       </div>
       <div class="field">
         <label class="label">Contraseña</label>
         <div class="control">
-          <input class="input" type="password" name="password" required>
+          <input class="input" type="password" name="contrasena" required>
         </div>
       </div>
       <div class="field">
@@ -43,6 +31,16 @@
           <button class="button is-primary" type="submit">Iniciar sesión</button>
         </div>
       </div>
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+          {% for message in messages %}
+          <div class="notification is-success">
+              <button class="delete"></button>
+              {{ message }}
+          </div>
+          {% endfor %}
+      {% endif %}
+      {% endwith %}
     </form>
   </div>
 </section>

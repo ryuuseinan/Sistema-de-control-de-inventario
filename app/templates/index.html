@@ -6,6 +6,16 @@
         <div class="columns">
             <div class="column">
                 <div class="column">
+                    {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                        <div class="notification is-success">
+                            <button class="delete"></button>
+                            {{ message }}
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                    {% endwith %}
                     <h1 class="title">Estás en la página de inicio</h1>
                 </div>
             </div>
