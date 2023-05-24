@@ -21,7 +21,15 @@
 
 # Dependencias
 ```
-mysqlclient
+mysqlclient pymysql
+```
+
+# MySQL config
+```
+use test;
+CREATE USER 'hinami'@'localhost' IDENTIFIED BY 'hinami';
+GRANT ALL PRIVILEGES ON test.* TO 'hinami'@'localhost';
+FLUSH PRIVILEGES;
 ```
 
 # Ejecutar app
