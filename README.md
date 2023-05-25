@@ -1,5 +1,5 @@
 # Sistema-de-control-de-inventario
-
+https://lafratelli.com/prueba23/
 `cd Sistema de control de inventario`
 
 `env\Scripts\activate.ps1`
