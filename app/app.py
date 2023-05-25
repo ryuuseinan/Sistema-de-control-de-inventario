@@ -1,5 +1,6 @@
 # Importamos las librerías necesarias
 import bcrypt
+from werkzeug.utils import secure_filename
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_, func
@@ -318,7 +319,7 @@ def usuarios():
 @app.route('/usuario/nuevo', methods=['GET', 'POST'])
 def usuario_nuevo():
     error = None
-    rol = db_db_session.query(Rol).all()
+    rol = db_session.query(Rol).all()
 
     if request.method == 'POST':
         nombre_usuario = request.form['nombre_usuario']
@@ -338,26 +339,26 @@ def usuario_nuevo():
             contrasena_hash = bcrypt.hashpw(contrasena.encode(), bcrypt.gensalt())
 
             # Verificar si el RUT ya existe en la base de datos
-            persona_existente = db_db_session.query(Persona).filter_by(rut=rut).first()
+            persona_existente = db_session.query(Persona).filter_by(rut=rut).first()
 
             if persona_existente:
                 error = 'El RUT ya existe en la base de datos.'
             else:
                 usuario = Usuario(nombre_usuario=nombre_usuario, correo=correo, contrasena=contrasena_hash, rol_id=rol_id)
                 try:
-                    db_db_session.add(usuario)
-                    db_db_session.commit()
+                    db_session.add(usuario)
+                    db_session.commit()
 
                     # Asignar el ID del usuario creado a persona.usuario_id
                     nueva_persona = Persona(usuario_id=usuario.id, rut=rut, nombre=nombre, apellido_paterno=apellido_paterno,
                                             apellido_materno=apellido_materno, celular=celular)
-                    db_db_session.add(nueva_persona)
-                    db_db_session.commit()
+                    db_session.add(nueva_persona)
+                    db_session.commit()
 
                     flash('El usuario ha sido creado exitosamente.', 'success')
                     return redirect(url_for('usuarios'))
                 except IntegrityError:
-                    db_db_session.rollback()
+                    db_session.rollback()
                     error = "El nombre de usuario o correo electrónico ya están en uso"
 
     return render_template('usuario/nuevo.html', error=error, rol=rol)
@@ -396,8 +397,9 @@ def usuario_restaurar(id):
 def usuario_editar(id):
     rol = db_session.query(Rol).all()
     usuario = db_session.query(Usuario).get(id)
-
-    if not usuario:
+    persona = db_session.query(Persona).filter(Persona.usuario_id == usuario.id).first()
+    
+    if usuario is None:
         flash('El usuario no existe', 'error')
         return redirect(url_for('usuarios'))
 
@@ -407,6 +409,11 @@ def usuario_editar(id):
         contrasena = request.form['contrasena']
         confirmar_contrasena = request.form['confirmar_contrasena']
         rol_id = request.form['rol_id']
+        rut = request.form['rut']
+        nombre = request.form['nombre']
+        apellido_paterno = request.form['apellido_paterno']
+        apellido_materno = request.form['apellido_materno']
+        celular = request.form['celular']
         
         # Validar formulario
         if not nombre_usuario:
@@ -420,15 +427,30 @@ def usuario_editar(id):
             usuario.nombre_usuario = nombre_usuario
             usuario.correo = correo
             usuario.rol_id = rol_id
+            
+            # Si se proporciona una nueva contraseña, se actualiza
             if contrasena:
                 contrasena_hash = bcrypt.hashpw(contrasena.encode(), bcrypt.gensalt())
                 usuario.contrasena = contrasena_hash
-            usuario.ultima_modificacion = datetime.now()
+                
+            usuario.ultima_modificacion = datetime.now()                
+            db_session.commit()
+            
+            # Actualizar los datos de la persona asociada al usuario
+            if persona:
+                persona.rut = rut
+                persona.nombre = nombre
+                persona.apellido_paterno = apellido_paterno
+                persona.apellido_materno = apellido_materno
+                persona.celular = celular
+                persona.ultima_modificacion = datetime.now()             
             db_session.commit()
             
             flash('Usuario actualizado exitosamente', 'success')
             return redirect(url_for('usuarios'))
-    return render_template('usuario/editar.html', usuario=usuario, rol=rol)
+    
+    return render_template('usuario/editar.html', usuario=usuario, rol=rol, persona=persona)
+
 
 @app.route('/usuario/eliminar/<int:id>', methods=['GET', 'POST'])
 def usuario_eliminar(id):
@@ -443,14 +465,6 @@ def usuario_eliminar(id):
 @app.route('/reportes')
 def reportes():
     return render_template('reportes.html')
-
-@app.route('/configuracion')
-def configuracion():
-    return render_template('configuracion.html')
-
-@app.route('/perfil')
-def perfil():
-    return render_template('perfil.html')
 
 @app.route('/logout')
 def logout():
@@ -655,7 +669,7 @@ def ingrediente_nuevo():
     unidadmedida = db_session.query(UnidadMedida).all()
     if request.method == 'POST':
         # Obtener los datos del formulario
-        nombre = request.files['nombre']
+        nombre = request.form['nombre']
         cantidad = request.form['cantidad']
         unidadmedida_id = request.form['unidadmedida_id']
         # Crear una nueva instancia de Producto con los datos del formulario
@@ -685,4 +699,4 @@ def ingrediente_eliminar():
 
 if __name__ == '__main__':
     app.debug = True
-    app.run()
+    app.run(host='192.168.187.187')

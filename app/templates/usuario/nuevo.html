@@ -95,20 +95,7 @@
                         <div class="control">
                             <input class="input" type="text" name="celular" required>
                         </div>
-                    </div>
-                    <div class="field">
-                        <label class="label">Seleccionar usuario:</label>
-                        <div class="control">
-                            <div class="select">
-                                <select name="usuario_id">
-                                    {% for usuario in usuario %}
-                                    <option value="{{ usuario.id }}">{{ usuario.nombre_usuario }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    
+                    </div>                    
                     <div class="field">
                         <div class="control">
                             <button class="button is-primary" type="submit">Crear</button>

@@ -3,7 +3,7 @@
 <head>
     {% include 'header.html' %}
 </head>
-{% if session.logged_in %}
+
 <body>
 	<body id="cuerpo_lista_opciones">
 		<nav class="navbar navbar-pink" role="navigation" aria-label="main navigation">
@@ -95,7 +95,5 @@
 		</body>
 	</body>
 </body>
-{% else %}
-	<script>window.location.href = "{{ url_for('login') }}";</script>
-{% endif %}
+
 </html>
