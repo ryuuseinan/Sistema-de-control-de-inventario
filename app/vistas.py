@@ -174,8 +174,6 @@ def categoria_restaurar(id):
     else:
         return render_template('categoria/restaurar.html', categoria=categoria)
 
-
-
 @app.route('/clientes')
 def clientes():
     return render_template('clientes.html')
