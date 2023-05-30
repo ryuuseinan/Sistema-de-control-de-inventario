@@ -1,4 +1,4 @@
-from database import *
+from models.database import *
 
 # Inicializa la base de datos
 def init_db():
