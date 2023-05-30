@@ -9,4 +9,23 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/js/bulma.min.js"></script>
     <script defer src="https://use.fontawesome.com/releases/v5.15.3/js/all.js"></script>
 </head>
+<header>
+<nav class="navbar navbar-pink" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="{{ url_for('index') }}">
+            <h2 style="color: #ccc;">Pizzería Fratelli</h2>
+        </a>
+        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarMenu">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        </a>
+    </div>
+        <div class="navbar-end">
+            <p class="navbar-item">{{ session.user_nombre }}</p>
+            <a class="navbar-item" href="{{ url_for('logout') }}">Cerrar sesión</a>
+        </div>
+    </div>
+</nav>
+</header>
 {% block content %}{% endblock %}

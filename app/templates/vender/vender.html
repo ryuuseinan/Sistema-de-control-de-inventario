@@ -10,6 +10,16 @@
         <div class="column">
             <div class="column">
                 <h1 class="title">Venta</h1>
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <div class="notification is-danger">
+                            <button class="delete"></button>
+                            {% for message in messages %}
+                                <p>{{ message }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
                 <p><b>Buscar producto por nombre o por código de barras:</b></p>
                 <form id="searchp" method="POST">
                     <div class="field is-grouped">

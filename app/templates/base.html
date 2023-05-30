@@ -3,97 +3,74 @@
 <head>
     {% include 'header.html' %}
 </head>
-
-<body>
-	<body id="cuerpo_lista_opciones">
-		<nav class="navbar navbar-pink" role="navigation" aria-label="main navigation">
-		<div class="navbar-brand">
-			<a class="navbar-item" href="{{ url_for('index') }}">
-				<h2 style="color: #ccc;">Pizzería Fratelli</h2>
-			</a>
-			<a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarMenu">
-			<span aria-hidden="true"></span>
-			<span aria-hidden="true"></span>
-			<span aria-hidden="true"></span>
-			</a>
+<body id="body_lista_opciones">
+	<div id="columnas" class="columns">
+		<div id="lista_de_opciones" class="column is-one-fifth">
+			<aside class="menu">
+			<ul class="menu-list">
+				<li>
+				<a href="{{ url_for('index') }}">
+					<span class="icon is-small"><i class="fas fa-home"></i></span>
+					<span>Inicio</span>
+				</a>
+				</li>
+				<li>
+				<a href="{{ url_for('vender') }}">
+					<span class="icon is-small"><i class="fas fa-dollar-sign"></i></span>
+					<span>Vender</span>
+				</a>
+				</li>
+				<li>
+				<a href="{{ url_for('ventas') }}">
+					<span class="icon is-small"><i class="fas fa-shopping-cart"></i></span>
+					<span>Ventas</span>
+				</a>
+				</li>
+				<li>
+				<a href="{{ url_for('productos') }}">
+					<span class="icon is-small"><i class="fas fa-utensils"></i></span>
+					<span>Productos</span>
+				</a>
+				</li>
+				<li>
+				<a href="{{ url_for('categorias') }}">
+					<span class="icon is-small"><i class="fas fa-list"></i></span>
+					<span>Categorías</span>
+				</a>
+				</li>
+				<li>
+					<a href="{{ url_for('ingredientes') }}">
+						<span class="icon is-small"><i class="fas fa-pepper-hot"></i></span>
+						<span>Ingredientes</span>
+					</a>
+				</li>
+			</ul>
+			<p id=admin class="menu-label">Administración</p>
+			<ul class="menu-list">
+				<li>
+				<a href="{{ url_for('usuarios') }}">
+					<span class="icon is-small"><i class="fas fa-users"></i></span>
+					<span>Usuarios</span>
+				</a>
+				</li>
+				<li>
+					<a href="{{ url_for('personas') }}">
+						<span class="icon is-small"><i class="fas fa-user-circle"></i></span>
+						<span>Personas</span>
+					</a>
+					</li>
+				<li>
+				<a href="{{ url_for('reportes') }}">
+					<span class="icon is-small"><i class="fas fa-clipboard-list"></i></span>
+					<span>Reportes</span>
+				</a>
+				</li>
+			</ul>
+			</aside>
 		</div>
-			<div class="navbar-end">
-				<p class="navbar-item">{{ session.user_nombre }}</p>
-				<a class="navbar-item" href="{{ url_for('logout') }}">Cerrar sesión</a>
-			</div>
+		<div class="column">
+			{% block content %}{% endblock %}
 		</div>
-		</nav>
-		<body>
-			<div id="columnas" class="columns">
-			<div id="lista_de_opciones" class="column is-one-fifth">
-				<aside class="menu">
-				<ul class="menu-list">
-					<li>
-					<a href="{{ url_for('index') }}">
-						<span class="icon is-small"><i class="fas fa-home"></i></span>
-						<span>Inicio</span>
-					</a>
-					</li>
-					<li>
-					<a href="{{ url_for('vender') }}">
-						<span class="icon is-small"><i class="fas fa-dollar-sign"></i></span>
-						<span>Vender</span>
-					</a>
-					</li>
-					<li>
-					<a href="{{ url_for('ventas') }}">
-						<span class="icon is-small"><i class="fas fa-shopping-cart"></i></span>
-						<span>Ventas</span>
-					</a>
-					</li>
-					<li>
-					<a href="{{ url_for('productos') }}">
-						<span class="icon is-small"><i class="fas fa-utensils"></i></span>
-						<span>Productos</span>
-					</a>
-					</li>
-					<li>
-					<a href="{{ url_for('categorias') }}">
-						<span class="icon is-small"><i class="fas fa-list"></i></span>
-						<span>Categorías</span>
-					</a>
-					</li>
-					<li>
-						<a href="{{ url_for('ingredientes') }}">
-							<span class="icon is-small"><i class="fas fa-pepper-hot"></i></span>
-							<span>Ingredientes</span>
-						</a>
-					</li>
-				</ul>
-				<p id=admin class="menu-label">Administración</p>
-				<ul class="menu-list">
-					<li>
-					<a href="{{ url_for('usuarios') }}">
-						<span class="icon is-small"><i class="fas fa-users"></i></span>
-						<span>Usuarios</span>
-					</a>
-					</li>
-					<li>
-						<a href="{{ url_for('personas') }}">
-							<span class="icon is-small"><i class="fas fa-user-circle"></i></span>
-							<span>Personas</span>
-						</a>
-						</li>
-					<li>
-					<a href="{{ url_for('reportes') }}">
-						<span class="icon is-small"><i class="fas fa-clipboard-list"></i></span>
-						<span>Reportes</span>
-					</a>
-					</li>
-				</ul>
-				</aside>
-			</div>
-			<div class="column">
-				{% block content %}{% endblock %}
-			</div>
-			</div>
-		</body>
-	</body>
+	</div>
 </body>
-
 </html>

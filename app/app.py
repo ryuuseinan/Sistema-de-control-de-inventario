@@ -39,57 +39,22 @@ def menu():
 # Vista para la búsqueda de productos
 @app.route('/vender', methods=['GET', 'POST'])
 def vender():
-    productos = []
     producto_busqueda = request.form.get('producto_busqueda')
-    if request.method == 'POST':
-        if producto_busqueda:
-            productos = productos = db_session.query(Producto).join(Categoria).filter(or_(Producto.nombre.ilike(f'%{producto_busqueda}%'),
-                                                                                       Categoria.nombre.ilike(f'%{producto_busqueda}%'),
-                                                                                       Producto.codigo_barra == producto_busqueda)).all()
-        else:
-            mensaje = "Por favor, ingrese el nombre o código de barras de un producto"
-            return render_template('vender.html', producto_busqueda=producto_busqueda, mensaje=mensaje)
-        return render_template('vender/vender.html', productos=productos)
-    
-    return render_template('vender/vender.html', productos=productos, producto_busqueda=producto_busqueda)
-
-@app.route('/agregar_producto', methods=['POST'])
-def agregar_producto():
-    producto_id = request.form.get('producto_id')
-    cantidad = request.form.get('cantidad')
-    
-    producto = Producto.query.filter_by(id=producto_id).first()
-    if not producto:
-        flash('El producto no existe', 'error')
-        return redirect(url_for('vender'))
-    
-    if int(cantidad) > producto.stock:
-        flash('No hay suficiente stock del producto', 'error')
-        return redirect(url_for('vender'))
-    
-    # Crear una nueva venta o actualizar una existente en la sesión
-    venta = db_session.get('venta')
-    if not venta:
-        venta = {'productos': {}, 'total': 0}
-    
-    if producto_id in venta['productos']:
-        venta['productos'][producto_id]['cantidad'] += int(cantidad)
-        venta['productos'][producto_id]['subtotal'] += float(producto.precio) * int(cantidad)
+    if request.method == 'POST' and producto_busqueda:
+        productos = db_session.query(Producto).join(Categoria).filter(or_(Producto.nombre.ilike(f'%{producto_busqueda}%'),
+                                                                  Categoria.nombre.ilike(f'%{producto_busqueda}%'),
+                                                                  Producto.codigo_barra == producto_busqueda),
+                                                             Producto.activo == True).all()
+        if not productos:
+            flash("No se encontraron productos con ese criterio de búsqueda", "error")
+            productos = db_session.query(Producto).filter(Producto.activo == True).all()
+    elif request.method == 'POST' and not producto_busqueda:
+        flash("Por favor, ingrese el nombre o código de barras de un producto", "error")
+        productos = db_session.query(Producto).filter(Producto.activo == True).all()
     else:
-        venta['productos'][producto_id] = {
-            'nombre': producto.nombre,
-            'precio': float(producto.precio),
-            'cantidad': int(cantidad),
-            'subtotal': float(producto.precio) * int(cantidad)
-        }
-    
-    venta['total'] += float(producto.precio) * int(cantidad)
-    
-    db_session['venta'] = venta
-    
-    flash('Producto agregado a la venta', 'success')
-    
-    return redirect(url_for('vender'))
+        productos = db_session.query(Producto).filter(Producto.activo == True).all()
+
+    return render_template('vender/vender.html', productos=productos, producto_busqueda=producto_busqueda)
 
 @app.route('/ventas')
 def ventas():
