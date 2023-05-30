@@ -18,12 +18,12 @@
             <h1 class="title">Lista de ingredientes en la papelera</h1>
           </div>
         </div>
-        <table class="table is-bordered is-hoverable is-narrow">
+        <table class="table is-striped is-hoverable">
           <thead>
             <tr>
               <th>Nombre</th>
-              <th>Stock</th>
-              <th></th>
+              <th>Cantidad</th>
+              <th>Restaurar</th>
             </tr>
           </thead>
           <tbody>
@@ -31,13 +31,10 @@
             {% if not ingrediente.activo %}
             <tr>
               <td>{{ ingrediente.nombre }}</td>
-              <td>{{ ingrediente.stock }}</td>
+              <td>{{ ingrediente.cantidad }}</td>
               <td>
-                <a href="{{ url_for('ingrediente_editar', id=ingrediente.id) }}" class="button is-warning is-small">
-                  <span class="icon is-small"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></i></span>
-                </a>
-                <a href="{{ url_for('ingrediente_eliminar', id=ingrediente.id) }}" class="button is-danger is-small">
-                  <span class="icon is-small"><i class="fas fa-trash" aria-hidden="true"></i></span>
+                <a href="{{ url_for('ingrediente_restaurar', id=ingrediente.id) }}" class="button is-link is-light is-small">
+                  <i class="fa fa-undo" aria-hidden="true"></i>
                 </a>
               </td>
             </tr>

@@ -1,18 +1,18 @@
 {% extends "base.html" %}
 
-{% block title %}Mover producto a la papelera{% endblock %}
+{% block title %}Mover ingrediente a la papelera{% endblock %}
 
 {% block content %}
 <section class="section">
     <div class="container">
-        <h1 class="title is-1">¿Desea mover el producto a la papelera?</h1>
+        <h1 class="title is-1">¿Desea mover el ingrediente a la papelera?</h1>
         <div class="notification is-warning">
-            <p>¿Está seguro de que desea mover el producto "{{ producto.name }}" a la papelera?</p>
-            <form method="post" action="{{ url_for('producto_eliminar', id=producto.id) }}">
+            <p>¿Está seguro de que desea mover el ingrediente "{{ ingrediente.nombre }}" a la papelera?</p>
+            <form method="post" action="{{ url_for('ingrediente_eliminar', id=ingrediente.id) }}">
                 <div class="field">
                     <div class="control">
                         <button class="button is-link" type="submit">Mover</button>
-                        <a href="{{ url_for('productos') }}" class="button is-link is-light">Cancelar</a>
+                        <a href="{{ url_for('ingredientes') }}" class="button is-link is-light">Cancelar</a>
                     </div>
                 </div>
             </form>

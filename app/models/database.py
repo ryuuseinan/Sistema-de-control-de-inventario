@@ -123,6 +123,18 @@ class Receta(Base):
         Retorna True si hay suficiente stock, False en caso contrario.
         """
         return self.ingrediente.activo and self.cantidad <= self.ingrediente.stock
+    
+class RecetaDetalle(Base):
+    __tablename__ = 'receta_detalle'
+    id = Column(Integer, primary_key=True)
+    receta_id = Column(Integer, ForeignKey('receta.id'))
+    paso = Column(Integer, nullable=False)
+    descripcion = Column(Text, nullable=False)
+    fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
+    ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
+    activo = Column(Boolean, default=True, nullable=False)
+    # Crea la relación con Receta
+    receta = relationship('Receta', backref='detalles')
 
 Base.metadata.create_all(engine)
 

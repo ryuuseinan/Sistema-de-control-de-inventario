@@ -1,18 +1,18 @@
 {% extends "base.html" %}
 
-{% block title %}Restaurar producto{% endblock %}
+{% block title %}Restaurar ingrediente{% endblock %}
 
 {% block content %}
 <section class="section">
     <div class="container">
-        <h1 class="title is-1">Restaurar producto</h1>
+        <h1 class="title is-1">Restaurar ingrediente</h1>
         <div class="notification is-warning">
-            <p>¿Está seguro de que desea restaurar la producto "{{ producto.name }}"?</p>
-            <form method="post" action="{{ url_for('producto_restaurar', id=producto.id) }}">
+            <p>¿Está seguro de que desea restaurar la ingrediente "{{ ingrediente.nombre }}"?</p>
+            <form method="post" action="{{ url_for('ingrediente_restaurar', id=ingrediente.id) }}">
                 <div class="field">
                     <div class="control">
                         <button class="button is-success" type="submit">Restaurar</button>
-                        <a href="{{ url_for('productos') }}" class="button">Cancelar</a>
+                        <a href="{{ url_for('ingredientes') }}" class="button">Cancelar</a>
                     </div>
                 </div>
             </form>

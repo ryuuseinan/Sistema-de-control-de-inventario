@@ -1,23 +1,14 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+# Importamos las librerías necesarias
+from flask import render_template, request, redirect, url_for, flash, session
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
-from models.database import Usuario, Producto, Categoria, Ingrediente, UnidadMedida, Rol, Persona, Receta, RecetaDetalle, db, db_session
+from models.database import Usuario, Producto, Categoria, Ingrediente, UnidadMedida, Rol, Persona, db, db_session
 from db_init import init_db
 from datetime import datetime
 import arrow, bcrypt, os
 from sqlalchemy.exc import IntegrityError
+from app import app
 from sqlalchemy import or_
-from config import *
-from werkzeug.utils import secure_filename
-
-# Configurar la aplicación
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{usuario_db}:{contrasena_db}@{host_db}:{puerto_db}/{nombre_base_datos_db}"
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-app.secret_key = os.urandom(24)
- 
-# Forzar eliminación de caché
-app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
-app.add_template_global(arrow, 'arrow')
+from db_init import db_session
 
 # Configurar la base de datos
 db.init_app(app)
@@ -202,7 +193,6 @@ def personas():
 def persona_nuevo():
     error = None
     usuario = db_session.query(Usuario).all()
-    rol = db_session.query(Rol).all()
     if request.method == 'POST':
         nombre_persona = request.form['nombre_persona']
         correo = request.form['correo']
@@ -495,40 +485,6 @@ def login():
 
     return render_template('sesion/login.html')
 
-# Función para agregar una receta a un producto
-@app.route('/agregar_receta/<int:producto_id>', methods=['GET', 'POST'])
-def agregar_receta(producto_id):
-    producto = Producto.query.get(producto_id)
-
-    if not producto:
-        flash('El producto no existe', 'error')
-        return redirect(url_for('vender'))
-
-    if request.method == 'POST':
-        # Obtener los ingredientes y cantidades desde el formulario
-        ingredientes = request.form.getlist('ingrediente')
-        cantidades = request.form.getlist('cantidad')
-
-        # Crear la receta
-        receta = Receta(producto_id=producto.id)
-
-        # Agregar los ingredientes y cantidades a la receta
-        for ingrediente, cantidad in zip(ingredientes, cantidades):
-            if ingrediente and cantidad:
-                receta_detalle = RecetaDetalle(ingrediente=ingrediente, cantidad=cantidad)
-                receta.detalle.append(receta_detalle)
-
-        # Guardar la receta en la base de datos
-        db.session.add(receta)
-        db.session.commit()
-
-        flash('Receta agregada al producto exitosamente', 'success')
-        return redirect(url_for('vender'))
-
-    ingredientes = Ingrediente.query.all()
-
-    return render_template('agregar_receta.html', producto=producto, ingredientes=ingredientes)
-
 @app.route('/productos')
 def productos():
     # Obtenemos todas los productos de la base de datos
@@ -691,20 +647,7 @@ def ingredientes():
 
 @app.route('/ingrediente_papelera')
 def ingrediente_papelera():
-    # Obtenemos todas los ingredientes de la base de datos
-    ingredientes = db_session.query(Ingrediente).all()
-    
-    # Verificamos si hay al menos un producto no activo
-    hay_activas = any(ingrediente.activo for ingrediente in ingredientes)
-    i = 0
-    for ingrediente in ingredientes:
-        if not ingrediente.activo:
-            i=i+1
-    if i>=1:
-        hay_activas = True
-    if i == 0:
-        hay_activas = False
-    return render_template('ingredientes/papelera.html', ingredientes=ingredientes, hay_activas=hay_activas)
+    return render_template('ingredientes/papelera.html')
 
 @app.route('/ingrediente_nuevo', methods=['GET', 'POST'])
 def ingrediente_nuevo():
@@ -732,64 +675,10 @@ def ingrediente_nuevo():
     # Renderizar la plantilla ingredientes
     return render_template('ingredientes/nuevo.html', unidadmedida=unidadmedida)
 
-@app.route('/ingrediente_editar/<int:id>', methods=['GET', 'POST'])
-def ingrediente_editar(id):
-    # Obtener el ingrediente a editar de la base de datos
-    ingrediente = db_session.query(Ingrediente).filter_by(id=id).one()
-    unidadmedida = db_session.query(UnidadMedida).all()
+@app.route('/ingrediente_editar')
+def ingrediente_editar():
+    return render_template('ingredientes/editar.html')
 
-    if request.method == 'POST':
-        # Obtener los datos del formulario
-        nombre = request.form['nombre']
-        cantidad = request.form['cantidad']
-        unidadmedida_id = request.form['unidadmedida_id']
-
-        # Actualizar los datos del ingrediente con los nuevos datos del formulario
-        if nombre:
-            ingrediente.nombre = nombre
-        if cantidad:
-            ingrediente.cantidad = cantidad
-        if unidadmedida_id:
-            ingrediente.unidadmedida_id = unidadmedida_id
-
-        # Registrar última modificación
-        ingrediente.ultima_modificacion = datetime.now()
-
-        # Guardar los cambios en la base de datos
-        db_session.commit()
-
-        # Redireccionar al listado de ingredientes
-        return redirect(url_for('ingredientes'))
-
-    # Renderizar la plantilla de edición de ingredientes
-    return render_template('ingredientes/editar.html', ingrediente=ingrediente, unidadmedida=unidadmedida)
-
-@app.route('/ingrediente_eliminar/<int:id>', methods=['GET', 'POST'])
-def ingrediente_eliminar(id):
-    ingrediente = db_session.query(Ingrediente).filter_by(id=id).one()
-
-    if request.method == 'POST':
-        # Eliminar el ingrediente estableciendo el campo "activo" en 0
-        ingrediente.activo = 0
-        db_session.commit()
-
-        # Redireccionar al listado de ingredientes
-        return redirect(url_for('ingredientes'))
-
-    # Renderizar la plantilla de confirmación de eliminación de ingrediente
-    return render_template('ingredientes/eliminar.html', ingrediente=ingrediente)
-
-@app.route('/ingrediente/restaurar/<int:id>', methods=['GET', 'POST'])
-def ingrediente_restaurar(id):
-    ingrediente = db_session.query(Ingrediente).filter_by(id=id).one()
-    if request.method == 'POST':
-        ingrediente.activo = 1
-        db_session.commit()
-        return redirect(url_for('ingredientes'))
-    else:
-        return render_template('ingredientes/restaurar.html', ingrediente=ingrediente)
-
-if __name__ == '__main__':
-    app.debug = True
-    app.run()
-    #app.run(host='192.168.187.187')
+@app.route('/ingrediente_eliminar')
+def ingrediente_eliminar():
+    return render_template('ingredientes/eliminar.html')

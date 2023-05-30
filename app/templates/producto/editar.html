@@ -63,6 +63,14 @@
           </div>
         </div>
       </div>
+      {% if Pizza not in categoria.nombre %}
+      <div class="field">
+        <label class="label">Stock</label>
+        <div class="control">
+          <input class="input" type="text" name="stock" value="{{ producto.stock }}">
+        </div>
+      </div>
+      {% endif %}
       <div class="field is-grouped">
         <div class="control">
           <button type="submit" class="button is-link">Guardar</button>
