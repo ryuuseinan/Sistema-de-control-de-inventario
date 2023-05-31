@@ -28,7 +28,7 @@
               <th>Categoría</th>
               <th>Precio</th>
               <th>Descripción</th>
-              <th>Stock</th>
+              <th>Editar receta</th>
               <th>Editar/Eliminar</th>
             </tr>
           </thead>
@@ -41,9 +41,17 @@
                 </td>
                 <td>{{ producto.nombre }}</td>
                 <td>{{ producto.categoria.nombre }}</td>
-                <td>${{ producto.precio }}</td>
+                <td>{{ producto.precio }}</td>
                 <td class="descripcion">{{ producto.descripcion }}</td>
-                <td>{{ producto.stock }}</td>
+                <td>
+                {% if producto.stock %}
+                {{ producto.stock }}
+                {% else %}
+                  <a href="{{ url_for('agregar_receta', id=producto.id) }}" class="button is-info is-light">
+                    <span class="icon is-small"><i class="fa fa-pencil-alt" aria-hidden="true"></i></i></span>
+                  </a>
+                {% endif %}
+                </td>
                 <td>
                   <a href="{{ url_for('producto_editar', id=producto.id) }}" class="button is-info is-light">
                     <span class="icon is-small"><i class="fa fa-pencil-alt" aria-hidden="true"></i></i></span>

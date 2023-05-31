@@ -56,6 +56,10 @@ def vender():
 
     return render_template('vender/vender.html', productos=productos, producto_busqueda=producto_busqueda)
 
+@app.route('/agregar_producto', methods=['POST'])
+def agregar_producto():
+    return redirect(url_for('vender'))
+
 @app.route('/ventas')
 def ventas():
     return render_template('ventas.html')
@@ -461,9 +465,9 @@ def login():
     return render_template('sesion/login.html')
 
 # Función para agregar una receta a un producto
-@app.route('/agregar_receta/<int:producto_id>', methods=['GET', 'POST'])
-def agregar_receta(producto_id):
-    producto = Producto.query.get(producto_id)
+@app.route('/agregar_receta/<int:id>', methods=['GET', 'POST'])
+def agregar_receta(id):
+    producto = Producto.query.get(id)
 
     if not producto:
         flash('El producto no existe', 'error')
@@ -481,18 +485,19 @@ def agregar_receta(producto_id):
         for ingrediente, cantidad in zip(ingredientes, cantidades):
             if ingrediente and cantidad:
                 receta_detalle = RecetaDetalle(ingrediente=ingrediente, cantidad=cantidad)
-                receta.detalle.append(receta_detalle)
+                receta.detalles.append(receta_detalle)
 
         # Guardar la receta en la base de datos
         db.session.add(receta)
         db.session.commit()
 
         flash('Receta agregada al producto exitosamente', 'success')
-        return redirect(url_for('vender'))
+        return redirect(url_for('productos'))
 
     ingredientes = Ingrediente.query.all()
 
-    return render_template('agregar_receta.html', producto=producto, ingredientes=ingredientes)
+    return render_template('receta/agregar_receta.html', producto=producto, ingredientes=ingredientes)
+
 
 @app.route('/productos')
 def productos():

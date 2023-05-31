@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Agregar Receta</title>
+</head>
+<body>
+  <h1>Agregar Receta para {{ producto.nombre }}</h1>
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul class="flash-messages">
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+
+  <form method="post">
+    <h2>Ingredientes:</h2>
+
+    <div class="form-group">
+      <label for="ingrediente">Ingrediente:</label>
+      <select name="ingrediente" id="ingrediente">
+        {% for ingrediente in ingredientes %}
+          <option value="{{ ingrediente.id }}">{{ ingrediente.nombre }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="cantidad">Cantidad:</label>
+      <input type="number" name="cantidad" id="cantidad" min="1" required>
+    </div>
+
+    <button type="submit">Agregar Receta</button>
+  </form>
+</body>
+</html>
