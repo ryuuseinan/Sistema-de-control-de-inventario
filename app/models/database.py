@@ -111,12 +111,10 @@ class Receta(Base):
     __tablename__ = 'receta'
     id = Column(Integer, primary_key=True)
     producto_id = Column(Integer, ForeignKey('producto.id'))
-    ingrediente_id = Column(Integer, ForeignKey('ingrediente.id'))
     cantidad = Column(Integer, nullable=False)
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
     ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
     producto = relationship('Producto', backref='recetas')
-    ingrediente = relationship('Ingrediente')
 
     def verificar_stock_suficiente(self):
         """
@@ -129,12 +127,12 @@ class RecetaDetalle(Base):
     __tablename__ = 'receta_detalle'
     id = Column(Integer, primary_key=True)
     receta_id = Column(Integer, ForeignKey('receta.id'))
-    paso = Column(Integer, nullable=False)
-    descripcion = Column(Text, nullable=False)
+    ingrediente_id = Column(Integer, ForeignKey('ingrediente.id'))
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
     ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
     activo = Column(Boolean, default=True, nullable=False)
     # Crea la relación con Receta
+    ingrediente = relationship('Ingrediente')
     receta = relationship('Receta', backref='detalles')
 
 Base.metadata.create_all(engine)

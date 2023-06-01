@@ -1,39 +1,75 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Agregar Receta</title>
-</head>
-<body>
-  <h1>Agregar Receta para {{ producto.nombre }}</h1>
+{% extends "base.html" %}
 
-  {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      <ul class="flash-messages">
-        {% for message in messages %}
-          <li>{{ message }}</li>
-        {% endfor %}
-      </ul>
-    {% endif %}
-  {% endwith %}
+{% block title %}Agregar Receta{% endblock %}
 
-  <form method="post">
-    <h2>Ingredientes:</h2>
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="columns">
+      <div class="column">
+        <h1 class="title">Agregar Receta para {{ producto.nombre }}</h1>
 
-    <div class="form-group">
-      <label for="ingrediente">Ingrediente:</label>
-      <select name="ingrediente" id="ingrediente">
-        {% for ingrediente in ingredientes %}
-          <option value="{{ ingrediente.id }}">{{ ingrediente.nombre }}</option>
-        {% endfor %}
-      </select>
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="notification is-danger">
+              <button class="delete"></button>
+              {% for message in messages %}
+                <p>{{ message }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <p><b>Buscar ingrediente:</b></p>
+        <form id="searchi" method="POST">
+          <div class="field is-grouped">
+            <div class="control is-expanded">
+              <input type="text" name="ingrediente_busqueda" class="input" placeholder="Nombre del ingrediente">
+            </div>
+            <div class="control">
+              <button type="submit" class="button is-primary"><i class="fas fa-search"></i> Buscar</button>
+            </div>
+          </div>
+        </form>
+
+        {% if ingrediente %}
+          <table class="table is-bordered is-hoverable">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Unidad de medida</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for ingrediente in ingrediente %}
+                <tr>
+                  <td>{{ ingrediente.nombre }}</td>
+                  <td>{{ ingrediente.unidadmedida.nombre }}</td>
+                  <td>
+                    <form method="post" action="{{ url_for('agregar_receta', id=producto.id) }}">
+
+                      <input type="hidden" name="ingrediente" value="{{ ingrediente.id }}">
+                      <div class="field is-grouped">
+                        <div class="control">
+                          <input type="number" name="cantidad" class="input" value="1" min="1" max="{{ ingrediente.cantidad }}">
+                        </div>
+                        <div class="control">
+                          <button type="submit" class="button is-primary"><i class="fas fa-cart-plus"></i> Añadir</button>
+                        </div>
+                      </div>
+                    </form>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p>No se han encontrado resultados.</p>
+        {% endif %}
+
+      </div>
     </div>
-
-    <div class="form-group">
-      <label for="cantidad">Cantidad:</label>
-      <input type="number" name="cantidad" id="cantidad" min="1" required>
-    </div>
-
-    <button type="submit">Agregar Receta</button>
-  </form>
-</body>
-</html>
+  </div>
+</section>
+{% endblock %}

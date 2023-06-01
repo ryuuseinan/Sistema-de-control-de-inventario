@@ -467,24 +467,23 @@ def login():
 # Función para agregar una receta a un producto
 @app.route('/agregar_receta/<int:id>', methods=['GET', 'POST'])
 def agregar_receta(id):
-    producto = Producto.query.get(id)
-
+    producto = db_session.query(Producto).filter_by(id=id).one()
     if not producto:
         flash('El producto no existe', 'error')
         return redirect(url_for('vender'))
 
     if request.method == 'POST':
         # Obtener los ingredientes y cantidades desde el formulario
-        ingredientes = request.form.getlist('ingrediente')
+        ingrediente = request.form.getlist('ingrediente')
         cantidades = request.form.getlist('cantidad')
 
         # Crear la receta
         receta = Receta(producto_id=producto.id)
 
-        # Agregar los ingredientes y cantidades a la receta
-        for ingrediente, cantidad in zip(ingredientes, cantidades):
-            if ingrediente and cantidad:
-                receta_detalle = RecetaDetalle(ingrediente=ingrediente, cantidad=cantidad)
+        # Agregar los ingrediente y cantidades a la receta
+        for ingrediente_id, cantidad in zip(ingrediente, cantidades):
+            if ingrediente_id and cantidad:
+                receta_detalle = RecetaDetalle(ingrediente_id=ingrediente_id, cantidad=cantidad)
                 receta.detalles.append(receta_detalle)
 
         # Guardar la receta en la base de datos
@@ -492,11 +491,12 @@ def agregar_receta(id):
         db.session.commit()
 
         flash('Receta agregada al producto exitosamente', 'success')
-        return redirect(url_for('productos'))
+        return redirect(url_for('agregar_receta', id=producto.id))
 
-    ingredientes = Ingrediente.query.all()
+    ingrediente = db_session.query(Ingrediente).all()
 
-    return render_template('receta/agregar_receta.html', producto=producto, ingredientes=ingredientes)
+    return render_template('receta/agregar_receta.html', producto=producto, ingrediente=ingrediente)
+
 
 
 @app.route('/productos')
