@@ -22,7 +22,7 @@
         <div class="control">
           <div class="select">
             <select name="categoria_id">
-              {% for categoria in categorias %}
+              {% for categoria in categoria %}
               {% if categoria.id == producto.categoria_id %}
               <option value="{{ categoria.id }}" selected>{{ categoria.nombre }}</option>
               {% else %}
@@ -47,6 +47,7 @@
       </div>
       <div class="field">
         <label class="label">Imagen</label>
+        <img src="{{ url_for('static', filename='img/') }}{{ producto.imagen }}" alt="{{ producto.nombre }}" style="max-height: 180px;">
         <div class="control">
           <div class="file">
             <label class="file-label">
@@ -63,20 +64,12 @@
           </div>
         </div>
       </div>
-      {% if Pizza not in categoria.nombre %}
-      <div class="field">
-        <label class="label">Stock</label>
-        <div class="control">
-          <input class="input" type="text" name="stock" value="{{ producto.stock }}">
-        </div>
-      </div>
-      {% endif %}
       <div class="field is-grouped">
         <div class="control">
           <button type="submit" class="button is-link">Guardar</button>
         </div>
         <div class="control">
-          <a href="{{ url_for('productos') }}" class="button is-link is-light">Cancelar</a>
+          <a href="{{ url_for('listar_productos') }}" class="button is-link is-light">Cancelar</a>
         </div>
       </div>
     </form>

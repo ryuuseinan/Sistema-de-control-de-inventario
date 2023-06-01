@@ -28,7 +28,7 @@
               <th>Categoría</th>
               <th>Precio</th>
               <th>Descripción</th>
-              <th>Editar receta</th>
+              <th>Stock/Receta</th>
               <th>Editar/Eliminar</th>
             </tr>
           </thead>
@@ -44,12 +44,19 @@
                 <td>{{ producto.precio }}</td>
                 <td class="descripcion">{{ producto.descripcion }}</td>
                 <td>
+                {% if not producto.tiene_receta %}
                 {% if producto.stock %}
-                {{ producto.stock }}
+                  {{ producto.stock }} unidades
                 {% else %}
-                  <a href="{{ url_for('agregar_receta', id=producto.id) }}" class="button is-info is-light">
-                    <span class="icon is-small"><i class="fa fa-pencil-alt" aria-hidden="true"></i></i></span>
+                  Sin stock<br>
+                  <a>Actualizar stock</a>
+                {% endif %}
+                {% else %}
+                  <a href="{{ url_for('agregar_receta', id=producto.id) }}">
+                    Agregar receta
                   </a>
+                  <br>
+                  <a>Actualizar receta</a>
                 {% endif %}
                 </td>
                 <td>

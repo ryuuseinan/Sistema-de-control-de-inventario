@@ -500,7 +500,7 @@ def agregar_receta(id):
 
 
 @app.route('/productos')
-def productos():
+def listar_productos():
     # Obtenemos todas los productos de la base de datos
     productos = db_session.query(Producto).all()
     # Verificamos si hay al menos un producto activo
@@ -592,7 +592,7 @@ def producto_reporte():
 def producto_editar(id):
     # Obtener el producto a editar de la base de datos
     producto = db_session.query(Producto).filter_by(id=id).one()
-    categorias = db_session.query(Categoria).all()
+    categoria = db_session.query(Categoria).all()
     if request.method == 'POST':
         # Obtener los datos del formulario
         codigo_barra = request.form['codigo_barra']
@@ -631,7 +631,7 @@ def producto_editar(id):
         return redirect(url_for('productos'))
 
     # Renderizar la plantilla de edición de productos
-    return render_template('producto/editar.html', producto=producto, categorias=categorias)
+    return render_template('producto/editar.html', producto=producto, categoria=categoria)
 
 @app.route('/producto/eliminar/<int:id>', methods=['GET', 'POST'])
 def producto_eliminar(id):
