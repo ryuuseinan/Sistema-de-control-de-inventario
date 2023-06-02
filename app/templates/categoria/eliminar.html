@@ -9,11 +9,11 @@
         <h1 class="title is-1">Eliminar Categoría</h1>
         <div class="notification is-warning">
             <p>¿Está seguro de que desea eliminar la categoría "{{ categoria.nombre }}"?</p>
-            <form method="post" action="{{ url_for('categoria_eliminar', id=categoria.id) }}">
+            <form method="post" action="{{ url_for('categoria.categoria_eliminar', id=categoria.id) }}">
                 <div class="field">
                     <div class="control">
                         <button class="button is-danger" type="submit">Eliminar</button>
-                        <a href="{{ url_for('categorias') }}" class="button">Cancelar</a>
+                        <a href="{{ url_for('categoria.categorias') }}" class="button">Cancelar</a>
                     </div>
                 </div>
             </form>

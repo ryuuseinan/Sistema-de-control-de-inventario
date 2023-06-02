@@ -8,6 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy import or_
 from config import *
 from werkzeug.utils import secure_filename
+from controllers.categoria_controller import create_categoria_blueprint
 
 # Configurar la aplicación
 app = Flask(__name__)
@@ -15,6 +16,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{usuario_db}:{contrase
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.secret_key = os.urandom(24)
  
+# Importar y registrar los controladores
+categoria_blueprint = create_categoria_blueprint()
+app.register_blueprint(categoria_blueprint)
+
 # Forzar eliminación de caché
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.add_template_global(arrow, 'arrow')
@@ -68,91 +73,7 @@ def ventas():
 def caja():
     return render_template('caja.html')
 
-@app.route('/categorias')
-def categorias():
-    # Obtenemos todas las categorías de la base de datos
-    categorias = db_session.query(Categoria).all()
-    
-    # Verificamos si hay al menos una categoría activa
-    hay_activas = any(categoria.activo for categoria in categorias)
-    
-    i = 0
-    for categoria in categorias:
-        if categoria.activo:
-            i=i+1
-    if i>=1:
-        hay_activas = True
-    if i == 0:
-        hay_activas = False
 
-    # Renderizamos el template correspondiente
-    return render_template('categoria/categorias.html', categorias=categorias, hay_activas=hay_activas)
-    
-@app.route('/categoria/nueva', methods=['GET', 'POST'])
-def categoria_nueva():
-    if request.method == 'POST':
-        # Obtener los datos del formulario
-        nombre = request.form['nombre']
-
-        # Crear una nueva categoría
-        nueva_categoria = Categoria(nombre=nombre)
-
-        # Guardar la nueva categoría en la base de datos
-        db_session.add(nueva_categoria)
-        db_session.commit()
-
-        return redirect(url_for('categorias'))
-    return render_template('categoria/nueva.html')
-
-@app.route('/categoria/editar/<int:id>', methods=['GET', 'POST'])
-def categoria_editar(id):
-    categoria = db_session.query(Categoria).filter_by(id=id).one()
-    if request.method == 'POST':
-        nombre = request.form['nombre']
-        categoria.ultima_modificacion = datetime.now()
-        categoria.nombre = nombre
-        db_session.commit()
-        return redirect(url_for('categorias'))
-    else:
-        return render_template('categoria/editar.html', categoria=categoria)
-
-@app.route('/categoria/eliminar/<int:id>', methods=['GET', 'POST'])
-def categoria_eliminar(id):
-    categoria = db_session.query(Categoria).filter_by(id=id).one()
-    if request.method == 'POST':
-        categoria.activo = 0
-        db_session.commit()
-        return redirect(url_for('categorias'))
-    else:
-        return render_template('categoria/eliminar.html', categoria=categoria)
-
-@app.route('/categorias/papelera')
-def categoria_papelera():
-    # Obtenemos todas los categorias de la base de datos
-    categorias = db_session.query(Categoria).all()
-    
-    # Verificamos si hay al menos un categoria no activo
-    hay_activas = any(categoria.activo for categoria in categorias)
-    i = 0
-    for categoria in categorias:
-        if not categoria.activo:
-            i=i+1
-    if i>=1:
-        hay_activas = True
-    if i == 0:
-        hay_activas = False
-
-    return render_template('categoria/papelera.html', categorias=categorias, hay_activas=hay_activas)
-
-@app.route('/categoria/restaurar/<int:id>', methods=['GET', 'POST'])
-def categoria_restaurar(id):
-    categoria = db_session.query(Categoria).filter_by(id=id).one()
-    if request.method == 'POST':
-        categoria.activo = 1
-        db_session.commit()
-        return redirect(url_for('categorias'))
-    else:
-        return render_template('categoria/restaurar.html', categoria=categoria)
 
 @app.route('/clientes')
 def clientes():

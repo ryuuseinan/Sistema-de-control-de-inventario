@@ -9,8 +9,8 @@
       <div class="column">
         <div class="column">
           <div class="buttons is-pulled-right">
-            <a href="{{ url_for('categoria_papelera') }}" class="button is-link is-light">Ir a papelera</a>
-            <a href="{{ url_for('categoria_nueva') }}" class="button is-link">Agregar Categoría</a>
+            <a href="{{ url_for('categoria.categoria_papelera') }}" class="button is-link is-light">Ir a papelera</a>
+            <a href="{{ url_for('categoria.categoria_nueva') }}" class="button is-link">Agregar Categoría</a>
           </div>
         </div>
         {% if hay_activas %}
@@ -32,10 +32,10 @@
                 <tr>
                   <td>{{ categoria.nombre }}</td>
                   <td>
-                    <a href="{{ url_for('categoria_editar', id=categoria.id) }}" class="button is-warning is-small">
+                    <a href="{{ url_for('categoria.categoria_editar', id=categoria.id) }}" class="button is-warning is-small">
                       <span class="icon is-small"><i class="fa fa-pencil-alt" aria-hidden="true"></i></i></span>
                     </a>
-                    <a href="{{ url_for('categoria_eliminar', id=categoria.id) }}" class="button is-danger is-small">
+                    <a href="{{ url_for('categoria.categoria_eliminar', id=categoria.id) }}" class="button is-danger is-small">
                       <span class="icon is-small"><i class="fas fa-trash" aria-hidden="true"></i></span>
                     </a>
                   </td>
