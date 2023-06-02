@@ -9,7 +9,7 @@
       <div class="column">
         <div class="column">
           <div class="buttons is-pulled-right">
-            <a href="{{ url_for('ingredientes') }}" class="button is-link is-light">Volver</a>
+            <a href="{{ url_for('ingrediente.listar') }}" class="button is-link is-light">Volver</a>
           </div>
         </div>
         {% if hay_activas %}
@@ -33,7 +33,7 @@
               <td>{{ ingrediente.nombre }}</td>
               <td>{{ ingrediente.cantidad }}</td>
               <td>
-                <a href="{{ url_for('ingrediente_restaurar', id=ingrediente.id) }}" class="button is-link is-light is-small">
+                <a href="{{ url_for('ingrediente.restaurar', id=ingrediente.id) }}" class="button is-link is-light is-small">
                   <i class="fa fa-undo" aria-hidden="true"></i>
                 </a>
               </td>

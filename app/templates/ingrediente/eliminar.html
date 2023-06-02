@@ -8,11 +8,11 @@
         <h1 class="title is-1">¿Desea mover el ingrediente a la papelera?</h1>
         <div class="notification is-warning">
             <p>¿Está seguro de que desea mover el ingrediente "{{ ingrediente.nombre }}" a la papelera?</p>
-            <form method="post" action="{{ url_for('ingrediente_eliminar', id=ingrediente.id) }}">
+            <form method="post" action="{{ url_for('ingrediente.eliminar', id=ingrediente.id) }}">
                 <div class="field">
                     <div class="control">
                         <button class="button is-link" type="submit">Mover</button>
-                        <a href="{{ url_for('ingredientes') }}" class="button is-link is-light">Cancelar</a>
+                        <a href="{{ url_for('ingrediente.listar') }}" class="button is-link is-light">Cancelar</a>
                     </div>
                 </div>
             </form>

@@ -63,13 +63,10 @@ def create_producto_blueprint():
                                     categoria_id=categoria_id, 
                                     precio=precio, 
                                     fecha_creacion=datetime.now())
-            
-            # Ruta de las imágenes
-            producto_blueprint.config['UPLOAD_FOLDER'] = 'app\static\img\productos'
 
             if imagen and imagen.filename:
                 filename = secure_filename(imagen.filename)
-                imagen.save(os.path.join(producto_blueprint.config['UPLOAD_FOLDER'], filename))
+                imagen.save(os.path.join('app', 'static', 'img', 'productos', filename))
                 nuevo_producto.imagen = '/productos/' + filename
             else:
                 filename = None
@@ -80,7 +77,7 @@ def create_producto_blueprint():
             db_session.commit()
             
             # Redireccionar al listado de productos
-            return redirect(url_for('productos'))
+            return redirect(url_for('producto.listar'))
         
         # Renderizar la plantilla de nuevo producto
         return render_template('producto/nuevo.html', categorias=categorias)
@@ -91,7 +88,7 @@ def create_producto_blueprint():
         if request.method == 'POST':
             producto.activo = 1
             db_session.commit()
-            return redirect(url_for('productos'))
+            return redirect(url_for('producto.listar'))
         else:
             return render_template('producto/restaurar.html', producto=producto)
 
@@ -124,8 +121,7 @@ def create_producto_blueprint():
             imagen = request.files['imagen']
             if imagen and imagen.filename:
                 filename = secure_filename(imagen.filename)
-                producto_blueprint.config['UPLOAD_FOLDER'] = 'app\static\img\productos'
-                imagen.save(os.path.join(producto_blueprint.config['UPLOAD_FOLDER'], filename))
+                imagen.save(os.path.join('app', 'static', 'img', 'productos', filename))
                 producto.imagen = '/productos/' + filename
             
             # Registrar ultima modificación
@@ -135,7 +131,7 @@ def create_producto_blueprint():
             db_session.commit()
 
             # Redireccionar al listado de productos
-            return redirect(url_for('productos'))
+            return redirect(url_for('producto.listar'))
 
         # Renderizar la plantilla de edición de productos
         return render_template('producto/editar.html', producto=producto, categoria=categoria)
@@ -146,7 +142,7 @@ def create_producto_blueprint():
         if request.method == 'POST':
             producto.activo = 0
             db_session.commit()
-            return redirect(url_for('productos'))
+            return redirect(url_for('producto.listar'))
         else:
             return render_template('producto/eliminar.html', producto=producto)
 

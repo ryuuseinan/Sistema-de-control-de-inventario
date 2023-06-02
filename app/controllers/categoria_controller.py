@@ -41,7 +41,7 @@ def create_categoria_blueprint():
             db_session.add(nueva_categoria)
             db_session.commit()
 
-            return redirect(url_for('categorias'))
+            return redirect(url_for('categoria.listar'))
         return render_template('categoria/nueva.html')
 
     @categoria_blueprint.route('/categoria/editar/<int:id>', methods=['GET', 'POST'])
@@ -52,7 +52,7 @@ def create_categoria_blueprint():
             categoria.ultima_modificacion = datetime.now()
             categoria.nombre = nombre
             db_session.commit()
-            return redirect(url_for('categorias'))
+            return redirect(url_for('categoria.listar'))
         else:
             return render_template('categoria/editar.html', categoria=categoria)
 
@@ -62,7 +62,7 @@ def create_categoria_blueprint():
         if request.method == 'POST':
             categoria.activo = 0
             db_session.commit()
-            return redirect(url_for('categorias'))
+            return redirect(url_for('categoria.listar'))
         else:
             return render_template('categoria/eliminar.html', categoria=categoria)
 
@@ -90,7 +90,7 @@ def create_categoria_blueprint():
         if request.method == 'POST':
             categoria.activo = 1
             db_session.commit()
-            return redirect(url_for('categorias'))
+            return redirect(url_for('categoria.listar'))
         else:
             return render_template('categoria/restaurar.html', categoria=categoria)
     
