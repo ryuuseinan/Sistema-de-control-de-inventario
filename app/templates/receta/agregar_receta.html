@@ -1,17 +1,17 @@
 {% extends "base.html" %}
 
-{% block title %}Agregar Receta{% endblock %}
+{% block title %}Configurar Receta{% endblock %}
 
 {% block content %}
 <section class="section">
   <div class="container">
     <div class="columns">
       <div class="column">
-        <h1 class="title">Agregar Receta para {{ producto.nombre }}</h1>
+        <h1 class="title">Configurar Receta para {{ producto.nombre }} ({{ receta.producto.categoria.nombre }})</h1>
 
         {% with messages = get_flashed_messages() %}
           {% if messages %}
-            <div class="notification is-danger">
+            <div class="notification is-success">
               <button class="delete"></button>
               {% for message in messages %}
                 <p>{{ message }}</p>
@@ -37,15 +37,14 @@
             <thead>
               <tr>
                 <th>Nombre</th>
+                <th>Cantidad</th>
                 <th>Unidad de medida</th>
-                <th></th>
               </tr>
             </thead>
             <tbody>
               {% for ingrediente in ingrediente %}
                 <tr>
                   <td>{{ ingrediente.nombre }}</td>
-                  <td>{{ ingrediente.unidadmedida.nombre }}</td>
                   <td>
                     <form method="post" action="{{ url_for('agregar_receta', id=producto.id) }}">
 
@@ -54,9 +53,10 @@
                         <div class="control">
                           <input type="number" name="cantidad" class="input" value="1" min="1" max="{{ ingrediente.cantidad }}">
                         </div>
-                        <div class="control">
+                        <td>{{ ingrediente.unidadmedida.nombre }}</td>
+                        <td><div class="control">
                           <button type="submit" class="button is-primary"><i class="fas fa-cart-plus"></i> Añadir</button>
-                        </div>
+                        </div></td>
                       </div>
                     </form>
                   </td>
@@ -67,7 +67,30 @@
         {% else %}
           <p>No se han encontrado resultados.</p>
         {% endif %}
-
+        
+        <h2 class="subtitle">Ingredientes de preparación para {{ receta.producto.nombre }} ({{ receta.producto.categoria.nombre }}):</h2>
+        <table class="table is-striped is-hoverable">
+          <thead>
+            <tr>
+              <th>Ingrediente</th>
+              <th>Cantidad</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for receta_detalle in receta_detalles %}
+              <tr>
+                <td>{{ receta_detalle.ingrediente.nombre }}</td>
+                <td>{{ receta_detalle.cantidad }} {{ receta_detalle.ingrediente.unidadmedida.nombre }}</td>
+                <td>
+                  <a href="{{ url_for('ingrediente_receta_eliminar', id=receta_detalle.id) }}" class="button is-danger is-light">
+                    <span class="icon is-small"><i class="fas fa-trash" aria-hidden="true"></i></span>
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
     </div>
   </div>

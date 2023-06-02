@@ -105,35 +105,35 @@ class UnidadMedida(Base):
     activo = Column(Boolean, default=True, nullable=False)
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
     ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
-
-# Creamos tabla para almacenar las recetas
+    
 class Receta(Base):
     __tablename__ = 'receta'
     id = Column(Integer, primary_key=True)
     producto_id = Column(Integer, ForeignKey('producto.id'))
-    cantidad = Column(Integer, nullable=False)
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
     ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
-    producto = relationship('Producto', backref='recetas')
+    producto = relationship('Producto')
+    detalles = relationship('RecetaDetalle', backref='receta')
 
     def verificar_stock_suficiente(self):
         """
         Verifica si hay suficiente stock de ingredientes para realizar el producto.
         Retorna True si hay suficiente stock, False en caso contrario.
         """
-        return self.ingrediente.activo and self.cantidad <= self.ingrediente.stock
-    
+        return all(detalle.ingrediente.activo and detalle.cantidad <= detalle.ingrediente.stock for detalle in self.detalles)
+
 class RecetaDetalle(Base):
     __tablename__ = 'receta_detalle'
     id = Column(Integer, primary_key=True)
+    cantidad = Column(Integer, nullable=False)
     receta_id = Column(Integer, ForeignKey('receta.id'))
     ingrediente_id = Column(Integer, ForeignKey('ingrediente.id'))
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
     ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
     activo = Column(Boolean, default=True, nullable=False)
-    # Crea la relación con Receta
+    # Crea la relación con Ingrediente
     ingrediente = relationship('Ingrediente')
-    receta = relationship('Receta', backref='detalles')
+
 
 Base.metadata.create_all(engine)
 

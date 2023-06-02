@@ -468,17 +468,22 @@ def login():
 @app.route('/agregar_receta/<int:id>', methods=['GET', 'POST'])
 def agregar_receta(id):
     producto = db_session.query(Producto).filter_by(id=id).one()
+    receta = db_session.query(Receta).filter_by(id=id).one()
+    receta_detalles = receta.detalles  # Obtener todos los detalles de la receta
+
+    # Crear la receta si no existe
+    if not receta:
+        receta = Receta(producto_id=producto.id)
+        db_session.add(receta)
+
     if not producto:
         flash('El producto no existe', 'error')
         return redirect(url_for('vender'))
 
     if request.method == 'POST':
-        # Obtener los ingredientes y cantidades desde el formulario
+        # Obtener los ingrediente y cantidades desde el formulario
         ingrediente = request.form.getlist('ingrediente')
         cantidades = request.form.getlist('cantidad')
-
-        # Crear la receta
-        receta = Receta(producto_id=producto.id)
 
         # Agregar los ingrediente y cantidades a la receta
         for ingrediente_id, cantidad in zip(ingrediente, cantidades):
@@ -486,18 +491,28 @@ def agregar_receta(id):
                 receta_detalle = RecetaDetalle(ingrediente_id=ingrediente_id, cantidad=cantidad)
                 receta.detalles.append(receta_detalle)
 
-        # Guardar la receta en la base de datos
-        db.session.add(receta)
-        db.session.commit()
+        db_session.commit()
 
-        flash('Receta agregada al producto exitosamente', 'success')
+        flash('Ingrediente agregado al producto exitosamente', 'success')
         return redirect(url_for('agregar_receta', id=producto.id))
 
     ingrediente = db_session.query(Ingrediente).all()
 
-    return render_template('receta/agregar_receta.html', producto=producto, ingrediente=ingrediente)
+    return render_template('receta/agregar_receta.html', producto=producto, receta=receta, ingrediente=ingrediente, receta_detalles=receta_detalles)
 
+@app.route('/ingrediente_receta_eliminar/<int:id>', methods=['GET', 'POST'])
+def ingrediente_receta_eliminar(id):
+    receta_detalle = db_session.query(RecetaDetalle).filter_by(id=id).one()
+    if not receta_detalle:
+        flash('El ingrediente de la receta no existe', 'error')
+        return redirect(url_for('agregar_receta', id=receta_detalle.receta_id))
 
+    # Eliminar el ingrediente de la receta
+    db_session.delete(receta_detalle)
+    db_session.commit()
+
+    flash('Ingrediente eliminado de la receta exitosamente', 'success')
+    return redirect(url_for('agregar_receta', id=receta_detalle.receta_id))
 
 @app.route('/productos')
 def listar_productos():
