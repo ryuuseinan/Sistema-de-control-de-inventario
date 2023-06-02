@@ -2676,6 +2676,3 @@ app/__pycache__/db_init.cpython-311.pyc
 app/__pycache__/database.cpython-311.pyc
 app/controllers/__pycache__/__init__.cpython-311.pyc
 app/controllers/__pycache__/categoria_controller.cpython-311.pyc
-app/__pycache__/db_init.cpython-311.pyc
-app/__pycache__/database.cpython-311.pyc
-.gitignore

@@ -9,7 +9,7 @@
       <div class="column">
         <div class="column">
           <div class="buttons is-pulled-right">
-            <a href="{{ url_for('categoria.categorias') }}" class="button is-link is-light">Volver</a>
+            <a href="{{ url_for('categoria.listar') }}" class="button is-link is-light">Volver</a>
           </div>
         </div>
         {% if hay_activas %}
@@ -31,7 +31,7 @@
                 <tr>
                   <td>{{ categoria.nombre }}</td>
                   <td>
-                    <a href="{{ url_for('categoria.categoria_restaurar', id=categoria.id) }}" class="button is-link is-light is-small">
+                    <a href="{{ url_for('categoria.restaurar', id=categoria.id) }}" class="button is-link is-light is-small">
                       <i class="fa fa-undo" aria-hidden="true"></i>
                     </a>
                   </td>

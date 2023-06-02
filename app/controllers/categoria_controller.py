@@ -29,7 +29,7 @@ def create_categoria_blueprint():
         return render_template('categoria/listar.html', categorias=categorias, hay_activas=hay_activas)
 
     @categoria_blueprint.route('/categoria/nueva', methods=['GET', 'POST'])
-    def categoria_nueva():
+    def nueva():
         if request.method == 'POST':
             # Obtener los datos del formulario
             nombre = request.form['nombre']
@@ -41,33 +41,33 @@ def create_categoria_blueprint():
             db_session.add(nueva_categoria)
             db_session.commit()
 
-            return redirect(url_for('.categorias'))
+            return redirect(url_for('categorias'))
         return render_template('categoria/nueva.html')
 
     @categoria_blueprint.route('/categoria/editar/<int:id>', methods=['GET', 'POST'])
-    def categoria_editar(id):
+    def editar(id):
         categoria = db_session.query(Categoria).filter_by(id=id).one()
         if request.method == 'POST':
             nombre = request.form['nombre']
             categoria.ultima_modificacion = datetime.now()
             categoria.nombre = nombre
             db_session.commit()
-            return redirect(url_for('.categorias'))
+            return redirect(url_for('categorias'))
         else:
             return render_template('categoria/editar.html', categoria=categoria)
 
     @categoria_blueprint.route('/categoria/eliminar/<int:id>', methods=['GET', 'POST'])
-    def categoria_eliminar(id):
+    def eliminar(id):
         categoria = db_session.query(Categoria).filter_by(id=id).one()
         if request.method == 'POST':
             categoria.activo = 0
             db_session.commit()
-            return redirect(url_for('.categorias'))
+            return redirect(url_for('categorias'))
         else:
             return render_template('categoria/eliminar.html', categoria=categoria)
 
     @categoria_blueprint.route('/categorias/papelera')
-    def categoria_papelera():
+    def papelera():
         # Obtenemos todas los categorias de la base de datos
         categorias = db_session.query(Categoria).all()
 
@@ -85,12 +85,12 @@ def create_categoria_blueprint():
         return render_template('categoria/papelera.html', categorias=categorias, hay_activas=hay_activas)
 
     @categoria_blueprint.route('/categoria/restaurar/<int:id>', methods=['GET', 'POST'])
-    def categoria_restaurar(id):
+    def restaurar(id):
         categoria = db_session.query(Categoria).filter_by(id=id).one()
         if request.method == 'POST':
             categoria.activo = 1
             db_session.commit()
-            return redirect(url_for('.categorias'))
+            return redirect(url_for('categorias'))
         else:
             return render_template('categoria/restaurar.html', categoria=categoria)
     
