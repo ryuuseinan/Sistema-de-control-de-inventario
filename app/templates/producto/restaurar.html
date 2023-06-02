@@ -8,11 +8,11 @@
         <h1 class="title is-1">Restaurar producto</h1>
         <div class="notification is-warning">
             <p>¿Está seguro de que desea restaurar la producto "{{ producto.nombre }}"?</p>
-            <form method="post" action="{{ url_for('producto_restaurar', id=producto.id) }}">
+            <form method="post" action="{{ url_for('producto.restaurar', id=producto.id) }}">
                 <div class="field">
                     <div class="control">
                         <button class="button is-success" type="submit">Restaurar</button>
-                        <a href="{{ url_for('listar_productos') }}" class="button">Cancelar</a>
+                        <a href="{{ url_for('producto.listar') }}" class="button">Cancelar</a>
                     </div>
                 </div>
             </form>
