@@ -1,4 +1,4 @@
-{% extends "header.html" %}
+{% extends "head.html" %}
 
 {% block title %}Inicio de sesión{% endblock %}
 
@@ -13,7 +13,7 @@
 
 <section class="section">
   <div class="container">
-    <form action="{{ url_for('login') }}" method="POST">
+    <form action="{{ url_for('sesion.login') }}" method="POST">
       <div class="field">
         <div class="control">
 			<label class="label">Nombre de usuario</label>

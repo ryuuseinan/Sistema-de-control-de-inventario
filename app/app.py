@@ -3,7 +3,7 @@ from flask_login import LoginManager, UserMixin, login_user, logout_user, curren
 from models.database import Usuario, Producto, Categoria, Ingrediente, UnidadMedida, Rol, Persona, Receta, RecetaDetalle, db, db_session
 from db_init import init_db
 from datetime import datetime
-import arrow, bcrypt
+import arrow
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import or_
 from config import *
@@ -11,6 +11,7 @@ from config import *
 from controllers.categoria_controller import create_categoria_blueprint
 from controllers.producto_controller import create_producto_blueprint
 from controllers.ingrediente_controller import create_ingrediente_blueprint
+from controllers.sesion_controller import create_sesion_blueprint
 
 # Configurar la aplicación
 app = Flask(__name__)
@@ -27,6 +28,9 @@ app.register_blueprint(producto_blueprint)
 
 ingrediente_blueprint = create_ingrediente_blueprint()
 app.register_blueprint(ingrediente_blueprint)
+
+sesion_blueprint = create_sesion_blueprint()
+app.register_blueprint(sesion_blueprint)
 
 # Forzar eliminación de caché
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
@@ -358,38 +362,6 @@ def usuario_eliminar(id):
 def reportes():
     return render_template('reportes.html')
 
-@app.route('/logout')
-def logout():
-    # Cerrar sesión asignando False a la sesión 
-    session['logged_in'] = False
-    # Agregar mensaje de "Has cerrado sesión"
-    flash('Has cerrado sesión', 'success')
-    # Redirecciona al usuario a la página de inicio de sesión después de cerrar sesión
-    return redirect(url_for('login'))
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        nombre_usuario = request.form['nombre_usuario']
-        contrasena = request.form['contrasena']
-
-        # Verificar si el nombre_usuario y la contraseña coinciden con un usuario en la base de datos
-        usuario = db_session.query(Usuario).filter_by(nombre_usuario=nombre_usuario).first()
-        persona = db_session.query(Persona).filter_by(usuario_id=usuario.id).first()
-
-        if usuario and bcrypt.checkpw(contrasena.encode(), usuario.contrasena.encode()):
-            # Establecer la sesión del usuario como iniciada
-            session['logged_in'] = True
-            session['user_id'] = usuario.id
-            session['user_nombre'] = persona.nombre  # Guardar el nombre de usuario en la sesión
-
-            flash('Sesión iniciada correctamente', 'success')
-            return redirect(url_for('index'))
-        else:
-            flash('Credenciales inválidas', 'error')
-            return redirect(url_for('login'))
-
-    return render_template('sesion/login.html')
 
 # Función para agregar una receta a un producto
 @app.route('/agregar_receta/<int:id>', methods=['GET', 'POST'])
