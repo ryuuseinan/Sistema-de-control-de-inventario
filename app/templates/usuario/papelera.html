@@ -9,7 +9,7 @@
             <div class="column">
                 <div class="column">
                     <div class="buttons is-pulled-right">
-                        <a href="{{ url_for('usuarios') }}" class="button is-link is-light">Volver</a>
+                        <a href="{{ url_for('usuario.listar') }}" class="button is-link is-light">Volver</a>
                     </div>
                     {% if not hay_activas %}
                     <h1 class="title">Lista de usuarios en la papelera</h1>
@@ -48,7 +48,7 @@
                                 <td>{{ arrow.get(usuario.ultima_modificacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if usuario.ultima_modificacion != usuario.fecha_creacion else 'Nunca modificado' }}</td>
                                 <td>{{ 'Sí' if usuario.activo else 'No' }}</td>
                                 <td>
-                                    <a href="{{ url_for('usuario_restaurar', id=usuario.id) }}" class="button is-link is-light is-small">
+                                    <a href="{{ url_for('usuario.restaurar', id=usuario.id) }}" class="button is-link is-light is-small">
                                       <i class="fa fa-undo" aria-hidden="true"></i>
                                     </a>
                                 </td>
