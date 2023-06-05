@@ -9,8 +9,8 @@
             <div class="column">
                 <div class="column">
                     <div class="buttons is-pulled-right">
-                        <a href="{{ url_for('persona_papelera') }}" class="button is-link is-light">Ir a papelera</a>
-                        <a href="{{ url_for('persona_nuevo') }}" class="button is-link">Agregar persona</a>
+                        <!-- <a href="{{ url_for('persona.papelera') }}" class="button is-link is-light">Ir a papelera</a>
+                        <a href="{{ url_for('persona.nueva') }}" class="button is-link">Agregar persona</a> -->
                     </div>
                     <h1 class="title">Personas</h1>
                     {% with messages = get_flashed_messages() %}
@@ -34,7 +34,7 @@
                                 <th>Fecha creación</th>
                                 <th>Última modificación</th>
                                 <th>Activo</th>
-                                <th>Editar/Eliminar</th>
+                                <!-- <th>Editar/Eliminar</th> -->
                             </tr>
                         </thead>
                         <tbody>
@@ -50,9 +50,9 @@
                                 <td>{{ arrow.get(persona.ultima_modificacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if persona.ultima_modificacion != persona.fecha_creacion else 'Nunca modificado' }}</td>
                                 <td>{{ 'Sí' if persona.activo else 'No' }}</td>
                                 <td>
-                                    <a href="{{ url_for('persona_eliminar', id=persona.id) }}" class="button is-danger is-light">
+                                    <!-- <a href="{{ url_for('persona.eliminar', id=persona.id) }}" class="button is-danger is-light">
                                       <span class="icon is-small"><i class="fas fa-trash" aria-hidden="true"></i></span>
-                                    </a>
+                                    </a> -->
                                 </td>
                             </tr>
                         {% endif %}
