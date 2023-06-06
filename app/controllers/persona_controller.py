@@ -12,8 +12,8 @@ def create_persona_blueprint():
     # Definir las rutas y las funciones controladoras
     @persona_blueprint.route('/personas')
     def listar():
-        usuario = db_session.query(Usuario).all()
-        personas = db_session.query(Persona).all()
+        usuario = db_session.query(Usuario).filter(Usuario.activo == True).all()
+        personas = db_session.query(Persona).filter(Persona.activo == True).all()
         for usuario in personas:
             fecha_creacion = arrow.get(usuario.fecha_creacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if usuario.fecha_creacion else None
             ultima_modificacion = arrow.get(usuario.ultima_modificacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if usuario.ultima_modificacion else None
@@ -23,7 +23,7 @@ def create_persona_blueprint():
     def nueva():
         error = None
         usuario = db_session.query(Usuario).all()
-        rol = db_session.query(Rol).all()
+        rol = db_session.query(Rol).filter(Rol.activo == True).all()
         if request.method == 'POST':
             nombre_persona = request.form['nombre_persona']
             correo = request.form['correo']
@@ -40,7 +40,7 @@ def create_persona_blueprint():
                     db_session.add(persona)
                     db_session.commit()
                     flash('El persona ha sido creado exitosamente.', 'success')
-                    return redirect(url_for('listar'))
+                    return redirect(url_for('persona.listar'))
                 except IntegrityError:
                     db_session.rollback()
                     error = "El nombre de persona o correo electrónico ya están en uso"
@@ -48,42 +48,29 @@ def create_persona_blueprint():
         
     @persona_blueprint.route('/personas/papelera')
     def papelera():
-        rol = db_session.query(Rol).all()
-        # Obtenemos todos los personas de la base de datos
-        personas = db_session.query(persona).all()
-
-        # Verificamos si hay al menos un persona no activo
-        hay_activos = any(persona.activo for persona in personas)
-        i = 0
-        for persona in personas:
-            if not persona.activo:
-                i=i+1
-        if i>=1:
-            hay_activos = True
-        if i == 0:
-            hay_activos = False
-
-        return render_template('persona/papelera.html', personas=personas, hay_activos=hay_activos)
+        rol = db_session.query(Rol).filter(Rol.activo == True).all()
+        personas = db_session.query(Persona).filter(Persona.activo == False).all()
+        return render_template('persona/papelera.html', personas=personas)
 
     @persona_blueprint.route('/persona/restaurar/<int:id>', methods=['GET', 'POST'])
     def restaurar(id):
-        rol = db_session.query(Rol).all()
-        persona = db_session.query(persona).filter_by(id=id).one()
+        rol = db_session.query(Rol).filter(Rol.activo == True).all()
+        persona = db_session.query(Persona).filter_by(id=id).one()
         if request.method == 'POST':
             persona.activo = 1
             db_session.commit()
-            return redirect(url_for('producto.listar'))
+            return redirect(url_for('persona.listar'))
         else:
             return render_template('persona/restaurar.html', persona=persona)
 
     @persona_blueprint.route('/persona/editar/<int:id>', methods=['GET', 'POST'])
     def editar(id):
-        rol = db_session.query(Rol).all()
-        persona = db_session.query(persona).get(id)
+        rol = db_session.query(Rol).filter(Rol.activo == True).all()
+        persona = db_session.query(Persona).get(id)
 
         if not persona:
             flash('El persona no existe', 'error')
-            return redirect(url_for('personas'))
+            return redirect(url_for('persona.listar'))
 
         if request.method == 'POST':
             nombre_persona = request.form['nombre_persona']
@@ -111,16 +98,16 @@ def create_persona_blueprint():
                 db_session.commit()
                 
                 flash('persona actualizado exitosamente', 'success')
-                return redirect(url_for('producto.listar'))
+                return redirect(url_for('persona.listar'))
         return render_template('persona/editar.html', persona=persona, rol=rol)
 
     @persona_blueprint.route('/persona/eliminar/<int:id>', methods=['GET', 'POST'])
     def eliminar(id):
-        persona = db_session.query(persona).filter_by(id=id).one()
+        persona = db_session.query(Persona).filter_by(id=id).one()
         if request.method == 'POST':
-            persona.activo = 0
+            persona.activo = False
             db_session.commit()
-            return redirect(url_for('personas'))
+            return redirect(url_for('persona.listar'))
         else:
             return render_template('persona/eliminar.html', persona=persona)
     # Devolver el blueprint

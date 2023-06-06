@@ -13,7 +13,7 @@
             <a href="{{ url_for('ingrediente.nuevo') }}" class="button is-link">Agregar Ingrediente</a>
           </div>
         </div>
-        {% if hay_activas %}
+        {% if ingredientes %}
         <div class="columns">
           <div class="column">
             <h1 class="title">Lista de Ingredientes</h1>
@@ -29,7 +29,6 @@
           </thead>
           <tbody>
             {% for ingrediente in ingredientes %}
-              {% if ingrediente.activo %}
                 <tr>
                   <td>{{ ingrediente.nombre }}</td>
                   <td>{{ ingrediente.cantidad }} {{ ingrediente.unidadmedida.nombre }}</td>
@@ -42,13 +41,10 @@
                     </a>
                   </td>
                 </tr>
-              {% endif %}
             {% endfor %}
           </tbody>
         </table>
-        {% endif %}
-        <!-- End "if hay_activas" -->
-        {% if not hay_activas %}
+        {% else %}
         <h1 class="title is-1">Lista de Ingredientes</h1>
 					<div class="box">
 						<div class="notification is-warning">

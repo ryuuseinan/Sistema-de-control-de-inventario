@@ -13,7 +13,7 @@
             <a href="{{ url_for('categoria.nueva') }}" class="button is-link">Agregar Categoría</a>
           </div>
         </div>
-        {% if hay_activas %}
+        {% if categorias %}
         <div class="columns">
           <div class="column">
             <h1 class="title">Lista de Categorías</h1>
@@ -28,7 +28,6 @@
           </thead>
           <tbody>
             {% for categoria in categorias %}
-              {% if categoria.activo %}
                 <tr>
                   <td>{{ categoria.nombre }}</td>
                   <td>
@@ -40,13 +39,10 @@
                     </a>
                   </td>
                 </tr>
-              {% endif %}
             {% endfor %}
           </tbody>
         </table>
-        {% endif %}
-        <!-- End "if hay_activas" -->
-        {% if not hay_activas %}
+        {% else %}
         <h1 class="title is-1">Lista de Categorías</h1>
 					<div class="box">
 						<div class="notification is-warning">

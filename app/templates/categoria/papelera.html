@@ -12,7 +12,7 @@
             <a href="{{ url_for('categoria.listar') }}" class="button is-link is-light">Volver</a>
           </div>
         </div>
-        {% if hay_activas %}
+        {% if categorias %}
         <div class="columns">
           <div class="column">
             <h1 class="title">Lista de categorias en la papelera</h1>
@@ -27,7 +27,6 @@
           </thead>
           <tbody>
             {% for categoria in categorias %}
-              {% if not categoria.activo %}
                 <tr>
                   <td>{{ categoria.nombre }}</td>
                   <td>
@@ -36,13 +35,10 @@
                     </a>
                   </td>
                 </tr>
-              {% endif %}
             {% endfor %}
           </tbody>
         </table>
-        {% endif %}
-        <!-- End "if hay_activas" -->
-        {% if not hay_activas %}
+        {% else %}
         <h1 class="title is-1">Lista de categorias en la papelera</h1>
 					<div class="box">
 						<div class="notification is-warning">

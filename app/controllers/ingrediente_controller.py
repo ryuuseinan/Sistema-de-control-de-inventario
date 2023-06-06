@@ -11,40 +11,19 @@ def create_ingrediente_blueprint():
     @ingrediente_blueprint.route('/ingredientes')
     def listar():
         # Obtenemos todas los ingredientes de la base de datos
-        ingredientes = db_session.query(Ingrediente).all()
-        # Verificamos si hay al menos un producto activo
-        hay_activas = any(ingrediente.activo for ingrediente in ingredientes)
-        i = 0
-        for ingrediente in ingredientes:
-            if ingrediente.activo:
-                i=i+1
-        if i>=1:
-            hay_activas = True
-        if i == 0:
-            hay_activas = False
-        return render_template('ingrediente/listar.html', ingredientes=ingredientes, hay_activas=hay_activas)
+        ingredientes = db_session.query(Ingrediente).filter(Ingrediente.activo == True).all()
+        return render_template('ingrediente/listar.html', ingredientes=ingredientes)
 
     @ingrediente_blueprint.route('/ingrediente_papelera')
     def papelera():
         # Obtenemos todas los ingredientes de la base de datos
-        ingredientes = db_session.query(Ingrediente).all()
-        
-        # Verificamos si hay al menos un producto no activo
-        hay_activas = any(ingrediente.activo for ingrediente in ingredientes)
-        i = 0
-        for ingrediente in ingredientes:
-            if not ingrediente.activo:
-                i=i+1
-        if i>=1:
-            hay_activas = True
-        if i == 0:
-            hay_activas = False
-        return render_template('ingrediente/papelera.html', ingredientes=ingredientes, hay_activas=hay_activas)
+        ingredientes = db_session.query(Ingrediente).filter(Ingrediente.activo == False).all()
+        return render_template('ingrediente/papelera.html', ingredientes=ingredientes)
 
     @ingrediente_blueprint.route('/ingrediente_nuevo', methods=['GET', 'POST'])
     def nuevo():
         # Obtener las categorías para mostrarlas en el formulario
-        unidadmedida = db_session.query(UnidadMedida).all()
+        unidadmedida = db_session.query(UnidadMedida).filter(UnidadMedida.activo == True).all()
         if request.method == 'POST':
             # Obtener los datos del formulario
             nombre = request.form['nombre']
@@ -71,7 +50,7 @@ def create_ingrediente_blueprint():
     def editar(id):
         # Obtener el ingrediente a editar de la base de datos
         ingrediente = db_session.query(Ingrediente).filter_by(id=id).one()
-        unidadmedida = db_session.query(UnidadMedida).all()
+        unidadmedida = db_session.query(UnidadMedida).filter(UnidadMedida.activo == True).all()
 
         if request.method == 'POST':
             # Obtener los datos del formulario

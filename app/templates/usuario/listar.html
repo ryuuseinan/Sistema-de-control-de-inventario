@@ -12,6 +12,7 @@
                         <a href="{{ url_for('usuario.papelera') }}" class="button is-link is-light">Ir a papelera</a>
                         <a href="{{ url_for('usuario.nuevo') }}" class="button is-link">Agregar Usuario</a>
                     </div>
+                    {% if usuarios %}
                     <h1 class="title">Lista de usuarios</h1>
                     {% with messages = get_flashed_messages() %}
                     {% if messages %}
@@ -61,6 +62,15 @@
                         </tbody>
                     </table>
                 </div>
+                {% else %}
+                <h1 class="title is-1">Lista de usuarios</h1>
+                <div class="box">
+                <div class="notification is-warning">
+                    <h2 class="subtitle is-2">No hay usuarios</h2>
+                    <p>No hay usuarios.</p>
+                </div>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>

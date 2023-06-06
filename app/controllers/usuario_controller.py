@@ -12,8 +12,8 @@ def create_usuario_blueprint():
     # Definir las rutas y las funciones controladoras
     @usuario_blueprint.route('/usuarios')
     def listar():
-        rol = db_session.query(Rol).all()
-        usuarios = db_session.query(Usuario).all()
+        rol = db_session.query(Rol).filter(Rol.activo == True).all()
+        usuarios = db_session.query(Usuario).filter(Usuario.activo == True).all()
         for usuario in usuarios:
             fecha_creacion = arrow.get(usuario.fecha_creacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if usuario.fecha_creacion else None
             ultima_modificacion = arrow.get(usuario.ultima_modificacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if usuario.ultima_modificacion else None
@@ -22,7 +22,7 @@ def create_usuario_blueprint():
     @usuario_blueprint.route('/usuario/nuevo', methods=['GET', 'POST'])
     def nuevo():
         error = None
-        rol = db_session.query(Rol).all()
+        rol = db_session.query(Rol).filter(Rol.activo == True).all()
 
         if request.method == 'POST':
             nombre_usuario = request.form['nombre_usuario']
@@ -68,25 +68,14 @@ def create_usuario_blueprint():
         
     @usuario_blueprint.route('/usuarios/papelera')
     def papelera():
-        rol = db_session.query(Rol).all()
+        rol = db_session.query(Rol).filter(Rol.activo == True).all()
         # Obtenemos todos los usuarios de la base de datos
-        usuarios = db_session.query(Usuario).all()
-
-        # Verificamos si hay al menos un usuario no activo
-        hay_activos = any(usuario.activo for usuario in usuarios)
-        i = 0
-        for usuario in usuarios:
-            if not usuario.activo:
-                i=i+1
-        if i>=1:
-            hay_activos = True
-        if i == 0:
-            hay_activos = False
-        return render_template('usuario/papelera.html', usuarios=usuarios, hay_activos=hay_activos)
+        usuarios = db_session.query(Usuario).filter(Usuario.activo == False).all()
+        return render_template('usuario/papelera.html', usuarios=usuarios)
 
     @usuario_blueprint.route('/usuario/restaurar/<int:id>', methods=['GET', 'POST'])
     def restaurar(id):
-        rol = db_session.query(Rol).all()
+        rol = db_session.query(Rol).filter(Rol.activo == True).all()
         usuario = db_session.query(Usuario).filter_by(id=id).one()
         if request.method == 'POST':
             usuario.activo = 1
@@ -97,8 +86,8 @@ def create_usuario_blueprint():
 
     @usuario_blueprint.route('/usuario/editar/<int:id>', methods=['GET', 'POST'])
     def editar(id):
-        rol = db_session.query(Rol).all()
-        usuario = db_session.query(Usuario).get(id)
+        rol = db_session.query(Rol).filter(Rol.activo == True).all()
+        usuario = db_session.query(Usuario).filter(Usuario.activo == True).get(id)
         persona = db_session.query(Persona).filter(Persona.usuario_id == usuario.id).first()
         
         if usuario is None:
