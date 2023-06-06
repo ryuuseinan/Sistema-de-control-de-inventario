@@ -78,7 +78,7 @@ def create_usuario_blueprint():
         rol = db_session.query(Rol).filter(Rol.activo == True).all()
         usuario = db_session.query(Usuario).filter_by(id=id).one()
         if request.method == 'POST':
-            usuario.activo = 1
+            usuario.activo = True
             db_session.commit()
             return redirect(url_for('usuario.listar'))
         else:
@@ -147,7 +147,7 @@ def create_usuario_blueprint():
     def eliminar(id):
         usuario = db_session.query(Usuario).filter_by(id=id).one()
         if request.method == 'POST':
-            usuario.activo = 0
+            usuario.activo = False
             db_session.commit()
             return redirect(url_for('usuario.listar'))
         else:

@@ -168,8 +168,8 @@ if not unidad_medida_ml:
     unidad_medida_ml = UnidadMedida(nombre='ml', activo=True)
     db_session.add(unidad_medida_ml)
 
-if not unidad_medida_ml:
-    unidad_medida_ml = UnidadMedida(nombre='Unidades', activo=True)
+if not unidad_medida_unidades:
+    unidad_medida_unidades = UnidadMedida(nombre='Unidades', activo=True)
     db_session.add(unidad_medida_unidades)
     
 rol_administrador = db_session.query(Rol).filter_by(nombre='Administrador').first()

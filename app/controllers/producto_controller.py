@@ -67,7 +67,7 @@ def create_producto_blueprint():
     def restaurar(id):
         producto = db_session.query(Producto).filter_by(id=id).one()
         if request.method == 'POST':
-            producto.activo = 1
+            producto.activo = True
             db_session.commit()
             return redirect(url_for('producto.listar'))
         else:

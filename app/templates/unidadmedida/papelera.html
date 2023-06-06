@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Unidades de medida en la papelera{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="columns">
+      <div class="column">
+        <div class="column">
+          <div class="buttons is-pulled-right">
+            <a href="{{ url_for('unidadmedida.listar') }}" class="button is-link is-light">Volver</a>
+          </div>
+        </div>
+        {% if unidadmedidas %}
+        <div class="columns">
+          <div class="column">
+            <h1 class="title">Lista de unidades de medida en la papelera</h1>
+          </div>
+        </div>
+        <table class="table is-striped is-hoverable">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Restaurar</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for unidadmedida in unidadmedidas %}
+            {% if not unidadmedida.activo %}
+            <tr>
+              <td>{{ unidadmedida.nombre }}</td>
+              <td>
+                <a href="{{ url_for('unidadmedida.restaurar', id=unidadmedida.id) }}" class="button is-link is-light is-small">
+                  <i class="fa fa-undo" aria-hidden="true"></i>
+                </a>
+              </td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <h1 class="title is-1">Lista de unidades de medida en la papelera</h1>
+        <div class="box">
+          <div class="notification is-warning">
+            <h2 class="subtitle is-2">No hay unidades de medida</h2>
+            <p>No hay unidades de medida en la papelera.</p>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

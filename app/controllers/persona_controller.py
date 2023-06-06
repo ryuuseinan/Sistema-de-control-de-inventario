@@ -57,7 +57,7 @@ def create_persona_blueprint():
         rol = db_session.query(Rol).filter(Rol.activo == True).all()
         persona = db_session.query(Persona).filter_by(id=id).one()
         if request.method == 'POST':
-            persona.activo = 1
+            persona.activo = True
             db_session.commit()
             return redirect(url_for('persona.listar'))
         else:

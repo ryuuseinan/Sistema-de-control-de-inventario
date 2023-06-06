@@ -10,6 +10,7 @@
         <div class="column">
           <div class="buttons is-pulled-right">
             <a href="{{ url_for('ingrediente.papelera') }}" class="button is-link is-light">Ir a papelera</a>
+            <a href="{{ url_for('unidadmedida.listar') }}" class="button is-link is-light">Configurar unidades de medida</a>
             <a href="{{ url_for('ingrediente.nuevo') }}" class="button is-link">Agregar Ingrediente</a>
           </div>
         </div>
@@ -24,6 +25,8 @@
             <tr>
               <th>Nombre</th>
               <th>Cantidad</th>
+              <th>Fecha creación</th>
+              <th>Fecha modificación</th>
               <th>Editar/Eliminar</th>
             </tr>
           </thead>
@@ -32,6 +35,8 @@
                 <tr>
                   <td>{{ ingrediente.nombre }}</td>
                   <td>{{ ingrediente.cantidad }} {{ ingrediente.unidadmedida.nombre }}</td>
+                  <td>{{ arrow.get(ingrediente.fecha_creacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if ingrediente.fecha_creacion else None }}</td>
+                  <td>{{ arrow.get(ingrediente.ultima_modificacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if ingrediente.ultima_modificacion != ingrediente.fecha_creacion else 'Nunca modificado' }}</td>
                   <td>
                     <a href="{{ url_for('ingrediente.editar', id=ingrediente.id) }}" class="button is-warning is-small">
                       <span class="icon is-small"><i class="fa fa-pencil-alt" aria-hidden="true"></i></i></span>
@@ -49,7 +54,7 @@
 					<div class="box">
 						<div class="notification is-warning">
 							<h1 class="subtitle is-2">No hay Ingredientes</h2>
-							<p>No se han agregado Ingredientes a la base de datos, puedes agregar uno dando click en el boton <b>"Agregar Producto"</b>.</p>
+							<p>No se han agregado Ingredientes a la base de datos, puedes agregar uno dando click en el boton <b>"Agregar Ingrediente"</b>.</p>
 						</div>
 					</div>
         {% endif %}

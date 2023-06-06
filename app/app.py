@@ -13,6 +13,7 @@ from controllers.usuario_controller import create_usuario_blueprint
 from controllers.receta_controller import create_receta_blueprint
 from controllers.vender_controller import create_vender_blueprint
 from controllers.ventas_controller import create_ventas_blueprint
+from controllers.unidadmedida_controller import create_unidadmedida_blueprint
 
 # Configurar la aplicación
 app = Flask(__name__)
@@ -47,6 +48,9 @@ app.register_blueprint(vender_blueprint)
 
 ventas_blueprint = create_ventas_blueprint()
 app.register_blueprint(ventas_blueprint)
+
+unidadmedida_blueprint = create_unidadmedida_blueprint()
+app.register_blueprint(unidadmedida_blueprint)
 
 # Forzar eliminación de caché
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0

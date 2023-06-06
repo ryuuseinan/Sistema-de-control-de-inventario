@@ -83,8 +83,8 @@ def create_ingrediente_blueprint():
         ingrediente = db_session.query(Ingrediente).filter_by(id=id).one()
 
         if request.method == 'POST':
-            # Eliminar el ingrediente estableciendo el campo "activo" en 0
-            ingrediente.activo = 0
+            # Eliminar el ingrediente estableciendo el campo "activo" en Falses
+            ingrediente.activo = False
             db_session.commit()
 
             # Redireccionar al listado de ingredientes
@@ -97,7 +97,7 @@ def create_ingrediente_blueprint():
     def restaurar(id):
         ingrediente = db_session.query(Ingrediente).filter_by(id=id).one()
         if request.method == 'POST':
-            ingrediente.activo = 1
+            ingrediente.activo = True
             db_session.commit()
             return redirect(url_for('ingrediente.listar'))
         else:
