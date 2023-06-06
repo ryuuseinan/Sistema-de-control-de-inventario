@@ -13,40 +13,19 @@ def create_producto_blueprint():
     @producto_blueprint.route('/productos')
     def listar():
         # Obtenemos todas los productos de la base de datos
-        productos = db_session.query(Producto).all()
-        # Verificamos si hay al menos un producto activo
-        hay_activas = any(producto.activo for producto in productos)
-        i = 0
-        for producto in productos:
-            if producto.activo:
-                i=i+1
-        if i>=1:
-            hay_activas = True
-        if i == 0:
-            hay_activas = False
-        return render_template('producto/listar.html', productos=productos, hay_activas=hay_activas)
+        productos = db_session.query(Producto).filter(Producto.activo == True).all()
+        return render_template('producto/listar.html', productos=productos)
 
     @producto_blueprint.route('/productos/papelera')
     def papelera():
         # Obtenemos todas los productos de la base de datos
-        productos = db_session.query(Producto).all()
-        
-        # Verificamos si hay al menos un producto no activo
-        hay_activas = any(producto.activo for producto in productos)
-        i = 0
-        for producto in productos:
-            if not producto.activo:
-                i=i+1
-        if i>=1:
-            hay_activas = True
-        if i == 0:
-            hay_activas = False
-        return render_template('producto/papelera.html', productos=productos, hay_activas=hay_activas)
+        productos = db_session.query(Producto).filter(Categoria.activo == False).all()
+        return render_template('producto/papelera.html', productos=productos)
 
     @producto_blueprint.route('/producto/nuevo', methods=['GET', 'POST'])
     def nuevo():
         # Obtener las categorías para mostrarlas en el formulario
-        categorias = db_session.query(Categoria).all()
+        categorias = db_session.query(Categoria).filter(Categoria.activo == True).all()
         
         if request.method == 'POST':
             # Obtener los datos del formulario
@@ -96,7 +75,7 @@ def create_producto_blueprint():
     def editar(id):
         # Obtener el producto a editar de la base de datos
         producto = db_session.query(Producto).filter_by(id=id).one()
-        categoria = db_session.query(Categoria).all()
+        categoria = db_session.query(Categoria).filter(Categoria.activo == True).all()
         if request.method == 'POST':
             # Obtener los datos del formulario
             codigo_barra = request.form['codigo_barra']
@@ -140,7 +119,7 @@ def create_producto_blueprint():
     def eliminar(id):
         producto = db_session.query(Producto).filter_by(id=id).one()
         if request.method == 'POST':
-            producto.activo = 0
+            producto.activo = False
             db_session.commit()
             return redirect(url_for('producto.listar'))
         else:

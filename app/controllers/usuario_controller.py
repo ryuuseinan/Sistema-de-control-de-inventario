@@ -17,7 +17,7 @@ def create_usuario_blueprint():
         for usuario in usuarios:
             fecha_creacion = arrow.get(usuario.fecha_creacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if usuario.fecha_creacion else None
             ultima_modificacion = arrow.get(usuario.ultima_modificacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if usuario.ultima_modificacion else None
-        return render_template('usuario/usuarios.html', usuarios=usuarios, rol=rol)
+        return render_template('usuario/listar.html', usuarios=usuarios, rol=rol)
 
     @usuario_blueprint.route('/usuario/nuevo', methods=['GET', 'POST'])
     def nuevo():
@@ -82,7 +82,6 @@ def create_usuario_blueprint():
             hay_activos = True
         if i == 0:
             hay_activos = False
-
         return render_template('usuario/papelera.html', usuarios=usuarios, hay_activos=hay_activos)
 
     @usuario_blueprint.route('/usuario/restaurar/<int:id>', methods=['GET', 'POST'])

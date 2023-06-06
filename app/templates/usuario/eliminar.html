@@ -7,7 +7,7 @@
     <div class="container">
         <h1 class="title is-1">¿Desea mover el usuario a la papelera?</h1>
         <div class="notification is-warning">
-            <p>¿Está seguro de que desea mover el usuario "{{ usuario.nombre }}" a la papelera?</p>
+            <p>¿Está seguro de que desea mover el usuario "{{ usuario.nombre_usuario }}" a la papelera?</p>
             <form method="post" action="{{ url_for('usuario.eliminar', id=usuario.id) }}">
                 <div class="field">
                     <div class="control">

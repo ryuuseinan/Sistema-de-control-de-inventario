@@ -11,7 +11,7 @@
                     <div class="buttons is-pulled-right">
                         <a href="{{ url_for('usuario.listar') }}" class="button is-link is-light">Volver</a>
                     </div>
-                    {% if not hay_activas %}
+                    {% if hay_activos %}
                     <h1 class="title">Lista de usuarios en la papelera</h1>
                     {% with messages = get_flashed_messages() %}
                     {% if messages %}
@@ -58,13 +58,13 @@
                         </tbody>
                     </table>
                 </div>
-                <!-- End if not hay_activas -->
+                <!-- End if not hay_activos -->
                 {% endif %}
-                {% if hay_activas %}
+                {% if not hay_activos %}
                 <h1 class="title is-1">Lista de usuarios en la papelera</h1>
                 <div class="box">
                 <div class="notification is-warning">
-                    <h1 class="subtitle is-2">No hay usuarios</h2>
+                    <h2 class="subtitle is-2">No hay usuarios</h2>
                     <p>No hay usuarios en la papelera.</p>
                 </div>
                 </div>

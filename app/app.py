@@ -93,10 +93,6 @@ def agregar_producto():
 def ventas():
     return render_template('ventas.html')
 
-@app.route('/reportes')
-def reportes():
-    return render_template('reportes.html')
-
 @app.errorhandler(404)
 def page_not_found(error):
     # Renderiza el template de error 404

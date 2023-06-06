@@ -23,9 +23,7 @@
           <div class="select">
             <select name="categoria_id">
               {% for categoria in categorias %}
-                {% if categoria.activo %}
                 <option value="{{ categoria.id }}">{{ categoria.nombre }}</option>
-                {% endif %}
               {% endfor %}
             </select>
           </div>

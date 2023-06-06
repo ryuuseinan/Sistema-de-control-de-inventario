@@ -12,7 +12,7 @@
                         <a href="{{ url_for('usuario.papelera') }}" class="button is-link is-light">Ir a papelera</a>
                         <a href="{{ url_for('usuario.nuevo') }}" class="button is-link">Agregar Usuario</a>
                     </div>
-                    <h1 class="title">Usuarios</h1>
+                    <h1 class="title">Lista de usuarios</h1>
                     {% with messages = get_flashed_messages() %}
                     {% if messages %}
                         {% for message in messages %}
