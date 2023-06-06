@@ -121,6 +121,25 @@ class Receta(Base):
         Retorna True si hay suficiente stock, False en caso contrario.
         """
         return all(detalle.ingrediente.activo and detalle.cantidad <= detalle.ingrediente.stock for detalle in self.detalles)
+    
+    def calcular_stock_disponible(self):
+        """
+        Calcula el stock disponible para la receta, basado en los ingredientes y sus cantidades.
+        Retorna el stock disponible o None si no hay suficiente stock.
+        """
+        stock_disponible = None
+        for detalle in self.detalles:
+            ingrediente = detalle.ingrediente
+            if not ingrediente.activo:
+                continue  # Si el ingrediente está inactivo, se ignora en el cálculo
+            if ingrediente.stock is None or detalle.cantidad == 0:
+                return None  # Si falta información de stock o cantidad, se retorna None
+            cantidad_requerida = detalle.cantidad
+            stock_ingrediente = ingrediente.stock
+            stock_actual = stock_ingrediente // cantidad_requerida
+            if stock_disponible is None or stock_actual < stock_disponible:
+                stock_disponible = stock_actual
+        return stock_disponible
 
 class RecetaDetalle(Base):
     __tablename__ = 'receta_detalle'

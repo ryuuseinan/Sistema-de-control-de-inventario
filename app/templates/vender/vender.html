@@ -53,8 +53,18 @@
                         </td>
                         <td>{{ producto.nombre }}</td>
                         <td>{{ producto.categoria.nombre }}</td>
-                        <td>{{ producto.precio }}</td>
-                        <td>{{ producto.stock }}</td>
+                        <td>${{ producto.precio }}</td>
+                        <td>
+                        {% if not producto.tiene_receta %}
+                            {% if producto.stock %}
+                                {{ producto.stock }} unidades<br>
+                            {% else %}
+                                Sin stock<br>
+                            {% endif %}
+                            {% else %}
+                                {{ stock_disponible }} unidades preparables
+                        {% endif %}
+                        </td>
                         <td>
                             <form method="post" action="{{ url_for('agregar_producto') }}">
                                 <input type="hidden" name="producto_id" value="{{ producto.id }}">

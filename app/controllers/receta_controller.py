@@ -1,8 +1,8 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from models.database import Producto, Receta, RecetaDetalle, Ingrediente, db_session
-import bcrypt, arrow
-from sqlalchemy.exc import IntegrityError
+import arrow
 from datetime import datetime
+from sqlalchemy.orm import joinedload
 
 receta_controller = Blueprint('receta_controller', __name__)
 def create_receta_blueprint():

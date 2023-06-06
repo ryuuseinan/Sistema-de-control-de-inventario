@@ -87,8 +87,8 @@ def create_usuario_blueprint():
     @usuario_blueprint.route('/usuario/editar/<int:id>', methods=['GET', 'POST'])
     def editar(id):
         rol = db_session.query(Rol).filter(Rol.activo == True).all()
-        usuario = db_session.query(Usuario).filter(Usuario.activo == True).get(id)
-        persona = db_session.query(Persona).filter(Persona.usuario_id == usuario.id).first()
+        usuario = db_session.query(Usuario).get(id)
+        persona = db_session.query(Persona).filter(Persona.usuario_id == usuario.id).one()
         
         if usuario is None:
             flash('El usuario no existe', 'error')
