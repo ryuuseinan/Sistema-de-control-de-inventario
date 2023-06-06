@@ -14,6 +14,7 @@ from controllers.ingrediente_controller import create_ingrediente_blueprint
 from controllers.sesion_controller import create_sesion_blueprint
 from controllers.persona_controller import create_persona_blueprint
 from controllers.usuario_controller import create_usuario_blueprint
+from controllers.receta_controller import create_receta_blueprint
 
 # Configurar la aplicación
 app = Flask(__name__)
@@ -39,6 +40,9 @@ app.register_blueprint(persona_blueprint)
 
 usuario_blueprint = create_usuario_blueprint()
 app.register_blueprint(usuario_blueprint)
+
+receta_blueprint = create_receta_blueprint()
+app.register_blueprint(receta_blueprint)
 
 # Forzar eliminación de caché
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
@@ -97,56 +101,6 @@ def reportes():
 def page_not_found(error):
     # Renderiza el template de error 404
     return render_template("404.html"), 404
-
-# Función para agregar una receta a un producto
-@app.route('/agregar_receta/<int:id>', methods=['GET', 'POST'])
-def agregar_receta(id):
-    producto = db_session.query(Producto).filter_by(id=id).one()
-    receta = db_session.query(Receta).filter_by(id=id).one()
-    receta_detalles = receta.detalles  # Obtener todos los detalles de la receta
-
-    # Crear la receta si no existe
-    if not receta:
-        receta = Receta(producto_id=producto.id)
-        db_session.add(receta)
-
-    if not producto:
-        flash('El producto no existe', 'error')
-        return redirect(url_for('vender'))
-
-    if request.method == 'POST':
-        # Obtener los ingrediente y cantidades desde el formulario
-        ingrediente = request.form.getlist('ingrediente')
-        cantidades = request.form.getlist('cantidad')
-
-        # Agregar los ingrediente y cantidades a la receta
-        for ingrediente_id, cantidad in zip(ingrediente, cantidades):
-            if ingrediente_id and cantidad:
-                receta_detalle = RecetaDetalle(ingrediente_id=ingrediente_id, cantidad=cantidad)
-                receta.detalles.append(receta_detalle)
-
-        db_session.commit()
-
-        flash('Ingrediente agregado al producto exitosamente', 'success')
-        return redirect(url_for('agregar_receta', id=producto.id))
-
-    ingrediente = db_session.query(Ingrediente).all()
-
-    return render_template('receta/agregar_receta.html', producto=producto, receta=receta, ingrediente=ingrediente, receta_detalles=receta_detalles)
-
-@app.route('/ingrediente_receta_eliminar/<int:id>', methods=['GET', 'POST'])
-def ingrediente_receta_eliminar(id):
-    receta_detalle = db_session.query(RecetaDetalle).filter_by(id=id).one()
-    if not receta_detalle:
-        flash('El ingrediente de la receta no existe', 'error')
-        return redirect(url_for('agregar_receta', id=receta_detalle.receta_id))
-
-    # Eliminar el ingrediente de la receta
-    db_session.delete(receta_detalle)
-    db_session.commit()
-
-    flash('Ingrediente eliminado de la receta exitosamente', 'success')
-    return redirect(url_for('agregar_receta', id=receta_detalle.receta_id))
 
 if __name__ == '__main__':
     app.debug = True

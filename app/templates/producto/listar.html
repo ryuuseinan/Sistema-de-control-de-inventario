@@ -52,7 +52,7 @@
                   <a>Actualizar stock</a>
                 {% endif %}
                 {% else %}
-                  <a href="{{ url_for('agregar_receta', id=producto.id) }}">
+                  <a href="{{ url_for('receta.configurar', id=producto.id) }}">
                     Configurar receta
                   </a>
                 {% endif %}

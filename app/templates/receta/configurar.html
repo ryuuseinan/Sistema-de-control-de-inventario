@@ -46,7 +46,7 @@
                 <tr>
                   <td>{{ ingrediente.nombre }}</td>
                   <td>
-                    <form method="post" action="{{ url_for('agregar_receta', id=producto.id) }}">
+                    <form method="post" action="{{ url_for('receta.configurar', id=producto.id) }}">
 
                       <input type="hidden" name="ingrediente" value="{{ ingrediente.id }}">
                       <div class="field is-grouped">
@@ -83,7 +83,7 @@
                 <td>{{ receta_detalle.ingrediente.nombre }}</td>
                 <td>{{ receta_detalle.cantidad }} {{ receta_detalle.ingrediente.unidadmedida.nombre }}</td>
                 <td>
-                  <a href="{{ url_for('ingrediente_receta_eliminar', id=receta_detalle.id) }}" class="button is-danger is-light">
+                  <a href="{{ url_for('receta.eliminar_ingrediente', id=receta_detalle.id) }}" class="button is-danger is-light">
                     <span class="icon is-small"><i class="fas fa-trash" aria-hidden="true"></i></span>
                   </a>
                 </td>
