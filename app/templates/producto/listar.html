@@ -45,10 +45,15 @@
                 <td>
                 {% if not producto.tiene_receta %}
                 {% if producto.stock %}
-                  {{ producto.stock }} unidades
+                  {{ producto.stock }} unidades<br>
+                  <a href="{{ url_for('producto.actualizar_stock', id=producto.id) }}">
+                    Actualizar stock
+                  </a>
                 {% else %}
                   Sin stock<br>
-                  <a>Actualizar stock</a>
+                  <a href="{{ url_for('producto.actualizar_stock', id=producto.id) }}">
+                    Actualizar stock
+                  </a>
                 {% endif %}
                 {% else %}
                   <a href="{{ url_for('receta.configurar', id=producto.id) }}">

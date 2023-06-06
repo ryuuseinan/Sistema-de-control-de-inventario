@@ -110,5 +110,7 @@ def create_persona_blueprint():
             return redirect(url_for('persona.listar'))
         else:
             return render_template('persona/eliminar.html', persona=persona)
+        
+    
     # Devolver el blueprint
     return persona_blueprint

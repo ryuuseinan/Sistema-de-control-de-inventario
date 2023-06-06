@@ -46,6 +46,20 @@
         </div>
       </div>
       <div class="field">
+        <label class="label">¿Tiene receta de preparación?</label>
+        <div class="control">
+          <label class="radio">
+            <input type="radio" name="tiene_receta" value="True" {% if producto.tiene_receta %}checked{% endif %}>
+            Sí
+          </label>
+          <label class="radio">
+            <input type="radio" name="tiene_receta" value="False" {% if not producto.tiene_receta %}checked{% endif %}>
+            No
+          </label>
+          <p class="help">La opción "Sí" permitirá configurar una receta para el producto, la opción "No" permitirá configurar stock del producto.</p>
+        </div>
+      </div>      
+      <div class="field">
         <label class="label">Imagen</label>
         <img src="{{ url_for('static', filename='img/') }}{{ producto.imagen }}" alt="{{ producto.nombre }}" style="max-height: 180px;">
         <div class="control">
