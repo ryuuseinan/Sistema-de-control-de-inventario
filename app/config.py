@@ -9,4 +9,5 @@ puerto_db = 3306
 nombre_base_datos_db = 'test'
 
 # Otras variables de configuración
+APP_NAME = 'Pizzería Fratelli'
 SECRET_KEY = os.urandom(24)

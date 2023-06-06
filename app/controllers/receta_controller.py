@@ -13,13 +13,15 @@ def create_receta_blueprint():
     @receta_blueprint.route('/configurar/<int:id>', methods=['GET', 'POST'])
     def configurar(id):
         producto = db_session.query(Producto).filter_by(id=id).one()
-        receta = db_session.query(Receta).filter_by(id=id).one()
-        receta_detalles = receta.detalles  # Obtener todos los detalles de la receta
 
-        # Crear la receta si no existe
-        if not receta:
-            receta = Receta(producto_id=producto.id)
+        if not db_session.query(Receta).filter_by(id=id).first():
+            receta = Receta(id=id, producto_id=id)
             db_session.add(receta)
+            db_session.commit()
+        else:
+            receta = db_session.query(Receta).filter_by(id=id).one()
+        
+        receta_detalles = receta.detalles  # Obtener todos los detalles de la receta
 
         if not producto:
             flash('El producto no existe', 'error')
@@ -41,7 +43,7 @@ def create_receta_blueprint():
             flash('Ingrediente agregado al producto exitosamente', 'success')
             return redirect(url_for('receta.configurar', id=producto.id))
 
-        ingrediente = db_session.query(Ingrediente).all()
+        ingrediente = db_session.query(Ingrediente).filter(Ingrediente.activo == True).all()
 
         return render_template('receta/configurar.html', producto=producto, receta=receta, ingrediente=ingrediente, receta_detalles=receta_detalles)
 

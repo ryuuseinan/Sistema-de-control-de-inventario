@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Ventas{% endblock %}
+
+{% block content %}
+<section class="section">
+<div class="container">
+    <div class="columns">
+    <div class="column">
+        {% if ventas %}
+        <div class="columns">
+        <div class="column">
+            <h1 class="title">Lista de ventas</h1>
+        </div>
+        </div>
+        <table class="table is-striped is-hoverable">
+        <thead>
+            <tr>
+            <th>Código</th>
+            <th>Imagen</th>
+            <th>Nombre</th>
+            <th>Categoría</th>
+            <th>Precio</th>
+            <th>Descripción</th>
+            <th>Stock/Receta</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for venta in ventas %}
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="descripcion"></td>
+                <td></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+        {% else %}
+        <h1 class="title is-1">Lista de ventas</h1>
+        <div class="box">
+        <div class="notification is-warning">
+            <h2 class="subtitle is-2">No hay ventas</h2>
+            <p>No hay ventas registradas.</p>
+        </div>
+        </div>
+        {% endif %}
+    </div>
+    </div>
+</div>
+</section>
+{% endblock %}

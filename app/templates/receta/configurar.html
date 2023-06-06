@@ -27,70 +27,78 @@
               <input type="text" name="ingrediente_busqueda" class="input" placeholder="Nombre del ingrediente">
             </div>
             <div class="control">
-              <button type="submit" class="button is-primary"><i class="fas fa-search"></i> Buscar</button>
+              <button type="submit" class="button is-link"><i class="fas fa-search"></i> Buscar</button>
             </div>
           </div>
         </form>
-
+        <br>
         {% if ingrediente %}
-          <table class="table is-bordered is-hoverable">
+        <div class="columns">
+          <div class="column">
+            <table class="table is-bordered is-hoverable">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Cantidad</th>
+                  <th>Unidad de medida</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for ingrediente in ingrediente %}
+                  <tr>
+                    <td>{{ ingrediente.nombre }}</td>
+                    <td>
+                      <form method="post" action="{{ url_for('receta.configurar', id=producto.id) }}">
+
+                        <input type="hidden" name="ingrediente" value="{{ ingrediente.id }}">
+                        <div class="field is-grouped">
+                          <div class="control">
+                            <input type="number" name="cantidad" class="input" value="1" min="1" max="{{ ingrediente.cantidad }}">
+                          </div>
+                          <td>{{ ingrediente.unidadmedida.nombre }}</td>
+                          <td><div class="control">
+                            <button type="submit" class="button is-link"><i class="fas fa-plus"></i></button>
+                          </div></td>
+                        </div>
+                      </form>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            <p>No se han encontrado resultados.</p>
+          {% endif %}
+        </div>
+        <div class="column">
+          <h2 class="subtitle">Ingredientes de preparación para {{ receta.producto.nombre }} ({{ receta.producto.categoria.nombre }}):</h2>
+          {% if receta_detalles %}
+          <table class="table is-striped is-hoverable">
             <thead>
               <tr>
-                <th>Nombre</th>
+                <th>Ingrediente</th>
                 <th>Cantidad</th>
-                <th>Unidad de medida</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
-              {% for ingrediente in ingrediente %}
+              {% for receta_detalle in receta_detalles %}
                 <tr>
-                  <td>{{ ingrediente.nombre }}</td>
+                  <td>{{ receta_detalle.ingrediente.nombre }}</td>
+                  <td>{{ receta_detalle.cantidad }} {{ receta_detalle.ingrediente.unidadmedida.nombre }}</td>
                   <td>
-                    <form method="post" action="{{ url_for('receta.configurar', id=producto.id) }}">
-
-                      <input type="hidden" name="ingrediente" value="{{ ingrediente.id }}">
-                      <div class="field is-grouped">
-                        <div class="control">
-                          <input type="number" name="cantidad" class="input" value="1" min="1" max="{{ ingrediente.cantidad }}">
-                        </div>
-                        <td>{{ ingrediente.unidadmedida.nombre }}</td>
-                        <td><div class="control">
-                          <button type="submit" class="button is-primary"><i class="fas fa-cart-plus"></i> Añadir</button>
-                        </div></td>
-                      </div>
-                    </form>
+                    <a href="{{ url_for('receta.eliminar_ingrediente', id=receta_detalle.id) }}" class="button is-danger is-light">
+                      <span class="icon is-small"><i class="fas fa-trash" aria-hidden="true"></i></span>
+                    </a>
                   </td>
                 </tr>
               {% endfor %}
+              {% else %}
+              <p>No hay ingredientes en esta receta.</p>
+              {% endif %}
             </tbody>
           </table>
-        {% else %}
-          <p>No se han encontrado resultados.</p>
-        {% endif %}
-        
-        <h2 class="subtitle">Ingredientes de preparación para {{ receta.producto.nombre }} ({{ receta.producto.categoria.nombre }}):</h2>
-        <table class="table is-striped is-hoverable">
-          <thead>
-            <tr>
-              <th>Ingrediente</th>
-              <th>Cantidad</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for receta_detalle in receta_detalles %}
-              <tr>
-                <td>{{ receta_detalle.ingrediente.nombre }}</td>
-                <td>{{ receta_detalle.cantidad }} {{ receta_detalle.ingrediente.unidadmedida.nombre }}</td>
-                <td>
-                  <a href="{{ url_for('receta.eliminar_ingrediente', id=receta_detalle.id) }}" class="button is-danger is-light">
-                    <span class="icon is-small"><i class="fas fa-trash" aria-hidden="true"></i></span>
-                  </a>
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+        </div>
       </div>
     </div>
   </div>
