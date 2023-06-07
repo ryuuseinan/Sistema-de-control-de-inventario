@@ -3,8 +3,6 @@ https://lafratelli.com/prueba23/
 
 `cd Sistema de control de inventario`
 
-`env\Scripts\activate.ps1`
-
 `pip install --upgrade pip`
 
 # Instalacion de venv
