@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Pedidos{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="columns">
+      <div class="column">
+        <div class="column">
+          <div class="buttons is-pulled-right">
+            <a href="{{ url_for('pedido.papelera') }}" class="button is-link is-light">Ir a papelera</a>
+            <a href="{{ url_for('pedido.nueva') }}" class="button is-link">Ingresar pedido</a>
+          </div>
+        </div>
+        {% if pedidos %}
+        <div class="columns">
+          <div class="column">
+            <h1 class="title">Lista de pedidos</h1>
+          </div>
+        </div>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <div class="notification is-success">
+                <button class="delete"></button>
+                {{ message }}
+            </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        {% if error %}
+        <div class="notification is-danger">
+            <button class="delete"></button>
+            {{ error }}
+        </div>
+        {% endif %}
+        <table class="table is-striped is-hoverable">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Vendedor</th>
+              <th>Detalle</th>
+              <th>Editar/Eliminar</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for pedido in pedidos %}
+              <tr>
+                <td>{{ pedido.id }}</td>
+                <td>{{ pedido.usuario.nombre }}</td>
+                <td class="descripcion">Detalle de pedido</td>
+                <td>
+                  <a href="{{ url_for('pedido.editar', id=pedido.id) }}" class="button is-info is-light">
+                    <span class="icon is-small"><i class="fa fa-pencil-alt" aria-hidden="true"></i></i></span>
+                  </a>
+                  <a href="{{ url_for('pedido.eliminar', id=pedido.id) }}" class="button is-danger is-light">
+                    <span class="icon is-small"><i class="fas fa-trash" aria-hidden="true"></i></span>
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <h1 class="title is-1">Lista de pedidos</h1>
+        <div class="box">
+          <div class="notification is-warning">
+            <h2 class="subtitle is-2">No hay pedidos</h2>
+            <p>No se han agregado pedidos a la base de datos, puedes ingresar uno dando click en el boton <b>"Ingresar pedido"</b>.</p>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

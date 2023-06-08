@@ -51,7 +51,7 @@ class Persona(Base):
     nombre = Column(String(30), nullable=False)
     apellido_paterno = Column(String(30), nullable=False)
     apellido_materno = Column(String(30), nullable=False)
-    celular = Column(String(22), nullable=False)
+    celular = Column(String(22), unique=True, nullable=False)
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
     ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
     activo = Column(Boolean, default=True, nullable=False)
@@ -89,7 +89,7 @@ class Producto(Base):
 class Ingrediente(Base):
     __tablename__ = 'ingrediente'
     id = Column(Integer, primary_key=True)
-    nombre = Column(String(50), nullable=False)
+    nombre = Column(String(50), unique=True, nullable=False)
     cantidad = Column(Integer, nullable=False)
     activo = Column(Boolean, default=True, nullable=False)
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
@@ -101,7 +101,7 @@ class Ingrediente(Base):
 class UnidadMedida(Base):
     __tablename__ = 'unidadmedida'
     id = Column(Integer, primary_key=True)
-    nombre = Column(String(10), nullable=False)
+    nombre = Column(String(10), unique=True, nullable=False)
     activo = Column(Boolean, default=True, nullable=False)
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
     ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
@@ -153,6 +153,44 @@ class RecetaDetalle(Base):
     # Crea la relación con Ingrediente
     ingrediente = relationship('Ingrediente')
 
+class Pedido(Base):
+    __tablename__ = 'pedido'
+    id = Column(Integer, primary_key=True)
+    usuario_id = Column(Integer, ForeignKey('usuario.id'))
+    estado_id = Column(Integer, ForeignKey('pedido_estado.id'))
+    fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
+    ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
+    # Crea la relación con Usuario
+    usuario = relationship('Usuario')
+    pedido_estado = relationship('PedidoEstado')
+
+class PedidoEstado(Base):
+    __tablename__ = 'pedido_estado'
+    id = Column(Integer, primary_key=True)
+    nombre = Column(String(50), unique=True, nullable=False)
+
+class PedidoDetalle(Base):
+    __tablename__ = 'pedido_detalle'
+    id = Column(Integer, primary_key=True)
+    id_pedido = Column(Integer, ForeignKey('pedido.id'))
+    id_producto = Column(Integer, ForeignKey('producto.id'))
+    activo = Column(Boolean, default=True, nullable=False)
+    fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
+    ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
+    # Crea la relación con pedido y producto
+    pedido = relationship('Pedido')
+    producto = relationship('Producto')
+
+class Venta(Base):
+    __tablename__ = 'venta'
+    id = Column(Integer, primary_key=True)
+    id_pedido = Column(Integer, ForeignKey('pedido.id'))
+    precio = Column(Integer)
+    activo = Column(Boolean, default=True, nullable=False)
+    fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
+    ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
+    # Crea la relación con pedido y producto
+    pedido = relationship('Pedido')
 
 Base.metadata.create_all(engine)
 
@@ -171,6 +209,9 @@ if not unidad_medida_ml:
 if not unidad_medida_unidades:
     unidad_medida_unidades = UnidadMedida(nombre='Unidades', activo=True)
     db_session.add(unidad_medida_unidades)
+
+estado_pedido = db_session.query(UnidadMedida).filter_by(nombre='Unidades').first()
+
     
 rol_administrador = db_session.query(Rol).filter_by(nombre='Administrador').first()
 rol_caja = db_session.query(Rol).filter_by(nombre='Personal de caja').first()

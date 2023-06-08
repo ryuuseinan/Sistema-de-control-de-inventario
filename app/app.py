@@ -15,6 +15,7 @@ from controllers.vender_controller import create_vender_blueprint
 from controllers.ventas_controller import create_ventas_blueprint
 from controllers.unidadmedida_controller import create_unidadmedida_blueprint
 from controllers.rol_controller import create_rol_blueprint
+from controllers.pedido_controller import create_pedido_blueprint
 
 # Configurar la aplicación
 app = Flask(__name__)
@@ -55,6 +56,9 @@ app.register_blueprint(unidadmedida_blueprint)
 
 rol_blueprint = create_rol_blueprint()
 app.register_blueprint(rol_blueprint)
+
+pedido_blueprint = create_pedido_blueprint()
+app.register_blueprint(pedido_blueprint)
 
 # Forzar eliminación de caché
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
