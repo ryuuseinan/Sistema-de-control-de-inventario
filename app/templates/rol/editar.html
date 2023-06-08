@@ -3,7 +3,7 @@
 {% block content %}
 <section class="section">
   <div class="container">
-    <h1 class="title">Agregar unidad de medida</h1>
+    <h1 class="title">Editar rol</h1>
     {% with messages = get_flashed_messages() %}
     {% if messages %}
         {% for message in messages %}
@@ -21,21 +21,22 @@
         {{ error }}
     </div>
     {% endif %}
-    <form method="POST" action="{{ url_for('unidadmedida.nuevo') }}" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data">
       <div class="field">
         <label class="label">Nombre</label>
         <div class="control">
-          <input class="input" type="text" name="nombre">
+          <input class="input" type="text" name="nombre" value="{{ rol.nombre }}">
         </div>
-      </div>
+      </div>      
       <div class="field is-grouped">
         <div class="control">
           <button type="submit" class="button is-link">Guardar</button>
         </div>
         <div class="control">
-          <a href="{{ url_for('unidadmedida.listar') }}" class="button is-link is-light">Cancelar</a>
+          <a href="{{ url_for('rol.listar') }}" class="button is-link is-light">Cancelar</a>
         </div>
       </div>
     </form>
   </div>
+</section>
 {% endblock %}

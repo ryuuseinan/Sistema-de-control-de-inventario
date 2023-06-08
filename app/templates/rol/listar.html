@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Ingredientes{% endblock %}
+{% block title %}roles{% endblock %}
 
 {% block content %}
 <section class="section">
@@ -9,15 +9,15 @@
       <div class="column">
         <div class="column">
           <div class="buttons is-pulled-right">
-            <a href="{{ url_for('ingrediente.papelera') }}" class="button is-link is-light">Ir a papelera</a>
-            <a href="{{ url_for('unidadmedida.listar') }}" class="button is-link is-light">Configurar unidades de medida</a>
-            <a href="{{ url_for('ingrediente.nuevo') }}" class="button is-link">Agregar Ingrediente</a>
+            <a href="{{ url_for('usuario.listar') }}" class="button is-link is-light">Volver</a>
+            <a href="{{ url_for('rol.papelera') }}" class="button is-link is-light">Ir a papelera</a>
+            <a href="{{ url_for('rol.nuevo') }}" class="button is-link">Agregar rol</a>
           </div>
         </div>
-        {% if ingredientes %}
+        {% if roles %}
         <div class="columns">
           <div class="column">
-            <h1 class="title">Lista de Ingredientes</h1>
+            <h1 class="title">Lista de roles</h1>
           </div>
         </div>
         {% with messages = get_flashed_messages() %}
@@ -41,24 +41,22 @@
           <thead>
             <tr>
               <th>Nombre</th>
-              <th>Cantidad</th>
-              <th>Fecha creación</th>
-              <th>Fecha modificación</th>
+              <th>Fecha de creación</th>
+              <th>Ultima modificación</th>
               <th>Editar/Eliminar</th>
             </tr>
           </thead>
           <tbody>
-            {% for ingrediente in ingredientes %}
+            {% for rol in roles %}
                 <tr>
-                  <td>{{ ingrediente.nombre }}</td>
-                  <td>{{ ingrediente.cantidad }} {{ ingrediente.unidadmedida.nombre }}</td>
-                  <td>{{ arrow.get(ingrediente.fecha_creacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if ingrediente.fecha_creacion else None }}</td>
-                  <td>{{ arrow.get(ingrediente.ultima_modificacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if ingrediente.ultima_modificacion != ingrediente.fecha_creacion else 'Nunca modificado' }}</td>
+                  <td>{{ rol.nombre }}</td>
+                  <td>{{ arrow.get(rol.fecha_creacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if rol.fecha_creacion else None }}</td>
+                  <td>{{ arrow.get(rol.ultima_modificacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if rol.ultima_modificacion != rol.fecha_creacion else 'Nunca modificado' }}</td>
                   <td>
-                    <a href="{{ url_for('ingrediente.editar', id=ingrediente.id) }}" class="button is-warning is-small">
+                    <a href="{{ url_for('rol.editar', id=rol.id) }}" class="button is-warning is-small">
                       <span class="icon is-small"><i class="fa fa-pencil-alt" aria-hidden="true"></i></i></span>
                     </a>
-                    <a href="{{ url_for('ingrediente.eliminar', id=ingrediente.id) }}" class="button is-danger is-small">
+                    <a href="{{ url_for('rol.eliminar', id=rol.id) }}" class="button is-danger is-small">
                       <span class="icon is-small"><i class="fas fa-trash" aria-hidden="true"></i></span>
                     </a>
                   </td>
@@ -67,11 +65,11 @@
           </tbody>
         </table>
         {% else %}
-        <h1 class="title is-1">Lista de Ingredientes</h1>
+        <h1 class="title is-1">Lista de roles</h1>
 					<div class="box">
 						<div class="notification is-warning">
-							<h1 class="subtitle is-2">No hay Ingredientes</h2>
-							<p>No se han agregado Ingredientes a la base de datos, puedes agregar uno dando click en el boton <b>"Agregar Ingrediente"</b>.</p>
+							<h1 class="subtitle is-2">No hay roles</h2>
+							<p>No se han agregado roles a la base de datos, puedes agregar uno dando click en el boton <b>"Agregar rol"</b>.</p>
 						</div>
 					</div>
         {% endif %}

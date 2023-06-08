@@ -1,8 +1,9 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from models.database import Producto, Categoria, db_session
 from datetime import datetime
 from werkzeug.utils import secure_filename
 import os
+from sqlalchemy.exc import IntegrityError
 
 producto_controller = Blueprint('producto_controller', __name__)
 def create_producto_blueprint():
@@ -35,31 +36,34 @@ def create_producto_blueprint():
             descripcion = request.form['descripcion']
             categoria_id = request.form['categoria_id']
             precio = request.form['precio']
-            tiene_receta = request.form['tiene_receta']
-            # Crear una nueva instancia de Producto con los datos del formulario
-            nuevo_producto = Producto(codigo_barra=codigo_barra, 
-                                    nombre=nombre, 
-                                    descripcion=descripcion, 
-                                    categoria_id=categoria_id, 
-                                    precio=precio,
-                                    tiene_receta=tiene_receta,
-                                    fecha_creacion=datetime.now())
+            tiene_receta = True if request.form['tiene_receta'] == "True" else False
 
-            if imagen and imagen.filename:
-                filename = secure_filename(imagen.filename)
-                imagen.save(os.path.join('app', 'static', 'img', 'productos', filename))
-                nuevo_producto.imagen = '/productos/' + filename
-            else:
-                filename = None
-                nuevo_producto.imagen = None
-            
-            # Agregar el producto a la base de datos
-            db_session.add(nuevo_producto)
-            db_session.commit()
-            
-            # Redireccionar al listado de productos
-            return redirect(url_for('producto.listar'))
-        
+
+            # Crear una nueva instancia de Producto con los datos del formulario
+            try:
+                # Crear una nueva instancia de Producto con los datos del formulario
+                nuevo_producto = Producto(codigo_barra=codigo_barra, 
+                                        nombre=nombre, 
+                                        descripcion=descripcion, 
+                                        categoria_id=categoria_id, 
+                                        precio=precio,
+                                        tiene_receta=tiene_receta,
+                                        fecha_creacion=datetime.now())
+                # Resto del código para guardar el producto en la base de datos
+
+                # Agregar el producto a la base de datos
+                db_session.add(nuevo_producto)
+                db_session.commit()
+
+                # Redireccionar al listado de productos
+                return redirect(url_for('producto.listar'))
+            except IntegrityError:
+                # Mostrar mensaje de error
+                
+                db_session.rollback()
+                flash('El código de barras ya está en uso. Por favor, elija otro.', 'error')
+                return redirect(url_for('producto.nuevo'))
+
         # Renderizar la plantilla de nuevo producto
         return render_template('producto/nuevo.html', categorias=categorias)
 
@@ -85,7 +89,8 @@ def create_producto_blueprint():
             categoria_id = request.form['categoria_id']
             descripcion = request.form['descripcion']
             precio = request.form['precio']
-            tiene_receta = request.form['tiene_receta']
+            tiene_receta = True if request.form['tiene_receta'] == "True" else False
+
             # Actualizar los datos del producto con los nuevos datos del formulario
             if codigo_barra:
                 producto.codigo_barra = codigo_barra

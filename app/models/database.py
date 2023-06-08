@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, DateTime, ForeignKey, Boolean, Text, Float
+from sqlalchemy import create_engine, Column, Integer, String, DateTime, ForeignKey, Boolean, Text
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
@@ -7,7 +7,7 @@ from config import *
 db = SQLAlchemy()
 
 # Crea la URL de conexión a la base de datos MySQL
-url = f'mysql://{usuario_db}:{contrasena_db}@{host_db}:{puerto_db}/{nombre_base_datos_db}'
+url = f"mysql://{mysql['usuario_db']}:{mysql['contrasena_db']}@{mysql['host_db']}:{mysql['puerto_db']}/{mysql['nombre_base_datos_db']}"
 
 # Crea una instancia de la clase create_engine
 engine = create_engine(url)
