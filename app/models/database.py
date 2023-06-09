@@ -121,25 +121,6 @@ class Receta(Base):
         Retorna True si hay suficiente stock, False en caso contrario.
         """
         return all(detalle.ingrediente.activo and detalle.cantidad <= detalle.ingrediente.stock for detalle in self.detalles)
-    
-    def calcular_stock_disponible(self):
-        """
-        Calcula el stock disponible para la receta, basado en los ingredientes y sus cantidades.
-        Retorna el stock disponible o None si no hay suficiente stock.
-        """
-        stock_disponible = None
-        for detalle in self.detalles:
-            ingrediente = detalle.ingrediente
-            if not ingrediente.activo:
-                continue  # Si el ingrediente está inactivo, se ignora en el cálculo
-            if ingrediente.stock is None or detalle.cantidad == 0:
-                return None  # Si falta información de stock o cantidad, se retorna None
-            cantidad_requerida = detalle.cantidad
-            stock_ingrediente = ingrediente.stock
-            stock_actual = stock_ingrediente // cantidad_requerida
-            if stock_disponible is None or stock_actual < stock_disponible:
-                stock_disponible = stock_actual
-        return stock_disponible
 
 class RecetaDetalle(Base):
     __tablename__ = 'receta_detalle'
@@ -149,7 +130,6 @@ class RecetaDetalle(Base):
     ingrediente_id = Column(Integer, ForeignKey('ingrediente.id'))
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
     ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
-    activo = Column(Boolean, default=True, nullable=False)
     # Crea la relación con Ingrediente
     ingrediente = relationship('Ingrediente')
 
@@ -174,7 +154,6 @@ class PedidoDetalle(Base):
     id = Column(Integer, primary_key=True)
     id_pedido = Column(Integer, ForeignKey('pedido.id'))
     id_producto = Column(Integer, ForeignKey('producto.id'))
-    activo = Column(Boolean, default=True, nullable=False)
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
     ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
     # Crea la relación con pedido y producto
@@ -210,8 +189,21 @@ if not unidad_medida_unidades:
     unidad_medida_unidades = UnidadMedida(nombre='Unidades', activo=True)
     db_session.add(unidad_medida_unidades)
 
-estado_pedido = db_session.query(UnidadMedida).filter_by(nombre='Unidades').first()
+pedido_estado_0 = db_session.query(PedidoEstado).filter_by(nombre='En proceso').first()
+pedido_estado_1 = db_session.query(PedidoEstado).filter_by(nombre='Finalizado').first()
+pedido_estado_2 = db_session.query(PedidoEstado).filter_by(nombre='Anulado').first()
 
+if not pedido_estado_0:
+    pedido_estado_0 = PedidoEstado(nombre='En proceso')
+    db_session.add(pedido_estado_0)
+
+if not pedido_estado_1:
+    pedido_estado_1 = PedidoEstado(nombre='Finalizado')
+    db_session.add(pedido_estado_1)
+
+if not pedido_estado_2:
+    pedido_estado_2 = PedidoEstado(nombre='Anulado')
+    db_session.add(pedido_estado_2)
     
 rol_administrador = db_session.query(Rol).filter_by(nombre='Administrador').first()
 rol_caja = db_session.query(Rol).filter_by(nombre='Personal de caja').first()

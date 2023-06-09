@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
-from models.database import Usuario, Pedido, Rol, db_session
+from models.database import Usuario, Pedido, PedidoEstado, Persona, db_session
 import bcrypt, arrow
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime
@@ -12,12 +12,14 @@ def create_pedido_blueprint():
     # Definir las rutas y las funciones controladoras
     @pedido_blueprint.route('/pedidos')
     def listar():
-        usuario = db_session.query(Usuario).filter(Usuario.activo == True).all()
-        pedidos = db_session.query(Pedido).filter(Pedido.activo == True).all()
+        persona = db_session.query(Usuario).all()
+        usuario = db_session.query(Usuario).all()
+        pedidos = db_session.query(Pedido).all()
+        estado_pedido = db_session.query(PedidoEstado).all()
         for pedido in pedidos:
             fecha_creacion = arrow.get(usuario.fecha_creacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if usuario.fecha_creacion else None
             ultima_modificacion = arrow.get(usuario.ultima_modificacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if usuario.ultima_modificacion else None
-        return render_template('pedido/listar.html', pedidos=pedidos, usuario=usuario)
+        return render_template('pedido/listar.html', pedidos=pedidos, usuario=usuario, estado_pedido=estado_pedido)
 
     @pedido_blueprint.route('/pedido/nuevo', methods=['GET', 'POST'])
     def nueva():

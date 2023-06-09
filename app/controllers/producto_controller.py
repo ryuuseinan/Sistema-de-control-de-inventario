@@ -49,7 +49,15 @@ def create_producto_blueprint():
                                         precio=precio,
                                         tiene_receta=tiene_receta,
                                         fecha_creacion=datetime.now())
+                                        
                 # Resto del código para guardar el producto en la base de datos
+                if imagen and imagen.filename:
+                    filename = secure_filename(imagen.filename)
+                    imagen.save(os.path.join('app', 'static', 'img', 'productos', filename))
+                    nuevo_producto.imagen = '/productos/' + filename
+                else:
+                    filename = None
+                    nuevo_producto.imagen = None
 
                 # Agregar el producto a la base de datos
                 db_session.add(nuevo_producto)

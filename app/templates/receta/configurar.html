@@ -7,6 +7,9 @@
   <div class="container">
     <div class="columns">
       <div class="column">
+        <div class="buttons is-pulled-right">
+          <a href="{{ url_for('producto.listar') }}" class="button is-link is-light">Volver</a>
+        </div>
         <h1 class="title">Configurar Receta para {{ producto.nombre }} ({{ receta.producto.categoria.nombre }})</h1>
 
         {% with messages = get_flashed_messages() %}
@@ -67,7 +70,7 @@
               </tbody>
             </table>
           {% else %}
-            <p>No se han encontrado resultados.</p>
+            <p>No se han encontrado Ingredientes en la base de datos, puedes agregar uno dando click en el boton <b>"Agregar Ingrediente"</b> en <a href="/ingredientes">esta</a> página.</p>
           {% endif %}
         </div>
         <div class="column">
@@ -82,17 +85,17 @@
               </tr>
             </thead>
             <tbody>
-              {% for receta_detalle in receta_detalles %}
-                <tr>
-                  <td>{{ receta_detalle.ingrediente.nombre }}</td>
-                  <td>{{ receta_detalle.cantidad }} {{ receta_detalle.ingrediente.unidadmedida.nombre }}</td>
-                  <td>
-                    <a href="{{ url_for('receta.eliminar_ingrediente', id=receta_detalle.id) }}" class="button is-danger is-light">
-                      <span class="icon is-small"><i class="fas fa-trash" aria-hidden="true"></i></span>
-                    </a>
-                  </td>
-                </tr>
-              {% endfor %}
+                {% for receta_detalle in receta_detalles %}
+                  <tr>
+                    <td>{{ receta_detalle.ingrediente.nombre }}</td>
+                    <td>{{ receta_detalle.cantidad }} {{ receta_detalle.ingrediente.unidadmedida.nombre }}</td>
+                    <td>
+                      <a href="{{ url_for('receta.eliminar_ingrediente', id=receta_detalle.id) }}" class="button is-danger is-light">
+                        <span class="icon is-small"><i class="fas fa-trash" aria-hidden="true"></i></span>
+                      </a>
+                    </td>
+                  </tr>
+                {% endfor %}
               {% else %}
               <p>No hay ingredientes en esta receta.</p>
               {% endif %}
