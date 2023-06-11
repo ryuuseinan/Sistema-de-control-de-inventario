@@ -110,8 +110,8 @@ def create_producto_blueprint():
                 producto.descripcion = descripcion
             if precio:
                 producto.precio = precio
-            if tiene_receta:
-                producto.tiene_receta = tiene_receta
+                
+            producto.tiene_receta = tiene_receta
 
             # Actualizar la imagen del producto si se ha enviado una nueva
             imagen = request.files['imagen']

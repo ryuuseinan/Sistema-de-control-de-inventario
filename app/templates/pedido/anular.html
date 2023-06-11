@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Anular pedido{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="title is-1">¿Desea anular el pedido?</h1>
+        <div class="notification is-warning">
+            <p>¿Está seguro de que desea anular el pedido "{{ pedido.id }}"?</p>
+            <form method="post" action="{{ url_for('pedido.anular', id=pedido.id) }}">
+                <div class="field">
+                    <div class="control">
+                        <button class="button is-link" type="submit">Mover</button>
+                        <a href="{{ url_for('pedido.listar') }}" class="button is-link is-light">Cancelar</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

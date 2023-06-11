@@ -136,12 +136,12 @@ class RecetaDetalle(Base):
 class Pedido(Base):
     __tablename__ = 'pedido'
     id = Column(Integer, primary_key=True)
-    usuario_id = Column(Integer, ForeignKey('usuario.id'))
+    persona_id = Column(Integer, ForeignKey('persona.id'))
     estado_id = Column(Integer, ForeignKey('pedido_estado.id'), default=1, nullable=False)
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
     ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
-    # Crea la relación con Usuario
-    usuario = relationship('Usuario')
+    # Crea la relación con persona
+    persona = relationship('Persona')
     pedido_estado = relationship('PedidoEstado')
 
 class PedidoEstado(Base):

@@ -13,12 +13,22 @@ def create_pedido_blueprint():
     # Definir las rutas y las funciones controladoras
     @pedido_blueprint.route('/pedidos')
     def listar():
-        persona = db_session.query(Usuario).all()
-        usuario = db_session.query(Usuario).all()
-        pedidos = db_session.query(Pedido).all()
+        pedidos = db_session.query(Pedido).filter(Pedido.estado_id == 1).all()
         estado_pedido = db_session.query(PedidoEstado).all()
         
-        return render_template('pedido/listar.html', pedidos=pedidos, usuario=usuario, estado_pedido=estado_pedido)
+        return render_template('pedido/listar.html', pedidos=pedidos, estado_pedido=estado_pedido)
+    
+    @pedido_blueprint.route('/finalizados')
+    def finalizados():
+        pedidos = db_session.query(Pedido).filter(Pedido.estado_id == 2).all()
+        estado_pedido = db_session.query(PedidoEstado).all()
+        return render_template('pedido/finalizados.html', pedidos=pedidos, estado_pedido=estado_pedido)
+    
+    @pedido_blueprint.route('/anulados')
+    def anulados():
+        pedidos = db_session.query(Pedido).filter(Pedido.estado_id == 3).all()
+        estado_pedido = db_session.query(PedidoEstado).all()
+        return render_template('pedido/anulados.html', pedidos=pedidos, estado_pedido=estado_pedido)
 
     @pedido_blueprint.route('/nuevo', methods=['GET', 'POST'])
     def nuevo():
@@ -53,11 +63,18 @@ def create_pedido_blueprint():
                 producto.ingredientes = []
                 producto.stock_disponible = producto.stock
         
-        pedido = Pedido(usuario_id=1)
+        #if session['logged_in']:
+        #    pedido = Pedido(persona_id=session['user_id'])
+        #else:
+        #    pedido = Pedido(persona_id=1)
+        
+        pedido = Pedido(persona_id=1)
         db_session.add(pedido)
         db_session.commit()
 
-        return render_template('pedido/nuevo.html', productos=productos, producto_busqueda=producto_busqueda)
+        pedidos = db_session.query(Pedido).all()
+
+        return render_template('pedido/nuevo.html', productos=productos, producto_busqueda=producto_busqueda, pedidos=pedidos)
     
     @pedido_blueprint.route('/agregar_producto/<int:id>', methods=['GET', 'POST'])
     def agregar_producto(id):
@@ -150,17 +167,26 @@ def create_pedido_blueprint():
                 flash('pedido actualizado exitosamente', 'success')
                 return redirect(url_for('pedido.listar'))
         return render_template('pedido/editar.html', pedido=pedido, rol=rol)
-
-    @pedido_blueprint.route('/pedido/eliminar/<int:id>', methods=['GET', 'POST'])
-    def eliminar(id):
-        pedido = db_session.query(pedido).filter_by(id=id).one()
+    
+    @pedido_blueprint.route('/pedido/finalizar/<int:id>', methods=['GET', 'POST'])
+    def finalizar(id):
+        pedido = db_session.query(Pedido).filter_by(id=id).one()
         if request.method == 'POST':
-            pedido.activo = False
+            pedido.estado_id = 2
             db_session.commit()
             return redirect(url_for('pedido.listar'))
         else:
-            return render_template('pedido/eliminar.html', pedido=pedido)
-        
-    
+            return render_template('pedido/finalizar.html', pedido=pedido)
+
+    @pedido_blueprint.route('/pedido/anular/<int:id>', methods=['GET', 'POST'])
+    def anular(id):
+        pedido = db_session.query(Pedido).filter_by(id=id).one()
+        if request.method == 'POST':
+            pedido.estado_id = 3
+            db_session.commit()
+            return redirect(url_for('pedido.listar'))
+        else:
+            return render_template('pedido/anular.html', pedido=pedido)
+
     # Devolver el blueprint
     return pedido_blueprint

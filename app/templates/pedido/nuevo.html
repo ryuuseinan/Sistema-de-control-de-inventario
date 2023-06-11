@@ -64,8 +64,12 @@
                                 {% else %}
                                     Sin stock<br>
                                 {% endif %}
-                                {% else %}
+                            {% else %}
+                                {% if producto.stock_disponible %}
                                     {{ producto.stock_disponible }} unidades preparables
+                                {% else %}
+                                    No hay unidades preparables
+                                {% endif %}
                             {% endif %}
                             </td>
                             <td>

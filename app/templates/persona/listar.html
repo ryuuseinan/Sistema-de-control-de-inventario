@@ -40,7 +40,6 @@
                         </thead>
                         <tbody>
                             {% for persona in personas %}
-                            {% if persona.activo %}
                             <tr>
                                 <td>{{ persona.usuario.nombre_usuario }}</td>
                                 <td>{{ persona.rut }}</td>
@@ -56,7 +55,6 @@
                                     </a> -->
                                 </td>
                             </tr>
-                        {% endif %}
                         {% endfor %}
                         </tbody>
                     </table>

@@ -18,7 +18,7 @@
         {% if pedidos %}
         <div class="columns">
           <div class="column">
-            <h1 class="title">Lista de pedidos en proceso</h1>
+            <h1 class="title">Lista de pedidos finalizados</h1>
           </div>
         </div>
         {% with messages = get_flashed_messages() %}
@@ -56,14 +56,8 @@
                 <td class="descripcion">Detalle de pedido</td>
                 <td>{{ pedido.pedido_estado.nombre }}</td>
                 <td>
-                  <a href="{{ url_for('pedido.editar', id=pedido.id) }}" class="button is-info is-light">
-                    <span class="icon is-small"><i class="fa fa-pencil-alt" aria-hidden="true"></i></i></span>
-                  </a>
-                  <a href="{{ url_for('pedido.finalizar', id=pedido.id) }}" class="button is-info is-success is-light">
-                    <span class="icon is-small"><i class="fas fa-check" aria-hidden="true"></i></i></span>
-                  </a>
                   <a href="{{ url_for('pedido.anular', id=pedido.id) }}" class="button is-danger is-light">
-                    <span class="icon is-small"><i class="fas fa-times" aria-hidden="true"></i></span>
+                    <span class="icon is-small"><i class="fas fa-trash" aria-hidden="true"></i></span>
                   </a>
                 </td>
               </tr>
@@ -72,11 +66,11 @@
         </table>
         
         {% else %}
-        <h1 class="title is-1">Lista de pedidos</h1>
+        <h1 class="title is-1">Lista de pedidos finalizados</h1>
         <div class="box">
           <div class="notification is-warning">
-            <h2 class="subtitle is-2">No hay pedidos en proceso</h2>
-            <p>No se han agregado pedidos a la base de datos, puedes ingresar uno dando click en el boton <b>"Ingresar pedido"</b>.</p>
+            <h2 class="subtitle is-2">No hay pedidos finalizados</h2>
+            <p>No se han encontrado pedidos finalizados en la base de datos.</p>
           </div>
         </div>
         {% endif %}
