@@ -137,7 +137,7 @@ class Pedido(Base):
     __tablename__ = 'pedido'
     id = Column(Integer, primary_key=True)
     usuario_id = Column(Integer, ForeignKey('usuario.id'))
-    estado_id = Column(Integer, ForeignKey('pedido_estado.id'))
+    estado_id = Column(Integer, ForeignKey('pedido_estado.id'), default=1, nullable=False)
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
     ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
     # Crea la relación con Usuario
@@ -154,6 +154,7 @@ class PedidoDetalle(Base):
     id = Column(Integer, primary_key=True)
     id_pedido = Column(Integer, ForeignKey('pedido.id'))
     id_producto = Column(Integer, ForeignKey('producto.id'))
+    cantidad = Column(Integer, nullable=False)
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
     ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
     # Crea la relación con pedido y producto
@@ -204,6 +205,22 @@ if not pedido_estado_1:
 if not pedido_estado_2:
     pedido_estado_2 = PedidoEstado(nombre='Anulado')
     db_session.add(pedido_estado_2)
+
+categoria_pizzamediana = db_session.query(PedidoEstado).filter_by(nombre='Pizza mediana').first()
+categoria_pizzafamiliar = db_session.query(PedidoEstado).filter_by(nombre='Pizza familiar').first()
+categoria_bebestibles = db_session.query(PedidoEstado).filter_by(nombre='Bebestibles').first()
+
+if not categoria_pizzamediana:
+    categoria_pizzamediana = PedidoEstado(nombre='Pizza mediana')
+    db_session.add(categoria_pizzamediana)
+
+if not categoria_pizzafamiliar:
+    categoria_pizzafamiliar = PedidoEstado(nombre='Pizza familiar')
+    db_session.add(categoria_pizzafamiliar)
+
+if not categoria_bebestibles:
+    categoria_bebestibles = PedidoEstado(nombre='Bebestibles')
+    db_session.add(categoria_bebestibles)
     
 rol_administrador = db_session.query(Rol).filter_by(nombre='Administrador').first()
 rol_caja = db_session.query(Rol).filter_by(nombre='Personal de caja').first()

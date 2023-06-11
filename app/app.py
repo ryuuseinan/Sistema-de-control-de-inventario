@@ -45,9 +45,6 @@ app.register_blueprint(usuario_blueprint)
 receta_blueprint = create_receta_blueprint()
 app.register_blueprint(receta_blueprint)
 
-vender_blueprint = create_vender_blueprint()
-app.register_blueprint(vender_blueprint)
-
 ventas_blueprint = create_ventas_blueprint()
 app.register_blueprint(ventas_blueprint)
 
