@@ -44,7 +44,11 @@
                             <th>Categoria</th>
                             <th>Precio</th>
                             <th>Stock</th>
+<<<<<<< HEAD
+                            <th>Receta</th>
+=======
                             <th>Ingredientes</th>
+>>>>>>> 4e5d4b2e87e166702eaaae2e16c3dcb86c15f600
                             <th></th>
                         </tr>
                     </thead>
@@ -71,7 +75,11 @@
                             <td>
                                 {% if producto.receta %}
                                     {% for receta_detalle in producto.receta_detalles %}
+<<<<<<< HEAD
+                                    {{ loop.index }}. {{ receta_detalle.ingrediente.nombre }} ({{ receta_detalle.cantidad }} {{ receta_detalle.ingrediente.unidadmedida.nombre }}) <br>
+=======
                                     {{ receta_detalle.ingrediente.nombre }} {{ receta_detalle.cantidad }} {{ receta_detalle.ingrediente.unidadmedida.nombre }} <br>
+>>>>>>> 4e5d4b2e87e166702eaaae2e16c3dcb86c15f600
                                     {% endfor %}
                                 {% else %}
                                     No se encontraron ingredientes

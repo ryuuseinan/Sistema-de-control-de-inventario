@@ -1,103 +1,104 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+
+{% block title %}Vender{% endblock %}
 
 {% block content %}
 <section class="section">
-  <div class="container">
-    <h1 class="title">Agregar Producto</h1>
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-        {% for message in messages %}
-        <div class="notification is-success">
-            <button class="delete"></button>
-            {{ message }}
+    <div class="container">
+        <div class="columns">
+            <div class="column">
+                <div class="column">
+                    <div class="buttons is-pulled-right">
+                        <a href="{{ url_for('pedido.listar') }}" class="button is-link is-light">Volver</a>
+                    </div>
+                    <h1 class="title">Ingresar productos al pedido</h1>
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            <div class="notification is-danger">
+                                <button class="delete"></button>
+                                {% for message in messages %}
+                                    <p>{{ message }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+                    <p><b>Buscar producto por nombre o por código de barras:</b></p>
+                    <form id="searchp" method="POST">
+                        <div class="field is-grouped">
+                            <div class="control is-expanded">
+                                <input type="text" name="producto_busqueda" class="input" placeholder="Nombre o código de barras">
+                            </div>
+                            <div class="control">
+                                <button type="submit" class="button is-primary"><i class="fas fa-search"></i> Buscar</button>
+                            </div>
+                        </div>
+                    </form>                
+                </div>
+            {% if productos %}
+                <table class="table is-bordered is-hoverable">
+                    <thead>
+                        <tr>
+                            <th>Código de barras</th>
+                            <th>Imagen</th>
+                            <th>Nombre</th>
+                            <th>Categoria</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                            <th>Receta</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for producto in productos %}
+                        <tr>
+                            <td>{{ producto.codigo_barra }}</td>
+                            <td><img src="{{ url_for('static', filename='img/') }}{{ producto.imagen }}" alt="{{ producto.nombre }}" style="max-height: 50px;">
+                            </td>
+                            <td>{{ producto.nombre }}</td>
+                            <td>{{ producto.categoria.nombre }}</td>
+                            <td>${{ producto.precio }}</td>
+                            <td>
+                            {% if not producto.tiene_receta %}
+                                {% if producto.stock %}
+                                    {{ producto.stock }} unidades<br>
+                                {% else %}
+                                    Sin stock<br>
+                                {% endif %}
+                                {% else %}
+                                    {{ producto.stock_disponible }} unidades preparables
+                            {% endif %}
+                            </td>
+                            <td>
+                                {% if producto.receta %}
+                                    {% for receta_detalle in producto.receta_detalles %}
+                                    {{ loop.index }}. {{ receta_detalle.ingrediente.nombre }} ({{ receta_detalle.cantidad }} {{ receta_detalle.ingrediente.unidadmedida.nombre }}) <br>
+                                    {% endfor %}
+                                {% else %}
+                                    No se encontraron ingredientes
+                                {% endif %}
+                            </td>
+                            <td>
+                                <form method="post" action="{{ url_for('pedido.agregar_producto', id=producto.id) }}">
+                                    <input type="hidden" name="producto_id" value="{{ producto.id }}">
+                                    <div class="field is-grouped">
+                                        <div class="control">
+                                            <input type="number" name="cantidad" class="input" value="1" min="1" max="{{ producto.stock }}">
+                                        </div>
+                                        <div class="control">
+                                            <button type="submit" class="button is-primary"><i class="fas fa-cart-plus"></i> Añadir</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                    <p>No se han encontrado resultados.</p>
+            {% endif %}
+            </div>
         </div>
-        {% endfor %}
-    {% endif %}
-    {% endwith %}
-
-    {% if error %}
-    <div class="notification is-danger">
-        <button class="delete"></button>
-        {{ error }}
     </div>
-    {% endif %}
-    <form method="post" enctype="multipart/form-data">
-      <div class="field">
-        <label class="label">Código de barras</label>
-        <div class="control">
-          <input class="input" type="text" name="codigo_barra">
-        </div>
-      </div>
-      <div class="field">
-        <label class="label">Nombre</label>
-        <div class="control">
-          <input class="input" type="text" name="nombre">
-        </div>
-      </div>
-      <div class="field">
-        <label class="label">Categoría</label>
-        <div class="control">
-          <div class="select">
-            <select name="categoria_id">
-              {% for categoria in categorias %}
-                <option value="{{ categoria.id }}">{{ categoria.nombre }}</option>
-              {% endfor %}
-            </select>
-          </div>
-        </div>
-      </div>
-      <div class="field">
-        <label class="label">Descripción</label>
-        <div class="control">
-          <textarea class="textarea" name="descripcion"></textarea>
-        </div>
-      </div>
-      <div class="field">
-        <label class="label">Precio</label>
-        <div class="control">
-          <input class="input" type="text" name="precio">
-        </div>
-      </div>
-      <div class="field">
-        <label class="label">¿Tiene receta de preparación?</label>
-        <div class="control">
-          <label class="radio">
-            <input type="radio" name="tiene_receta" value="True">
-            Sí
-          </label>
-          <label class="radio">
-            <input type="radio" name="tiene_receta" value="False" checked>
-            No
-          </label>
-          <p class="help">La opción "Sí" permitirá configurar una receta para el producto, la opción "No" permitirá configurar stock del producto.</p>
-        </div>
-      </div>
-      <div class="field">
-        <label class="label">Imagen</label>
-        <div class="control">
-          <div class="file">
-            <label class="file-label">
-              <input class="file-input" type="file" name="imagen">
-              <span class="file-cta">
-                <span class="file-icon">
-                  <i class="fas fa-upload"></i>
-                </span>
-                <span class="file-label">
-                  Elige un archivo…
-                </span>
-              </span>
-            </label>
-          </div>
-        </div>
-      </div>
-      <div class="field is-grouped">
-        <div class="control">
-          <button type="submit" class="button is-link">Guardar</button>
-        </div>
-        <div class="control">
-          <a href="{{ url_for('producto.listar') }}" class="button is-link is-light">Cancelar</a>
-        </div>
-      </div>
-    </form>
-  </div>
+</section>
 {% endblock %}
