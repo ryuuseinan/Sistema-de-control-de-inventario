@@ -2,7 +2,7 @@
 https://lafratelli.com/prueba23/
 
 `cd Sistema de control de inventario`
-
+`python get-pip.py`
 `pip install --upgrade pip`
 
 # Instalacion de venv
