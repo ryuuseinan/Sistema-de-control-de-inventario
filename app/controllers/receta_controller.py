@@ -10,6 +10,27 @@ def create_receta_blueprint():
     receta_blueprint = Blueprint('receta', __name__)
 
     # Definir las rutas y las funciones controladoras
+
+    @receta_blueprint.route('/buscar_ingrediente/', methods=['GET', 'POST'])
+    def buscar_ingrediente():
+        ingrediente_busqueda = request.form.get('ingrediente_busqueda')
+
+        if request.method == 'POST' and ingrediente_busqueda:
+            ingredientes = db_session.query(Ingrediente).filter(Ingrediente.nombre.ilike(f'%{ingrediente_busqueda}%'),
+                Ingrediente.activo == True
+            ).all()
+            if not ingredientes:
+                flash("No se encontraron ingredientes con ese criterio de búsqueda", "error")
+                ingredientes = db_session.query(Ingrediente).filter(Ingrediente.activo == True).all()
+        elif request.method == 'POST' and not ingrediente_busqueda:
+            flash("Por favor, ingrese el nombre o código de barras de un ingrediente", "error")
+            ingredientes = db_session.query(Ingrediente).filter(Ingrediente.activo == True).all()
+        else:
+            ingredientes = db_session.query(Ingrediente).filter(Ingrediente.activo == True).all()
+
+        return redirect(url_for('receta.configurar', ingrediente_busqueda=ingrediente_busqueda))
+
+
     @receta_blueprint.route('/configurar/<int:id>', methods=['GET', 'POST'])
     def configurar(id):
         producto = db_session.query(Producto).filter_by(id=id).one()
@@ -50,6 +71,7 @@ def create_receta_blueprint():
     @receta_blueprint.route('/ingrediente_receta_eliminar/<int:id>', methods=['GET', 'POST'])
     def eliminar_ingrediente(id):
         receta_detalle = db_session.query(RecetaDetalle).filter_by(id=id).one()
+        
         if not receta_detalle:
             flash('El ingrediente de la receta no existe', 'error')
             return redirect(url_for('receta.configurar', id=receta_detalle.receta_id))

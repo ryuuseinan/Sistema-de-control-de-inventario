@@ -143,6 +143,7 @@ class Pedido(Base):
     # Crea la relación con persona
     persona = relationship('Persona')
     pedido_estado = relationship('PedidoEstado')
+    detalles = relationship('PedidoDetalle', backref='pedido_detalles')
 
 class PedidoEstado(Base):
     __tablename__ = 'pedido_estado'
@@ -152,19 +153,19 @@ class PedidoEstado(Base):
 class PedidoDetalle(Base):
     __tablename__ = 'pedido_detalle'
     id = Column(Integer, primary_key=True)
-    id_pedido = Column(Integer, ForeignKey('pedido.id'))
-    id_producto = Column(Integer, ForeignKey('producto.id'))
+    pedido_id = Column(Integer, ForeignKey('pedido.id'))
+    producto_id = Column(Integer, ForeignKey('producto.id'))
     cantidad = Column(Integer, nullable=False)
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
     ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
     # Crea la relación con pedido y producto
-    pedido = relationship('Pedido')
+    #pedido = relationship('Pedido')
     producto = relationship('Producto')
 
 class Venta(Base):
     __tablename__ = 'venta'
     id = Column(Integer, primary_key=True)
-    id_pedido = Column(Integer, ForeignKey('pedido.id'))
+    pedido_id = Column(Integer, ForeignKey('pedido.id'))
     precio = Column(Integer)
     activo = Column(Boolean, default=True, nullable=False)
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
@@ -206,20 +207,20 @@ if not pedido_estado_2:
     pedido_estado_2 = PedidoEstado(nombre='Anulado')
     db_session.add(pedido_estado_2)
 
-categoria_pizzamediana = db_session.query(PedidoEstado).filter_by(nombre='Pizza mediana').first()
-categoria_pizzafamiliar = db_session.query(PedidoEstado).filter_by(nombre='Pizza familiar').first()
-categoria_bebestibles = db_session.query(PedidoEstado).filter_by(nombre='Bebestibles').first()
+categoria_pizzamediana = db_session.query(Categoria).filter_by(nombre='Pizza mediana').first()
+categoria_pizzafamiliar = db_session.query(Categoria).filter_by(nombre='Pizza familiar').first()
+categoria_bebestibles = db_session.query(Categoria).filter_by(nombre='Bebestibles').first()
 
 if not categoria_pizzamediana:
-    categoria_pizzamediana = PedidoEstado(nombre='Pizza mediana')
+    categoria_pizzamediana = Categoria(nombre='Pizza mediana')
     db_session.add(categoria_pizzamediana)
 
 if not categoria_pizzafamiliar:
-    categoria_pizzafamiliar = PedidoEstado(nombre='Pizza familiar')
+    categoria_pizzafamiliar = Categoria(nombre='Pizza familiar')
     db_session.add(categoria_pizzafamiliar)
 
 if not categoria_bebestibles:
-    categoria_bebestibles = PedidoEstado(nombre='Bebestibles')
+    categoria_bebestibles = Categoria(nombre='Bebestibles')
     db_session.add(categoria_bebestibles)
     
 rol_administrador = db_session.query(Rol).filter_by(nombre='Administrador').first()

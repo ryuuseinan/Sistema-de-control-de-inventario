@@ -15,9 +15,8 @@ def create_pedido_blueprint():
     def listar():
         pedidos = db_session.query(Pedido).filter(Pedido.estado_id == 1).all()
         estado_pedido = db_session.query(PedidoEstado).all()
-        
         return render_template('pedido/listar.html', pedidos=pedidos, estado_pedido=estado_pedido)
-    
+
     @pedido_blueprint.route('/finalizados')
     def finalizados():
         pedidos = db_session.query(Pedido).filter(Pedido.estado_id == 2).all()
@@ -29,9 +28,17 @@ def create_pedido_blueprint():
         pedidos = db_session.query(Pedido).filter(Pedido.estado_id == 3).all()
         estado_pedido = db_session.query(PedidoEstado).all()
         return render_template('pedido/anulados.html', pedidos=pedidos, estado_pedido=estado_pedido)
-
+    
     @pedido_blueprint.route('/nuevo', methods=['GET', 'POST'])
     def nuevo():
+        pedido = Pedido(persona_id=1)
+        db_session.add(pedido)
+        db_session.commit()
+        return redirect(url_for('pedido.editar', id=pedido.id))
+
+    @pedido_blueprint.route('/pedido/editar/<int:id>', methods=['GET', 'POST'])
+    def editar(id):
+        pedido = db_session.query(Pedido).filter_by(id=id).one()
         producto_busqueda = request.form.get('producto_busqueda')
         
         if request.method == 'POST' and producto_busqueda:
@@ -67,114 +74,53 @@ def create_pedido_blueprint():
         #    pedido = Pedido(persona_id=session['user_id'])
         #else:
         #    pedido = Pedido(persona_id=1)
-        
-        pedido = Pedido(persona_id=1)
-        db_session.add(pedido)
-        db_session.commit()
 
-        pedidos = db_session.query(Pedido).all()
-
-        return render_template('pedido/nuevo.html', productos=productos, producto_busqueda=producto_busqueda, pedidos=pedidos)
+        return render_template('pedido/editar.html', productos=productos, producto_busqueda=producto_busqueda, pedido=pedido)
     
     @pedido_blueprint.route('/agregar_producto/<int:id>', methods=['GET', 'POST'])
     def agregar_producto(id):
+        pedido = db_session.query(Pedido).filter_by(id=id).one()
         
-        usuario = db_session.query(Usuario).filter_by(id=id).one()
-
-        if not db_session.query(Pedido).filter_by(id=id).first():
-            pedido = Pedido(id=id, usuario_id=id)
-            db_session.add(pedido)
-            db_session.commit()
-        else:
-            pedido = db_session.query(Pedido).filter_by(id=id).one()
-        
-        pedido_detalles = pedido.detalles  # Obtener todos los detalles de la pedido
-
-        if not producto:
-            flash('El producto no existe', 'error')
-            return redirect(url_for('pedido.listar'))
-
         if request.method == 'POST':
-            # Obtener los producto y cantidades desde el formulario
-            producto = request.form.getlist('producto')
-            cantidades = request.form.getlist('cantidad')
+            producto_id = request.form.getlist('producto_id')  # Obtener una lista de los IDs de productos
+            cantidades = request.form.getlist('cantidad')  # Obtener una lista de cantidades
 
-            # Agregar los producto y cantidades a la pedido
-            for producto_id, cantidad in zip(producto, cantidades):
+            for producto_id, cantidad in zip(producto_id, cantidades):
                 if producto_id and cantidad:
-                    pedido_detalle = PedidoDetalle(producto_id=producto_id, cantidad=cantidad)
+                    producto = db_session.query(Producto).filter_by(id=producto_id).first()  # Obtener el producto correspondiente
+
+                    if not producto:
+                        flash('El producto no existe', 'error')
+                        return redirect(url_for('pedido.listar'))
+
+                    pedido_detalle = PedidoDetalle(pedido_id=id, producto_id=producto_id, cantidad=cantidad)
                     pedido.detalles.append(pedido_detalle)
 
             db_session.commit()
 
-            flash('Ingrediente agregado al producto exitosamente', 'success')
-            return redirect(url_for('pedido.listar', id=producto.id))
+            flash('Producto agregado al pedido exitosamente', 'success')
+            return redirect(url_for('pedido.editar', id=pedido.id))
 
-        return render_template('pedido/listar.html', producto=producto, usuario=usuario, pedido=pedido, pedido_detalles=pedido_detalles)
-
-
-    @pedido_blueprint.route('/pedidos/papelera')
-    def papelera():
-        rol = db_session.query(Rol).filter(Rol.activo == True).all()
-        pedidos = db_session.query(pedido).filter(pedido.activo == False).all()
-        return render_template('pedido/papelera.html', pedidos=pedidos)
-
-    @pedido_blueprint.route('/pedido/restaurar/<int:id>', methods=['GET', 'POST'])
-    def restaurar(id):
-        rol = db_session.query(Rol).filter(Rol.activo == True).all()
-        pedido = db_session.query(pedido).filter_by(id=id).one()
+        pedido_detalles = pedido.detalles  # Obtener todos los detalles del pedido
+        return render_template('pedido/editar.html', pedido=pedido, pedido_detalles=pedido_detalles)
+    
+    @pedido_blueprint.route('/pedido/en_proceso/<int:id>', methods=['GET', 'POST'])
+    def en_proceso(id):
+        pedido = db_session.query(Pedido).filter_by(id=id).one()
         if request.method == 'POST':
-            pedido.activo = True
+            pedido.estado_id = 1
             db_session.commit()
             return redirect(url_for('pedido.listar'))
         else:
-            return render_template('pedido/restaurar.html', pedido=pedido)
+            return render_template('pedido/listar.html', pedido=pedido)
 
-    @pedido_blueprint.route('/pedido/editar/<int:id>', methods=['GET', 'POST'])
-    def editar(id):
-        rol = db_session.query(Rol).filter(Rol.activo == True).all()
-        pedido = db_session.query(pedido).get(id)
-
-        if not pedido:
-            flash('El pedido no existe', 'error')
-            return redirect(url_for('pedido.listar'))
-
-        if request.method == 'POST':
-            nombre_pedido = request.form['nombre_pedido']
-            correo = request.form['correo']
-            contrasena = request.form['contrasena']
-            confirmar_contrasena = request.form['confirmar_contrasena']
-            rol_id = request.form['rol_id']
-            
-            # Validar formulario
-            if not nombre_pedido:
-                flash('El nombre de pedido es requerido', 'error')
-            elif not correo:
-                flash('El correo electrónico es requerido', 'error')
-            elif contrasena != confirmar_contrasena:
-                flash('Las contraseñas no coinciden', 'error')
-            else:
-                # Actualizar pedido
-                pedido.nombre_pedido = nombre_pedido
-                pedido.correo = correo
-                pedido.rol_id = rol_id
-                if contrasena:
-                    contrasena_hash = bcrypt.hashpw(contrasena.encode(), bcrypt.gensalt())
-                    pedido.contrasena = contrasena_hash
-                pedido.ultima_modificacion = datetime.now()
-                db_session.commit()
-                
-                flash('pedido actualizado exitosamente', 'success')
-                return redirect(url_for('pedido.listar'))
-        return render_template('pedido/editar.html', pedido=pedido, rol=rol)
-    
     @pedido_blueprint.route('/pedido/finalizar/<int:id>', methods=['GET', 'POST'])
     def finalizar(id):
         pedido = db_session.query(Pedido).filter_by(id=id).one()
         if request.method == 'POST':
             pedido.estado_id = 2
             db_session.commit()
-            return redirect(url_for('pedido.listar'))
+            return redirect(url_for('pedido.finalizar'))
         else:
             return render_template('pedido/finalizar.html', pedido=pedido)
 
@@ -184,7 +130,7 @@ def create_pedido_blueprint():
         if request.method == 'POST':
             pedido.estado_id = 3
             db_session.commit()
-            return redirect(url_for('pedido.listar'))
+            return redirect(url_for('pedido.anular'))
         else:
             return render_template('pedido/anular.html', pedido=pedido)
 

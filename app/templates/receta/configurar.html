@@ -52,7 +52,6 @@
                     <td>{{ ingrediente.nombre }}</td>
                     <td>
                       <form method="post" action="{{ url_for('receta.configurar', id=producto.id) }}">
-
                         <input type="hidden" name="ingrediente" value="{{ ingrediente.id }}">
                         <div class="field is-grouped">
                           <div class="control">

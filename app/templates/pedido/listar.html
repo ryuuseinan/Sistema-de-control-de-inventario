@@ -43,7 +43,7 @@
             <tr>
               <th>ID</th>
               <th>Vendedor</th>
-              <th>Detalle</th>
+              <th>Detalle del pedido</th>
               <th>Estado</th>
               <th>Editar/Finalizar/Anular</th>
             </tr>
@@ -53,7 +53,11 @@
               <tr>
                 <td>{{ pedido.id }}</td>
                 <td>{{ pedido.persona.nombre }} {{ pedido.persona.apellido_paterno }} {{ pedido.persona.apellido_materno}}</td>
-                <td class="descripcion">Detalle de pedido</td>
+                <td class="descripcion">
+                {% for pedido_detalle in pedido.detalles %}
+                <img src="{{ url_for('static', filename='img/') }}{{ pedido_detalle.producto.imagen }}" alt="{{ pedido_detalle.producto.nombre }}" style="max-height: 15px;">{{ loop.index }}. {{ pedido_detalle.producto.nombre }} ({{ pedido_detalle.cantidad }} unidades)<br>
+                {% endfor %}
+                </td>
                 <td>{{ pedido.pedido_estado.nombre }}</td>
                 <td>
                   <a href="{{ url_for('pedido.editar', id=pedido.id) }}" class="button is-info is-light">
