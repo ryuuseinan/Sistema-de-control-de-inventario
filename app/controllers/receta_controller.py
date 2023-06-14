@@ -58,8 +58,9 @@ def create_receta_blueprint():
                 if ingrediente_id and cantidad:
                     ingrediente_existente = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id, ingrediente_id=ingrediente_id).all()
                     if ingrediente_existente:
-                        flash(f'El ingrediente {ingrediente.nombre} ya existe en la receta', 'existe')
-                        continue
+                        flash(f'El ingrediente {ingrediente_id} ya existe en la receta', 'error')
+                        return redirect(url_for('receta.configurar', id=producto.id))
+                    
                     receta_detalle = RecetaDetalle(ingrediente_id=ingrediente_id, cantidad=cantidad)
                     receta.detalles.append(receta_detalle)
 

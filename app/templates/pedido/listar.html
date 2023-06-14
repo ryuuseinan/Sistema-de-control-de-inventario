@@ -21,23 +21,7 @@
             <h1 class="title">Lista de pedidos en proceso</h1>
           </div>
         </div>
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-            <div class="notification is-success">
-                <button class="delete"></button>
-                {{ message }}
-            </div>
-            {% endfor %}
-        {% endif %}
-        {% endwith %}
-
-        {% if error %}
-        <div class="notification is-danger">
-            <button class="delete"></button>
-            {{ error }}
-        </div>
-        {% endif %}
+        {% include 'messages.html' %}
         <table class="table is-striped is-hoverable">
           <thead>
             <tr>
@@ -55,11 +39,15 @@
                 <td>{{ pedido.id }}</td>
                 <td>{{ pedido.persona.nombre }} {{ pedido.persona.apellido_paterno }} {{ pedido.persona.apellido_materno}}</td>
                 <td class="descripcion">
-                {% for pedido_detalle in pedido.detalles %}
-                <img src="{{ url_for('static', filename='img/') }}{{ pedido_detalle.producto.imagen }}" alt="{{ pedido_detalle.producto.nombre }}" style="max-height: 15px;">{{ loop.index }}. {{ pedido_detalle.producto.nombre }} ({{ pedido_detalle.cantidad }} unidades)<br>
-                {% endfor %}
+                {% if pedido.detalles %}
+                  {% for pedido_detalle in pedido.detalles %}
+                    <img src="{{ url_for('static', filename='img/') }}{{ pedido_detalle.producto.imagen }}" alt=" " style="max-height: 15px;">{{ loop.index }}. {{ pedido_detalle.producto.nombre }} ({{ pedido_detalle.cantidad }} unidades)<br>
+                  {% endfor %}
+                {% else %}
+                  <p>No se han añadido productos al pedido.</p>
+                {% endif %}
                 </td>
-                <td></td>
+                <td>${{ pedido.total_pedido }}</td>
                 <td>{{ pedido.pedido_estado.nombre }}</td>
                 <td>
                   <a href="{{ url_for('pedido.editar', id=pedido.id) }}" class="button is-info is-light">

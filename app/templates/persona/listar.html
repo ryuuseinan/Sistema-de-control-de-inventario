@@ -14,16 +14,7 @@
                     </div>
                     {% if personas %}
                     <h1 class="title">Lista de personas</h1>
-                    {% with messages = get_flashed_messages() %}
-                    {% if messages %}
-                        {% for message in messages %}
-                        <div class="notification is-success">
-                            <button class="delete"></button>
-                            {{ message }}
-                        </div>
-                        {% endfor %}
-                    {% endif %}
-                    {% endwith %}
+                    {% include 'messages.html' %}
                     <table class="table is-striped is-hoverable">
                         <thead>
                             <tr>

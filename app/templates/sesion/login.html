@@ -31,16 +31,7 @@
           <button class="button is-primary" type="submit">Iniciar sesión</button>
         </div>
       </div>
-      {% with messages = get_flashed_messages() %}
-      {% if messages %}
-          {% for message in messages %}
-          <div class="notification is-success">
-              <button class="delete"></button>
-              {{ message }}
-          </div>
-          {% endfor %}
-      {% endif %}
-      {% endwith %}
+      {% include 'messages.html' %}
     </form>
   </div>
 </section>

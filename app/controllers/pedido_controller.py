@@ -10,23 +10,41 @@ def create_pedido_blueprint():
     # Crear el objeto Blueprint
     pedido_blueprint = Blueprint('pedido', __name__)
 
+    def calcular_total_pedido(pedido):
+        total_pedido = 0
+        for pedido_detalle in pedido.detalles:
+            total_pedido += pedido_detalle.cantidad * pedido_detalle.producto.precio
+        return total_pedido
+
     # Definir las rutas y las funciones controladoras
     @pedido_blueprint.route('/pedidos')
     def listar():
         pedidos = db_session.query(Pedido).filter(Pedido.estado_id == 1).all()
         estado_pedido = db_session.query(PedidoEstado).all()
+
+        for pedido in pedidos:
+            pedido.total_pedido = calcular_total_pedido(pedido)
+
         return render_template('pedido/listar.html', pedidos=pedidos, estado_pedido=estado_pedido)
 
     @pedido_blueprint.route('/finalizados')
     def finalizados():
         pedidos = db_session.query(Pedido).filter(Pedido.estado_id == 2).all()
         estado_pedido = db_session.query(PedidoEstado).all()
+
+        for pedido in pedidos:
+            pedido.total_pedido = calcular_total_pedido(pedido)
+        
         return render_template('pedido/finalizados.html', pedidos=pedidos, estado_pedido=estado_pedido)
     
     @pedido_blueprint.route('/anulados')
     def anulados():
         pedidos = db_session.query(Pedido).filter(Pedido.estado_id == 3).all()
         estado_pedido = db_session.query(PedidoEstado).all()
+
+        for pedido in pedidos:
+            pedido.total_pedido = calcular_total_pedido(pedido)
+
         return render_template('pedido/anulados.html', pedidos=pedidos, estado_pedido=estado_pedido)
     
     @pedido_blueprint.route('/nuevo', methods=['GET', 'POST'])
@@ -40,7 +58,7 @@ def create_pedido_blueprint():
     def editar(id):
         pedido = db_session.query(Pedido).filter_by(id=id).one()
         producto_busqueda = request.form.get('producto_busqueda')
-        
+
         if request.method == 'POST' and producto_busqueda:
             productos = db_session.query(Producto).join(Categoria).filter(or_(Producto.nombre.ilike(f'%{producto_busqueda}%'),
                                                                     Categoria.nombre.ilike(f'%{producto_busqueda}%'),
@@ -93,6 +111,13 @@ def create_pedido_blueprint():
                         flash('El producto no existe', 'error')
                         return redirect(url_for('pedido.listar'))
 
+                    producto_existente = db_session.query(PedidoDetalle).filter_by(pedido_id=pedido.id, producto_id=producto_id).all()
+                    if producto_existente:
+                        flash(f'El producto {producto.nombre} ya existe en la pedido, por lo que se han añadido {cantidades} unidades adicionales.', 'error')
+                        producto_existente[0].cantidad += int(cantidad)
+                        db_session.commit()
+                        return redirect(url_for('pedido.editar', id=pedido.id))
+                    
                     pedido_detalle = PedidoDetalle(pedido_id=id, producto_id=producto_id, cantidad=cantidad)
                     pedido.detalles.append(pedido_detalle)
 
@@ -104,15 +129,12 @@ def create_pedido_blueprint():
         pedido_detalles = pedido.detalles  # Obtener todos los detalles del pedido
         return render_template('pedido/editar.html', pedido=pedido, pedido_detalles=pedido_detalles)
     
-    @pedido_blueprint.route('/pedido/en_proceso/<int:id>', methods=['GET', 'POST'])
-    def en_proceso(id):
+    @pedido_blueprint.route('/pedido/listar/<int:id>', methods=['POST'])
+    def restaurar(id):
         pedido = db_session.query(Pedido).filter_by(id=id).one()
-        if request.method == 'POST':
-            pedido.estado_id = 1
-            db_session.commit()
-            return redirect(url_for('pedido.listar'))
-        else:
-            return render_template('pedido/listar.html', pedido=pedido)
+        pedido.estado_id = 1
+        db_session.commit()
+        return redirect(url_for('pedido.listar'))
 
     @pedido_blueprint.route('/pedido/finalizar/<int:id>', methods=['GET', 'POST'])
     def finalizar(id):
@@ -120,7 +142,7 @@ def create_pedido_blueprint():
         if request.method == 'POST':
             pedido.estado_id = 2
             db_session.commit()
-            return redirect(url_for('pedido.finalizar'))
+            return redirect(url_for('pedido.listar'))
         else:
             return render_template('pedido/finalizar.html', pedido=pedido)
 
@@ -130,7 +152,7 @@ def create_pedido_blueprint():
         if request.method == 'POST':
             pedido.estado_id = 3
             db_session.commit()
-            return redirect(url_for('pedido.anular'))
+            return redirect(url_for('pedido.listar'))
         else:
             return render_template('pedido/anular.html', pedido=pedido)
 

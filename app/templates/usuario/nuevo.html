@@ -8,24 +8,7 @@
         <div class="columns">
             <div class="column is-half">
                 <h1 class="title">Crear usuario y persona</h1>
-                {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    {% for message in messages %}
-                    <div class="notification is-success">
-                        <button class="delete"></button>
-                        {{ message }}
-                    </div>
-                    {% endfor %}
-                {% endif %}
-                {% endwith %}
-
-                {% if error %}
-                <div class="notification is-danger">
-                    <button class="delete"></button>
-                    {{ error }}
-                </div>
-                {% endif %}
-                
+                {% include 'messages.html' %}
                 <form method="POST">
                     <!-- Usuario -->
                     <div class="field">

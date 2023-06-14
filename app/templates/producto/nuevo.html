@@ -4,23 +4,7 @@
 <section class="section">
   <div class="container">
     <h1 class="title">Agregar Producto</h1>
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-        {% for message in messages %}
-        <div class="notification is-success">
-            <button class="delete"></button>
-            {{ message }}
-        </div>
-        {% endfor %}
-    {% endif %}
-    {% endwith %}
-
-    {% if error %}
-    <div class="notification is-danger">
-        <button class="delete"></button>
-        {{ error }}
-    </div>
-    {% endif %}
+    {% include 'messages.html' %}
     <form method="post" enctype="multipart/form-data">
       <div class="field">
         <label class="label">Código de barras</label>

@@ -11,18 +11,7 @@
           <a href="{{ url_for('producto.listar') }}" class="button is-link is-light">Volver</a>
         </div>
         <h1 class="title">Configurar Receta para {{ producto.nombre }} ({{ receta.producto.categoria.nombre }})</h1>
-
-        {% with messages = get_flashed_messages() %}
-          {% if messages %}
-            <div class="notification is-success">
-              <button class="delete"></button>
-              {% for message in messages %}
-                <p>{{ message }}</p>
-              {% endfor %}
-            </div>
-          {% endif %}
-        {% endwith %}
-
+        {% include 'messages.html' %}
         <p><b>Buscar ingrediente:</b></p>
         <form id="searchi" method="POST">
           <div class="field is-grouped">
