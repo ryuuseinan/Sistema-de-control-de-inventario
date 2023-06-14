@@ -56,6 +56,10 @@ def create_receta_blueprint():
             # Agregar los ingrediente y cantidades a la receta
             for ingrediente_id, cantidad in zip(ingrediente, cantidades):
                 if ingrediente_id and cantidad:
+                    ingrediente_existente = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id, ingrediente_id=ingrediente_id).all()
+                    if ingrediente_existente:
+                        flash(f'El ingrediente {ingrediente.nombre} ya existe en la receta', 'existe')
+                        continue
                     receta_detalle = RecetaDetalle(ingrediente_id=ingrediente_id, cantidad=cantidad)
                     receta.detalles.append(receta_detalle)
 
