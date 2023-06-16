@@ -10,7 +10,6 @@ def create_pedido_blueprint():
     # Crear el objeto Blueprint
     pedido_blueprint = Blueprint('pedido', __name__)
 
-    
     def calcular_total_pedido(pedido):
         total_pedido = 0
         for pedido_detalle in pedido.detalles:
@@ -18,9 +17,9 @@ def create_pedido_blueprint():
         return total_pedido
 
     def actualizar_stock(producto, cantidad):
+        receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
+        receta_detalles = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id).all()
         if producto.tiene_receta:
-            receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
-            receta_detalles = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id).all()
             receta = producto.receta
             receta_detalles = producto.receta_detalles
             for detalle in receta_detalles:
@@ -121,58 +120,80 @@ def create_pedido_blueprint():
         if request.method == 'POST':
             producto_id = request.form.getlist('producto_id')  # Obtener una lista de los IDs de productos
             cantidades = request.form.getlist('cantidad')  # Obtener una lista de cantidades
+            stock = request.form.getlist('stock')
+            unidades_preparables = request.form.getlist('unidades_preparables')
             action = request.form.get('action')
 
-            for producto_id, cantidad in zip(producto_id, cantidades):
-                if producto_id and cantidad:
-                    producto = db_session.query(Producto).filter_by(id=producto_id).first()  # Obtener el producto correspondiente
-                
-                if action == 'agregar':
-                    producto_existente = db_session.query(PedidoDetalle).filter_by(pedido_id=pedido.id,
-                                                                                    producto_id=producto_id).all()
+            if cantidades > stock or unidades_preparables:
+                for producto_id, cantidad in zip(producto_id, cantidades):
+                    if producto_id and cantidad:
+                        producto = db_session.query(Producto).filter_by(id=producto_id).first()  # Obtener el producto correspondiente
                     
-                    if producto_existente:
-                        flash(f'El producto {producto.nombre} ya existe en la pedido, por lo que se ha(n) añadido {int(cantidades[0])} unidad(es) adicional(es).', 'error')
-                        for pedido_detalle in producto_existente:
-                            pedido_detalle.cantidad += int(cantidad)
-                            actualizar_stock(producto, int(cantidad))
-                    else:
-                        flash(f'El producto {producto.nombre} no existe en la pedido, por lo que se ha(n) añadido {int(cantidades[0])} unidad(es) al pedido.', 'error')
-                        pedido_detalle = PedidoDetalle(pedido_id=pedido.id, producto_id=producto_id,
-                                                    cantidad=int(cantidad))
-
-                        actualizar_stock(producto, int(cantidad))
-                        db_session.add(pedido_detalle)
-                
-                if action == 'quitar':
-                    pedido_detalle = db_session.query(PedidoDetalle).filter_by(pedido_id=pedido.id, producto_id=producto_id).first()
-                    cantidad = int(cantidad)
-                    if cantidad >= pedido_detalle.cantidad:
-                        db_session.delete(pedido_detalle)
-                        if producto.tiene_receta:
-                            receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
-                            receta_detalles = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id).all()
-                            ingredientes = [detalle.ingrediente for detalle in receta_detalles]
-                            for detalle in receta_detalles:
-                                ingrediente = detalle.ingrediente
-                                cantidad_necesaria = detalle.cantidad * pedido_detalle.cantidad
-                                ingrediente.cantidad += cantidad_necesaria
+                    if action == 'agregar':
+                        producto_existente = db_session.query(PedidoDetalle).filter_by(pedido_id=pedido.id,
+                                                                                        producto_id=producto_id).all()
+                        
+                        if producto_existente:
+                            flash(f'El producto {producto.nombre} ya existe en la pedido, por lo que se ha(n) añadido {int(cantidades[0])} unidad(es) adicional(es).', 'error')
+                            for pedido_detalle in producto_existente:
+                                pedido_detalle.cantidad += int(cantidad)
+                                if producto.tiene_receta:
+                                    receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
+                                    receta_detalles = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id).all()
+                                    for detalle in receta_detalles:
+                                        ingrediente = detalle.ingrediente
+                                        cantidad_necesaria = detalle.cantidad * int(cantidad)
+                                        ingrediente.cantidad -= cantidad_necesaria
+                                else:
+                                    producto.stock -= int(cantidad)
                         else:
-                            producto.stock += pedido_detalle.cantidad
-                    else:
-                        pedido_detalle.cantidad -= cantidad
-                        if producto.tiene_receta:
-                            receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
-                            receta_detalles = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id).all()
-                            ingredientes = [detalle.ingrediente for detalle in receta_detalles]
-                            for detalle in receta_detalles:
-                                ingrediente = detalle.ingrediente
-                                cantidad_necesaria = detalle.cantidad * cantidad
-                                ingrediente.cantidad += cantidad_necesaria
-                        else:
-                            producto.stock += cantidad
+                            flash(f'El producto {producto.nombre} no existe en la pedido, por lo que se ha(n) añadido {int(cantidades[0])} unidad(es) al pedido.', 'error')
+                            pedido_detalle = PedidoDetalle(pedido_id=pedido.id, producto_id=producto_id,
+                                                        cantidad=int(cantidad))
 
-            db_session.commit()
+                            if producto.tiene_receta:
+                                receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
+                                receta_detalles = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id).all()
+                                for detalle in receta_detalles:
+                                    ingrediente = detalle.ingrediente
+                                    cantidad_necesaria = detalle.cantidad * int(cantidad)
+                                    ingrediente.cantidad -= cantidad_necesaria
+                            else:
+                                producto.stock -= int(cantidad)
+
+                            db_session.add(pedido_detalle)
+                            return redirect(url_for('pedido.editar', id=pedido.id))
+                    
+                    if action == 'quitar':
+                        pedido_detalle = db_session.query(PedidoDetalle).filter_by(pedido_id=pedido.id, producto_id=producto_id).first()
+                        cantidad = int(cantidad)
+                        if cantidad >= pedido_detalle.cantidad:
+                            db_session.delete(pedido_detalle)
+                            if producto.tiene_receta:
+                                receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
+                                receta_detalles = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id).all()
+                                for detalle in receta_detalles:
+                                    ingrediente = detalle.ingrediente
+                                    cantidad_necesaria = detalle.cantidad * pedido_detalle.cantidad
+                                    ingrediente.cantidad += cantidad_necesaria
+                            else:
+                                producto.stock += pedido_detalle.cantidad
+                        else:
+                            pedido_detalle.cantidad -= cantidad
+                            if producto.tiene_receta:
+                                receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
+                                receta_detalles = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id).all()
+                                for detalle in receta_detalles:
+                                    ingrediente = detalle.ingrediente
+                                    cantidad_necesaria = detalle.cantidad * cantidad
+                                    ingrediente.cantidad += cantidad_necesaria
+                            else:
+                                producto.stock += cantidad
+
+                db_session.commit()
+
+            else:
+                flash(f'No hay stock suficiente o unidades preparables.', 'error')
 
             return redirect(url_for('pedido.editar', id=pedido.id))
 

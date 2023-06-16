@@ -115,7 +115,7 @@
                                     {% for receta_detalle in producto.receta_detalles %}
                                     <tr>
                                     <td>{{ loop.index }}. {{ receta_detalle.ingrediente.nombre }}</td>
-                                    <td>({{ receta_detalle.cantidad }} {{ receta_detalle.ingrediente.unidadmedida.nombre }}) <br></td>
+                                    <td>{{ receta_detalle.cantidad }} {{ receta_detalle.ingrediente.unidadmedida.nombre }}<br></td>
                                 </tr>
                                     {% endfor %}
                                     </tbody>
@@ -128,6 +128,8 @@
                             <td>
                                 <form method="post" action="{{ url_for('pedido.actualizar_pedido', id=pedido.id) }}">
                                     <input type="hidden" name="producto_id" value="{{ producto.id }}">
+                                    <input type="hidden" name="stock" value="{{ stock }}">
+                                    <input type="hidden" name="unidades_preparables" value="{{ producto.stock_disponible }}">
                                     <div class="field is-grouped">
                                         <div class="control">
                                             <input type="number" name="cantidad" class="input" value="1" min="1">
