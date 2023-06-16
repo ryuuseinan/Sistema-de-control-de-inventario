@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, url_for
-from models.database import db
+from models.database import db, db_session
 from db_init import init_db
 import arrow
 from config import *
@@ -73,10 +73,6 @@ with app.app_context():
 def index():
     # Renderizamos el archivo index.html
     return render_template('index.html')
-
-@app.route('/agregar_producto', methods=['POST'])
-def agregar_producto():
-    return redirect(url_for('vender'))
 
 @app.template_global()
 def appName() -> str:

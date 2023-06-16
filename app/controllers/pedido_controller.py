@@ -19,6 +19,8 @@ def create_pedido_blueprint():
 
     def actualizar_stock(producto, cantidad):
         if producto.tiene_receta:
+            receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
+            receta_detalles = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id).all()
             receta = producto.receta
             receta_detalles = producto.receta_detalles
             for detalle in receta_detalles:
@@ -126,29 +128,21 @@ def create_pedido_blueprint():
                     producto = db_session.query(Producto).filter_by(id=producto_id).first()  # Obtener el producto correspondiente
                 
                 if action == 'agregar':
-                    if producto.tiene_receta:
-                        receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
-                        receta_detalles = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id).all()
-                        ingredientes = [detalle.ingrediente for detalle in receta_detalles]
-                        for detalle in receta_detalles:
-                            ingrediente = detalle.ingrediente
-                            cantidad_necesaria = detalle.cantidad * int(cantidad)
-                            ingrediente.cantidad -= cantidad_necesaria
-                    else:
-                        producto.stock -= int(cantidad)
-
-                        producto_existente = db_session.query(PedidoDetalle).filter_by(pedido_id=pedido.id,
-                                                                                        producto_id=producto_id).all()
-                        
-                        if producto_existente:
-                            for pedido_detalle in producto_existente:
-                                pedido_detalle.cantidad += int(cantidad)
-                                actualizar_stock(producto, int(cantidad))
-                        else:
-                            pedido_detalle = PedidoDetalle(pedido_id=pedido.id, producto_id=producto_id,
-                                                        cantidad=int(cantidad))
+                    producto_existente = db_session.query(PedidoDetalle).filter_by(pedido_id=pedido.id,
+                                                                                    producto_id=producto_id).all()
+                    
+                    if producto_existente:
+                        flash(f'El producto {producto.nombre} ya existe en la pedido, por lo que se ha(n) añadido {int(cantidades[0])} unidad(es) adicional(es).', 'error')
+                        for pedido_detalle in producto_existente:
+                            pedido_detalle.cantidad += int(cantidad)
                             actualizar_stock(producto, int(cantidad))
-                            db_session.add(pedido_detalle)
+                    else:
+                        flash(f'El producto {producto.nombre} no existe en la pedido, por lo que se ha(n) añadido {int(cantidades[0])} unidad(es) al pedido.', 'error')
+                        pedido_detalle = PedidoDetalle(pedido_id=pedido.id, producto_id=producto_id,
+                                                    cantidad=int(cantidad))
+
+                        actualizar_stock(producto, int(cantidad))
+                        db_session.add(pedido_detalle)
                 
                 if action == 'quitar':
                     pedido_detalle = db_session.query(PedidoDetalle).filter_by(pedido_id=pedido.id, producto_id=producto_id).first()
@@ -179,8 +173,6 @@ def create_pedido_blueprint():
                             producto.stock += cantidad
 
             db_session.commit()
-
-            flash('Producto(s) agregado(s) correctamente', 'success')
 
             return redirect(url_for('pedido.editar', id=pedido.id))
 

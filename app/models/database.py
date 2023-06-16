@@ -101,7 +101,7 @@ class Ingrediente(Base):
 class UnidadMedida(Base):
     __tablename__ = 'unidadmedida'
     id = Column(Integer, primary_key=True)
-    nombre = Column(String(10), unique=True, nullable=False)
+    nombre = Column(String(50), unique=True, nullable=False)
     activo = Column(Boolean, default=True, nullable=False)
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
     ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
@@ -177,7 +177,7 @@ Base.metadata.create_all(engine)
 
 unidad_medida_gr = db_session.query(UnidadMedida).filter_by(nombre='gr').first()
 unidad_medida_ml = db_session.query(UnidadMedida).filter_by(nombre='ml').first()
-unidad_medida_unidades = db_session.query(UnidadMedida).filter_by(nombre='Unidades').first()
+unidad_medida_unidades = db_session.query(UnidadMedida).filter_by(nombre='Unidad(es)').first()
 
 if not unidad_medida_gr:
     unidad_medida_gr = UnidadMedida(nombre='gr', activo=True)
@@ -188,7 +188,7 @@ if not unidad_medida_ml:
     db_session.add(unidad_medida_ml)
 
 if not unidad_medida_unidades:
-    unidad_medida_unidades = UnidadMedida(nombre='Unidades', activo=True)
+    unidad_medida_unidades = UnidadMedida(nombre='Unidad(es)', activo=True)
     db_session.add(unidad_medida_unidades)
 
 pedido_estado_0 = db_session.query(PedidoEstado).filter_by(nombre='En proceso').first()
