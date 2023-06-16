@@ -12,12 +12,19 @@ def create_usuario_blueprint():
     # Definir las rutas y las funciones controladoras
     @usuario_blueprint.route('/usuarios')
     def listar():
-        rol = db_session.query(Rol).filter(Rol.activo == True).all()
-        usuarios = db_session.query(Usuario).filter(Usuario.activo == True).all()
-        for usuario in usuarios:
-            fecha_creacion = arrow.get(usuario.fecha_creacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if usuario.fecha_creacion else None
-            ultima_modificacion = arrow.get(usuario.ultima_modificacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if usuario.ultima_modificacion else None
-        return render_template('usuario/listar.html', usuarios=usuarios, rol=rol)
+        try:
+            rol = db_session.query(Rol).filter(Rol.activo == True).all()
+            usuarios = db_session.query(Usuario).filter(Usuario.activo == True).all()
+            for usuario in usuarios:
+                fecha_creacion = arrow.get(usuario.fecha_creacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if usuario.fecha_creacion else None
+                ultima_modificacion = arrow.get(usuario.ultima_modificacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if usuario.ultima_modificacion else None
+            return render_template('usuario/listar.html', usuarios=usuarios, rol=rol)
+        except Exception as e:
+            db_session.rollback()
+            # Manejar el error de alguna manera, como imprimirlo en la consola o mostrar un mensaje al usuario
+            print(f"Error: {e}")
+            # Renderizar un template de error o redirigir a una página de error
+            return render_template('error.html', error_message=str(e))
 
     @usuario_blueprint.route('/usuario/nuevo', methods=['GET', 'POST'])
     def nuevo():
@@ -95,51 +102,57 @@ def create_usuario_blueprint():
             return redirect(url_for('usuario.listar'))
 
         if request.method == 'POST':
-            nombre_usuario = request.form['nombre_usuario']
-            correo = request.form['correo']
-            contrasena = request.form['contrasena']
-            confirmar_contrasena = request.form['confirmar_contrasena']
-            rol_id = request.form['rol_id']
-            rut = request.form['rut']
-            nombre = request.form['nombre']
-            apellido_paterno = request.form['apellido_paterno']
-            apellido_materno = request.form['apellido_materno']
-            celular = request.form['celular']
-            
-            # Validar formulario
-            if not nombre_usuario:
-                flash('El nombre de usuario es requerido', 'error')
-            elif not correo:
-                flash('El correo electrónico es requerido', 'error')
-            elif contrasena != confirmar_contrasena:
-                flash('Las contraseñas no coinciden', 'error')
-            else:
-                # Actualizar usuario
-                usuario.nombre_usuario = nombre_usuario
-                usuario.correo = correo
-                usuario.rol_id = rol_id
+            try:
+                nombre_usuario = request.form['nombre_usuario']
+                correo = request.form['correo']
+                contrasena = request.form['contrasena']
+                confirmar_contrasena = request.form['confirmar_contrasena']
+                rol_id = request.form['rol_id']
+                rut = request.form['rut']
+                nombre = request.form['nombre']
+                apellido_paterno = request.form['apellido_paterno']
+                apellido_materno = request.form['apellido_materno']
+                celular = request.form['celular']
                 
-                # Si se proporciona una nueva contraseña, se actualiza
-                if contrasena:
-                    contrasena_hash = bcrypt.hashpw(contrasena.encode(), bcrypt.gensalt())
-                    usuario.contrasena = contrasena_hash
+                # Validar formulario
+                if not nombre_usuario:
+                    flash('El nombre de usuario es requerido', 'error')
+                elif not correo:
+                    flash('El correo electrónico es requerido', 'error')
+                elif contrasena != confirmar_contrasena:
+                    flash('Las contraseñas no coinciden', 'error')
+                else:
+                    # Actualizar usuario
+                    usuario.nombre_usuario = nombre_usuario
+                    usuario.correo = correo
+                    usuario.rol_id = rol_id
                     
-                usuario.ultima_modificacion = datetime.now()                
-                db_session.commit()
-                
-                # Actualizar los datos de la persona asociada al usuario
-                if persona:
-                    persona.rut = rut
-                    persona.nombre = nombre
-                    persona.apellido_paterno = apellido_paterno
-                    persona.apellido_materno = apellido_materno
-                    persona.celular = celular
-                    persona.ultima_modificacion = datetime.now()             
-                db_session.commit()
-                
-                flash('Usuario actualizado exitosamente', 'success')
-                return redirect(url_for('usuario.listar'))
-        
+                    # Si se proporciona una nueva contraseña, se actualiza
+                    if contrasena:
+                        contrasena_hash = bcrypt.hashpw(contrasena.encode(), bcrypt.gensalt())
+                        usuario.contrasena = contrasena_hash
+                        
+                    usuario.ultima_modificacion = datetime.now()                
+                    db_session.commit()
+                    
+                    # Actualizar los datos de la persona asociada al usuario
+                    if persona:
+                        persona.rut = rut
+                        persona.nombre = nombre
+                        persona.apellido_paterno = apellido_paterno
+                        persona.apellido_materno = apellido_materno
+                        persona.celular = celular
+                        persona.ultima_modificacion = datetime.now()             
+                    db_session.commit()
+                    
+                    flash('Usuario actualizado exitosamente', 'success')
+                    return redirect(url_for('usuario.listar'))
+            except Exception as e:
+                db_session.rollback()
+                # Manejar el error de alguna manera, como imprimirlo en la consola o mostrar un mensaje al usuario
+                print(f"Error: {e}")
+                # Renderizar un template de error o redirigir a una página de error
+                return render_template('error.html', error_message=str(e))
         return render_template('usuario/editar.html', usuario=usuario, rol=rol, persona=persona)
 
 

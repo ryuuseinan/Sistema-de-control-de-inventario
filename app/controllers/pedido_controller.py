@@ -10,20 +10,35 @@ def create_pedido_blueprint():
     # Crear el objeto Blueprint
     pedido_blueprint = Blueprint('pedido', __name__)
 
+    
     def calcular_total_pedido(pedido):
         total_pedido = 0
         for pedido_detalle in pedido.detalles:
             total_pedido += pedido_detalle.cantidad * pedido_detalle.producto.precio
         return total_pedido
 
+    def actualizar_stock(producto, cantidad):
+        if producto.tiene_receta:
+            receta = producto.receta
+            receta_detalles = producto.receta_detalles
+            for detalle in receta_detalles:
+                ingrediente = detalle.ingrediente
+                cantidad_necesaria = detalle.cantidad * cantidad
+                ingrediente.cantidad -= cantidad_necesaria
+        else:
+            producto.stock -= cantidad
+
     # Definir las rutas y las funciones controladoras
     @pedido_blueprint.route('/pedidos')
     def listar():
-        pedidos = db_session.query(Pedido).filter(Pedido.estado_id == 1).all()
-        estado_pedido = db_session.query(PedidoEstado).all()
+        try:
+            pedidos = db_session.query(Pedido).filter(Pedido.estado_id == 1).all()
+            estado_pedido = db_session.query(PedidoEstado).all()
 
-        for pedido in pedidos:
-            pedido.total_pedido = calcular_total_pedido(pedido)
+            for pedido in pedidos:
+                pedido.total_pedido = calcular_total_pedido(pedido)
+        except:
+            db_session.rollback()
 
         return render_template('pedido/listar.html', pedidos=pedidos, estado_pedido=estado_pedido)
 
@@ -34,9 +49,9 @@ def create_pedido_blueprint():
 
         for pedido in pedidos:
             pedido.total_pedido = calcular_total_pedido(pedido)
-        
+
         return render_template('pedido/finalizados.html', pedidos=pedidos, estado_pedido=estado_pedido)
-    
+
     @pedido_blueprint.route('/anulados')
     def anulados():
         pedidos = db_session.query(Pedido).filter(Pedido.estado_id == 3).all()
@@ -46,7 +61,7 @@ def create_pedido_blueprint():
             pedido.total_pedido = calcular_total_pedido(pedido)
 
         return render_template('pedido/anulados.html', pedidos=pedidos, estado_pedido=estado_pedido)
-    
+
     @pedido_blueprint.route('/nuevo', methods=['GET', 'POST'])
     def nuevo():
         pedido = Pedido(persona_id=1)
@@ -60,10 +75,11 @@ def create_pedido_blueprint():
         producto_busqueda = request.form.get('producto_busqueda')
 
         if request.method == 'POST' and producto_busqueda:
-            productos = db_session.query(Producto).join(Categoria).filter(or_(Producto.nombre.ilike(f'%{producto_busqueda}%'),
-                                                                    Categoria.nombre.ilike(f'%{producto_busqueda}%'),
-                                                                    Producto.codigo_barra == producto_busqueda),
-                                                                Producto.activo == True).all()
+            productos = db_session.query(Producto).join(Categoria).filter(
+                or_(Producto.nombre.ilike(f'%{producto_busqueda}%'),
+                    Categoria.nombre.ilike(f'%{producto_busqueda}%'),
+                    Producto.codigo_barra == producto_busqueda),
+                Producto.activo == True).all()
             if not productos:
                 flash("No se encontraron productos con ese criterio de búsqueda", "error")
                 productos = db_session.query(Producto).filter(Producto.activo == True).all()
@@ -72,7 +88,7 @@ def create_pedido_blueprint():
             productos = db_session.query(Producto).filter(Producto.activo == True).all()
         else:
             productos = db_session.query(Producto).filter(Producto.activo == True).all()
-        
+
         for producto in productos:
             receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
             if receta:
@@ -81,53 +97,94 @@ def create_pedido_blueprint():
                 producto.receta = receta
                 producto.receta_detalles = receta_detalles
                 producto.ingredientes = ingredientes
-                producto.stock_disponible = producto.stock if not producto.tiene_receta else min([ingrediente.cantidad // detalle.cantidad for ingrediente, detalle in zip(ingredientes, receta_detalles)])
+                producto.stock_disponible = (
+                    producto.stock if not producto.tiene_receta else min(
+                        [ingrediente.cantidad // detalle.cantidad for ingrediente, detalle in
+                         zip(ingredientes, receta_detalles)])
+                )
             else:
                 producto.receta = None
                 producto.receta_detalles = []
                 producto.ingredientes = []
                 producto.stock_disponible = producto.stock
-        
-        #if session['logged_in']:
-        #    pedido = Pedido(persona_id=session['user_id'])
-        #else:
-        #    pedido = Pedido(persona_id=1)
+
+        pedido.total_pedido = calcular_total_pedido(pedido)
 
         return render_template('pedido/editar.html', productos=productos, producto_busqueda=producto_busqueda, pedido=pedido)
-    
-    @pedido_blueprint.route('/agregar_producto/<int:id>', methods=['GET', 'POST'])
-    def agregar_producto(id):
+
+    @pedido_blueprint.route('/actualizar_pedido/<int:id>', methods=['GET', 'POST'])
+    def actualizar_pedido(id):
         pedido = db_session.query(Pedido).filter_by(id=id).one()
-        
+
         if request.method == 'POST':
             producto_id = request.form.getlist('producto_id')  # Obtener una lista de los IDs de productos
             cantidades = request.form.getlist('cantidad')  # Obtener una lista de cantidades
+            action = request.form.get('action')
 
             for producto_id, cantidad in zip(producto_id, cantidades):
                 if producto_id and cantidad:
                     producto = db_session.query(Producto).filter_by(id=producto_id).first()  # Obtener el producto correspondiente
+                
+                if action == 'agregar':
+                    if producto.tiene_receta:
+                        receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
+                        receta_detalles = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id).all()
+                        ingredientes = [detalle.ingrediente for detalle in receta_detalles]
+                        for detalle in receta_detalles:
+                            ingrediente = detalle.ingrediente
+                            cantidad_necesaria = detalle.cantidad * int(cantidad)
+                            ingrediente.cantidad -= cantidad_necesaria
+                    else:
+                        producto.stock -= int(cantidad)
 
-                    if not producto:
-                        flash('El producto no existe', 'error')
-                        return redirect(url_for('pedido.listar'))
-
-                    producto_existente = db_session.query(PedidoDetalle).filter_by(pedido_id=pedido.id, producto_id=producto_id).all()
-                    if producto_existente:
-                        flash(f'El producto {producto.nombre} ya existe en la pedido, por lo que se han añadido {cantidades} unidades adicionales.', 'error')
-                        producto_existente[0].cantidad += int(cantidad)
-                        db_session.commit()
-                        return redirect(url_for('pedido.editar', id=pedido.id))
-                    
-                    pedido_detalle = PedidoDetalle(pedido_id=id, producto_id=producto_id, cantidad=cantidad)
-                    pedido.detalles.append(pedido_detalle)
+                        producto_existente = db_session.query(PedidoDetalle).filter_by(pedido_id=pedido.id,
+                                                                                        producto_id=producto_id).all()
+                        
+                        if producto_existente:
+                            for pedido_detalle in producto_existente:
+                                pedido_detalle.cantidad += int(cantidad)
+                                actualizar_stock(producto, int(cantidad))
+                        else:
+                            pedido_detalle = PedidoDetalle(pedido_id=pedido.id, producto_id=producto_id,
+                                                        cantidad=int(cantidad))
+                            actualizar_stock(producto, int(cantidad))
+                            db_session.add(pedido_detalle)
+                
+                if action == 'quitar':
+                    pedido_detalle = db_session.query(PedidoDetalle).filter_by(pedido_id=pedido.id, producto_id=producto_id).first()
+                    cantidad = int(cantidad)
+                    if cantidad >= pedido_detalle.cantidad:
+                        db_session.delete(pedido_detalle)
+                        if producto.tiene_receta:
+                            receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
+                            receta_detalles = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id).all()
+                            ingredientes = [detalle.ingrediente for detalle in receta_detalles]
+                            for detalle in receta_detalles:
+                                ingrediente = detalle.ingrediente
+                                cantidad_necesaria = detalle.cantidad * pedido_detalle.cantidad
+                                ingrediente.cantidad += cantidad_necesaria
+                        else:
+                            producto.stock += pedido_detalle.cantidad
+                    else:
+                        pedido_detalle.cantidad -= cantidad
+                        if producto.tiene_receta:
+                            receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
+                            receta_detalles = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id).all()
+                            ingredientes = [detalle.ingrediente for detalle in receta_detalles]
+                            for detalle in receta_detalles:
+                                ingrediente = detalle.ingrediente
+                                cantidad_necesaria = detalle.cantidad * cantidad
+                                ingrediente.cantidad += cantidad_necesaria
+                        else:
+                            producto.stock += cantidad
 
             db_session.commit()
 
-            flash('Producto agregado al pedido exitosamente', 'success')
+            flash('Producto(s) agregado(s) correctamente', 'success')
+
             return redirect(url_for('pedido.editar', id=pedido.id))
 
-        pedido_detalles = pedido.detalles  # Obtener todos los detalles del pedido
-        return render_template('pedido/editar.html', pedido=pedido, pedido_detalles=pedido_detalles)
+        return redirect(url_for('pedido.editar', id=pedido.id))
     
     @pedido_blueprint.route('/pedido/listar/<int:id>', methods=['POST'])
     def restaurar(id):

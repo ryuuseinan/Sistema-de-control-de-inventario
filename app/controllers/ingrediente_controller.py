@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from models.database import Ingrediente, UnidadMedida, db_session
 from datetime import datetime
 
@@ -25,24 +25,28 @@ def create_ingrediente_blueprint():
         # Obtener las categorías para mostrarlas en el formulario
         unidadmedida = db_session.query(UnidadMedida).filter(UnidadMedida.activo == True).all()
         if request.method == 'POST':
-            # Obtener los datos del formulario
-            nombre = request.form['nombre']
-            cantidad = request.form['cantidad']
-            unidadmedida_id = request.form['unidadmedida_id']
-            # Crear una nueva instancia de Producto con los datos del formulario
-            nuevo_ingrediente = Ingrediente(nombre=nombre, 
-                                    cantidad=cantidad, 
-                                    unidadmedida_id=unidadmedida_id,
-                                    fecha_creacion=datetime.now(),
-                                    ultima_modificacion=datetime.now())
-            
-            # Agregar el producto a la base de datos
-            db_session.add(nuevo_ingrediente)
-            db_session.commit()
-            
-            # Redireccionar al listado de productos
-            return redirect(url_for('ingrediente.listar'))
-        
+            try:
+                # Obtener los datos del formulario
+                nombre = request.form['nombre']
+                cantidad = request.form['cantidad']
+                unidadmedida_id = request.form['unidadmedida_id']
+                # Crear una nueva instancia de Producto con los datos del formulario
+                nuevo_ingrediente = Ingrediente(nombre=nombre, 
+                                        cantidad=cantidad, 
+                                        unidadmedida_id=unidadmedida_id,
+                                        fecha_creacion=datetime.now(),
+                                        ultima_modificacion=datetime.now())
+                
+                # Agregar el producto a la base de datos
+                db_session.add(nuevo_ingrediente)
+                db_session.commit()
+                
+                # Redireccionar al listado de productos
+                return redirect(url_for('ingrediente.listar'))
+            except:
+                db_session.rollback()
+                flash('Error al crear el ingrediente', 'error')
+
         # Renderizar la plantilla ingrediente
         return render_template('ingrediente/nuevo.html', unidadmedida=unidadmedida)
 
@@ -53,27 +57,31 @@ def create_ingrediente_blueprint():
         unidadmedida = db_session.query(UnidadMedida).filter(UnidadMedida.activo == True).all()
 
         if request.method == 'POST':
-            # Obtener los datos del formulario
-            nombre = request.form['nombre']
-            cantidad = request.form['cantidad']
-            unidadmedida_id = request.form['unidadmedida_id']
+            try:
+                # Obtener los datos del formulario
+                nombre = request.form['nombre']
+                cantidad = request.form['cantidad']
+                unidadmedida_id = request.form['unidadmedida_id']
 
-            # Actualizar los datos del ingrediente con los nuevos datos del formulario
-            if nombre:
-                ingrediente.nombre = nombre
-            if cantidad:
-                ingrediente.cantidad = cantidad
-            if unidadmedida_id:
-                ingrediente.unidadmedida_id = unidadmedida_id
+                # Actualizar los datos del ingrediente con los nuevos datos del formulario
+                if nombre:
+                    ingrediente.nombre = nombre
+                if cantidad:
+                    ingrediente.cantidad = cantidad
+                if unidadmedida_id:
+                    ingrediente.unidadmedida_id = unidadmedida_id
 
-            # Registrar última modificación
-            ingrediente.ultima_modificacion = datetime.now()
+                # Registrar última modificación
+                ingrediente.ultima_modificacion = datetime.now()
 
-            # Guardar los cambios en la base de datos
-            db_session.commit()
+                # Guardar los cambios en la base de datos
+                db_session.commit()
 
-            # Redireccionar al listado de ingredientes
-            return redirect(url_for('ingrediente.listar'))
+                # Redireccionar al listado de ingredientes
+                return redirect(url_for('ingrediente.listar'))
+            except:
+                db_session.rollback()
+                flash('Error al editar el ingrediente', 'error')
 
         # Renderizar la plantilla de edición de ingrediente
         return render_template('ingrediente/editar.html', ingrediente=ingrediente, unidadmedida=unidadmedida)
@@ -83,11 +91,12 @@ def create_ingrediente_blueprint():
         ingrediente = db_session.query(Ingrediente).filter_by(id=id).one()
 
         if request.method == 'POST':
-            # Eliminar el ingrediente estableciendo el campo "activo" en Falses
-            ingrediente.activo = False
-            db_session.commit()
-
-            # Redireccionar al listado de ingredientes
+            try:
+                # Eliminar el ingrediente estableciendo el campo "activo" en Falses
+                ingrediente.activo = False
+                db_session.commit()
+            except:
+                db_session.rollback()
             return redirect(url_for('ingrediente.listar'))
 
         # Renderizar la plantilla de confirmación de eliminación de ingrediente
@@ -97,10 +106,13 @@ def create_ingrediente_blueprint():
     def restaurar(id):
         ingrediente = db_session.query(Ingrediente).filter_by(id=id).one()
         if request.method == 'POST':
-            ingrediente.activo = True
-            db_session.commit()
+            try:
+                ingrediente.activo = True
+                db_session.commit()
+            except:
+                db_session.rollback()
             return redirect(url_for('ingrediente.listar'))
-        else:
-            return render_template('ingrediente/restaurar.html', ingrediente=ingrediente)
+        
+        return render_template('ingrediente/restaurar.html', ingrediente=ingrediente)
     # Devolver el blueprint
     return ingrediente_blueprint

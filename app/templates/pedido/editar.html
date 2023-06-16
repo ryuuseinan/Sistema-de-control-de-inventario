@@ -11,7 +11,52 @@
                     <div class="buttons is-pulled-right">
                         <a href="{{ url_for('pedido.listar') }}" class="button is-link is-light">Volver</a>
                     </div>
-                    <h1 class="title">Ingresar productos al pedido</h1>
+                    {% if pedido %}
+                    <div class="columns">
+                      <div class="column">
+                        <h1 class="title">Detalle del pedido</h1>
+                      </div>
+                    </div>
+                    <table class="table is-striped is-hoverable">
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>Vendedor</th>
+                          <th>Detalle del pedido</th>
+                          <th>Fecha</th>
+                          <th>Total</th>
+                          <th>Estado</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                          <tr>
+                            <td>{{ pedido.id }}</td>
+                            <td>{{ pedido.persona.nombre }} {{ pedido.persona.apellido_paterno }} {{ pedido.persona.apellido_materno}}</td>
+                            <td class="descripcion">
+                                {% if pedido.detalles %}
+                                    <table class="table is-striped is-hoverable">
+                                        <tbody>
+                                            {% for detalle_pedido in pedido.detalles %}
+                                                <tr>
+                                                    <td><img src="{{ url_for('static', filename='img/') }}{{ detalle_pedido.producto.imagen }}" alt=" " style="max-height: 15px;"></td>
+                                                    <td>{{ loop.index }}. {{ detalle_pedido.producto.nombre }}</td>
+                                                    <td>{{ detalle_pedido.cantidad }} unidades<br></td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                {% else %}
+                                    <p>No se han añadido productos al pedido.</p>
+                                {% endif %}
+                            </td>
+                            <td>{{ arrow.get(pedido.fecha_creacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if pedido.fecha_creacion else None }}</td>
+                            <td>${{ pedido.total_pedido }}</td>
+                            <td>{{ pedido.pedido_estado.nombre }}</td>
+                          </tr>
+                      </tbody>
+                    </table>
+                {% endif %}
+                <h1 class="title">Ingresar productos al pedido</h1>
                     {% include 'messages.html' %}
                     <p><b>Buscar producto por nombre o por código de barras:</b></p>
                     <form id="searchp" method="POST">
@@ -26,7 +71,7 @@
                     </form>                
                 </div>
             {% if productos %}
-                <table class="table is-bordered is-hoverable">
+            <table class="table is-striped is-hoverable">
                     <thead>
                         <tr>
                             <th>Código de barras</th>
@@ -43,7 +88,7 @@
                         {% for producto in productos %}
                         <tr>
                             <td>{{ producto.codigo_barra }}</td>
-                            <td><img src="{{ url_for('static', filename='img/') }}{{ producto.imagen }}" alt="{{ producto.nombre }}" style="max-height: 50px;">
+                            <td><img src="{{ url_for('static', filename='img/') }}{{ producto.imagen }}" alt=" " style="max-height: 50px;">
                             </td>
                             <td>{{ producto.nombre }}</td>
                             <td>{{ producto.categoria.nombre }}</td>
@@ -65,25 +110,37 @@
                             </td>
                             <td>
                                 {% if producto.receta %}
+                                <table class="table is-striped is-hoverable">
+                                    <tbody>
                                     {% for receta_detalle in producto.receta_detalles %}
-                                    {{ loop.index }}. {{ receta_detalle.ingrediente.nombre }} ({{ receta_detalle.cantidad }} {{ receta_detalle.ingrediente.unidadmedida.nombre }}) <br>
+                                    <tr>
+                                    <td>{{ loop.index }}. {{ receta_detalle.ingrediente.nombre }}</td>
+                                    <td>({{ receta_detalle.cantidad }} {{ receta_detalle.ingrediente.unidadmedida.nombre }}) <br></td>
+                                </tr>
                                     {% endfor %}
+                                    </tbody>
+                                </table>
                                 {% else %}
                                     No se encontraron ingredientes
                                 {% endif %}
+                               
                             </td>
                             <td>
-                                <form method="post" action="{{ url_for('pedido.agregar_producto', id=pedido.id) }}">
+                                <form method="post" action="{{ url_for('pedido.actualizar_pedido', id=pedido.id) }}">
                                     <input type="hidden" name="producto_id" value="{{ producto.id }}">
                                     <div class="field is-grouped">
                                         <div class="control">
                                             <input type="number" name="cantidad" class="input" value="1" min="1" max="{{ producto.stock }}">
                                         </div>
                                         <div class="control">
-                                            <button type="submit" class="button is-primary"><i class="fas fa-cart-plus"></i> Añadir</button>
+                                            <button type="submit" name="action" value="agregar" class="button is-primary"><i class="fas fa-plus"></i></button>
+                                        </div>
+                                        <div class="control">
+                                            <button type="submit" name="action" value="quitar" class="button is-danger"><i class="fas fa-minus"></i></button>
                                         </div>
                                     </div>
                                 </form>
+                                
                             </td>
                         </tr>
                         {% endfor %}

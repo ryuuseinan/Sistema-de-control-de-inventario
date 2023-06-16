@@ -28,6 +28,7 @@
               <th>ID</th>
               <th>Vendedor</th>
               <th>Detalle</th>
+              <th>Fecha</th>
               <th>Total</th>
               <th>Anular</th>
             </tr>
@@ -42,6 +43,7 @@
                   <img src="{{ url_for('static', filename='img/') }}{{ pedido_detalle.producto.imagen }}" alt=" " style="max-height: 15px;">{{ loop.index }}. {{ pedido_detalle.producto.nombre }} ({{ pedido_detalle.cantidad }} unidades)<br>
                  {% endfor %}
                  </td>
+                <td>{{ arrow.get(pedido.fecha_creacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if pedido.fecha_creacion else None }}</td>
                 <td>${{ pedido.total_pedido }}</td>
                 <td>
                   <a href="{{ url_for('pedido.anular', id=pedido.id) }}" class="button is-danger is-light">
