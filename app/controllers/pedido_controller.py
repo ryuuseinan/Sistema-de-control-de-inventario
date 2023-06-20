@@ -120,18 +120,19 @@ def create_pedido_blueprint():
         if request.method == 'POST':
             producto_id = request.form.getlist('producto_id')  # Obtener una lista de los IDs de productos
             cantidades = request.form.getlist('cantidad')  # Obtener una lista de cantidades
-            stock = request.form.getlist('stock')
+            #stock = request.form.getlist('stock')
             unidades_preparables = request.form.getlist('unidades_preparables')
             action = request.form.get('action')
+            test = int(unidades_preparables[0]) - int(cantidades[0])
 
-            if cantidades > stock or unidades_preparables:
+            print(f'Preparables: {unidades_preparables} - {cantidades} = {test}')
+            producto = db_session.query(Producto).filter_by(id=producto_id).first()
+
+            if unidades_preparables >= cantidades:
                 for producto_id, cantidad in zip(producto_id, cantidades):
-                    if producto_id and cantidad:
-                        producto = db_session.query(Producto).filter_by(id=producto_id).first()  # Obtener el producto correspondiente
-                    
                     if action == 'agregar':
                         producto_existente = db_session.query(PedidoDetalle).filter_by(pedido_id=pedido.id,
-                                                                                        producto_id=producto_id).all()
+                                                                                        producto_id=producto.id).all()
                         
                         if producto_existente:
                             flash(f'El producto {producto.nombre} ya existe en la pedido, por lo que se ha(n) añadido {int(cantidades[0])} unidad(es) adicional(es).', 'error')
@@ -146,6 +147,7 @@ def create_pedido_blueprint():
                                         ingrediente.cantidad -= cantidad_necesaria
                                 else:
                                     producto.stock -= int(cantidad)
+                                    
                         else:
                             flash(f'El producto {producto.nombre} no existe en la pedido, por lo que se ha(n) añadido {int(cantidades[0])} unidad(es) al pedido.', 'error')
                             pedido_detalle = PedidoDetalle(pedido_id=pedido.id, producto_id=producto_id,
@@ -193,7 +195,7 @@ def create_pedido_blueprint():
                 db_session.commit()
 
             else:
-                flash(f'No hay stock suficiente o unidades preparables.', 'error')
+                flash(f'No hay stock suficiente para agregar { producto.nombre } al pedido.', 'error')
 
             return redirect(url_for('pedido.editar', id=pedido.id))
 
