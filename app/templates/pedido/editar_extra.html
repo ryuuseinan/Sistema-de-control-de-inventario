@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Vender{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="columns">
+            <div class="column">
+                <div class="column">
+                    <div class="buttons is-pulled-right">
+                        <a href="{{ url_for('pedido.listar') }}" class="button is-link is-light">Volver</a>
+                    </div>
+                    <div class="columns">
+                      <div class="column">
+                        <h1 class="title">Detalle del pedido</h1>
+                      </div>
+                    </div>
+                    <table class="table is-striped is-hoverable">
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>Vendedor</th>
+                          <th>Detalle del pedido</th>
+                          <th>Fecha</th>
+                          <th>Total</th>
+                          <th>Estado</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                          <tr>
+                            <td>{{ detalle_pedido.id }}</td>
+                            <td>
+                                {% if pedido.detalles %}
+                                {% else %}
+                                    <p>No se han añadido productos al pedido.</p>
+                                {% endif %}
+                            </td>
+                          </tr>
+                      </tbody>
+                    </table>
+                <h1 class="title">Ingresar productos al pedido</h1>
+                    {% include 'messages.html' %}
+                    <p><b>Buscar producto por nombre o por código de barras:</b></p>
+                    <form id="searchp" method="POST">
+                        <div class="field is-grouped">
+                            <div class="control is-expanded">
+                                <input type="text" name="producto_busqueda" class="input" placeholder="Nombre o código de barras">
+                            </div>
+                            <div class="control">
+                                <button type="submit" class="button is-primary"><i class="fas fa-search"></i> Buscar</button>
+                            </div>
+                        </div>
+                    </form>                
+                </div>
+            {% if productos %}
+            <table class="table is-striped is-hoverable">
+                    <thead>
+                        <tr>
+                            <th>Código de barras</th>
+                            <th>Imagen</th>
+                            <th>Nombre</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                            <th>Receta</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for producto in productos %}
+                        <tr>
+                            <td>{{ producto.codigo_barra }}</td>
+                            <td><img src="{{ url_for('static', filename='img/') }}{{ producto.imagen }}" alt=" " style="max-height: 50px;">
+                            </td>
+                            <td>{{ producto.nombre }} ({{ producto.categoria.nombre }})</td>
+                            <td>${{ producto.precio }}</td>
+                            <td>
+                            {% if not producto.tiene_receta %}
+                                {% if producto.stock %}
+                                    {{ producto.stock }} unidad(es)<br>
+                                {% else %}
+                                    Sin stock<br>
+                                {% endif %}
+                            {% else %}
+                                {% if producto.stock_disponible %}
+                                    {{ producto.stock_disponible }} unidad(es) preparable(s)
+                                {% else %}
+                                    No hay unidad(es) preparable(s)
+                                {% endif %}
+                            {% endif %}
+                            </td>
+                            <td>
+                                {% if producto.receta %}
+                                <table class="table is-striped is-hoverable">
+                                    <tbody>
+                                    {% for receta_detalle in producto.receta_detalles %}
+                                    <tr>
+                                    <td>{{ loop.index }}. {{ receta_detalle.ingrediente.nombre }}</td>
+                                    <td>{{ receta_detalle.cantidad }} {{ receta_detalle.ingrediente.unidadmedida.nombre }}<br></td>
+                                </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                {% else %}
+                                    No se encontraron ingredientes
+                                {% endif %}
+                            </td>
+                            <td>
+                                <form method="post" action="{{ url_for('pedido.actualizar_pedido', id=pedido.id) }}">
+                                <input type="hidden" name="producto_id" value="{{ producto.id }}">
+                                <input type="hidden" name="unidades_preparables" value="{{ producto.stock_disponible }}">
+                                <div class="field is-grouped">
+                                    <div class="control">
+                                        <input type="number" name="cantidad" class="input" value="1" min="1" max="9999">
+                                    </div>
+                                    <div class="control">
+                                        <button type="submit" name="action" value="agregar" class="button is-primary"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                    <div class="control">
+                                        <button type="submit" name="action" value="quitar" class="button is-danger"><i class="fas fa-minus"></i></button>
+                                    </div>
+                                </div> 
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                {% else %}
+                    <p>No se han encontrado resultados.</p>
+            {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

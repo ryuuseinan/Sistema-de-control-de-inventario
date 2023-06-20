@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
-from models.database import Usuario, Pedido, PedidoEstado, Persona, Producto, Categoria, Receta, RecetaDetalle, PedidoDetalle, db_session
+from models.database import Usuario, Pedido, PedidoEstado, Persona, Producto, Categoria, Receta, RecetaDetalle, PedidoDetalle, PedidoDetalleIngrediente, db_session
 import bcrypt, arrow
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
@@ -134,7 +134,7 @@ def create_pedido_blueprint():
                         producto_existente = db_session.query(PedidoDetalle).filter_by(pedido_id=pedido.id,
                                                                                         producto_id=producto.id).all()
                         
-                        if producto_existente:
+                        if producto_existente and producto.tiene_receta is False:
                             flash(f'El producto {producto.nombre} ya existe en la pedido, por lo que se ha(n) añadido {int(cantidades[0])} unidad(es) adicional(es).', 'error')
                             for pedido_detalle in producto_existente:
                                 pedido_detalle.cantidad += int(cantidad)
@@ -147,7 +147,6 @@ def create_pedido_blueprint():
                                         ingrediente.cantidad -= cantidad_necesaria
                                 else:
                                     producto.stock -= int(cantidad)
-                                    
                         else:
                             flash(f'El producto {producto.nombre} no existe en la pedido, por lo que se ha(n) añadido {int(cantidades[0])} unidad(es) al pedido.', 'error')
                             pedido_detalle = PedidoDetalle(pedido_id=pedido.id, producto_id=producto_id,
@@ -204,6 +203,25 @@ def create_pedido_blueprint():
             return redirect(url_for('pedido.editar', id=pedido.id))
 
         return redirect(url_for('pedido.editar', id=pedido.id))
+    
+    @pedido_blueprint.route('/pedido/editar_extra/<int:id>', methods=['GET', 'POST'])
+    def editar_extra(id):
+        detalle_pedido = db_session.query(PedidoDetalle).filter_by(id=id).one()
+        
+        return render_template('pedido/editar.html', productos=productos, producto_busqueda=producto_busqueda, pedido=pedido)
+
+    
+    @pedido_blueprint.route('/agregar_extras/<int:id>', methods=['GET', 'POST'])
+    def agregar_extras(id):
+        detalle_pedido = db_session.query(PedidoDetalle).filter_by(id=id).all()
+
+        return redirect(url_for('pedido.editar_extra', id=detalle_pedido.id))
+    
+    @pedido_blueprint.route('/eliminar_extras/<int:id>', methods=['GET', 'POST'])
+    def eliminar_extras(id):
+        detalle_pedido = db_session.query(PedidoDetalle).filter_by(id=id).all()
+
+        return redirect(url_for('pedido.editar_extra', id=detalle_pedido.id))
     
     @pedido_blueprint.route('/pedido/listar/<int:id>', methods=['POST'])
     def restaurar(id):

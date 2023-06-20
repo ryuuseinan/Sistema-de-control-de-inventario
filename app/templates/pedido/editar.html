@@ -32,15 +32,19 @@
                           <tr>
                             <td>{{ pedido.id }}</td>
                             <td>{{ pedido.persona.nombre }} {{ pedido.persona.apellido_paterno }} {{ pedido.persona.apellido_materno}}</td>
-                            <td class="descripcion">
+                            <td>
                                 {% if pedido.detalles %}
                                     <table class="table is-striped is-hoverable">
                                         <tbody>
                                             {% for detalle_pedido in pedido.detalles %}
                                                 <tr>
-                                                    <td><img src="{{ url_for('static', filename='img/') }}{{ detalle_pedido.producto.imagen }}" alt=" " style="max-height: 15px;"></td>
-                                                    <td>{{ loop.index }}. {{ detalle_pedido.producto.nombre }}</td>
+                                                    <td>{{ detalle_pedido.id }}</td>
+                                                    <td><img src="{{ url_for('static', filename='img/') }}{{ detalle_pedido.producto.imagen }}" alt=" " style="max-height: 30px;"></td>
+                                                    <td>{{ loop.index }}. {{ detalle_pedido.producto.nombre }} ({{ detalle_pedido.producto.categoria.nombre }})</td>
                                                     <td>{{ detalle_pedido.cantidad }} unidad(es)<br></td>
+                                                    <td><a href="{{ url_for('pedido.editar_extra', id=detalle_pedido.id) }}">
+                                                        Agregar añadidos
+                                                    </a></td>
                                                 </tr>
                                             {% endfor %}
                                         </tbody>
@@ -77,7 +81,6 @@
                             <th>Código de barras</th>
                             <th>Imagen</th>
                             <th>Nombre</th>
-                            <th>Categoria</th>
                             <th>Precio</th>
                             <th>Stock</th>
                             <th>Receta</th>
@@ -90,8 +93,7 @@
                             <td>{{ producto.codigo_barra }}</td>
                             <td><img src="{{ url_for('static', filename='img/') }}{{ producto.imagen }}" alt=" " style="max-height: 50px;">
                             </td>
-                            <td>{{ producto.nombre }}</td>
-                            <td>{{ producto.categoria.nombre }}</td>
+                            <td>{{ producto.nombre }} ({{ producto.categoria.nombre }})</td>
                             <td>${{ producto.precio }}</td>
                             <td>
                             {% if not producto.tiene_receta %}

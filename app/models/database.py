@@ -173,6 +173,14 @@ class Venta(Base):
     # Crea la relación con pedido y producto
     pedido = relationship('Pedido')
 
+class PedidoDetalleIngrediente(Base):
+    __tablename__ = 'pedido_detalle_ingrediente'
+    id = Column(Integer, primary_key=True)
+    pedido_detalle_id = Column(Integer, ForeignKey('pedido_detalle.id'))
+    ingrediente_id = Column(Integer, ForeignKey('ingrediente.id'))
+    pedido_detalle = relationship('PedidoDetalle')
+    ingrediente = relationship('Ingrediente')
+
 Base.metadata.create_all(engine)
 
 unidad_medida_gr = db_session.query(UnidadMedida).filter_by(nombre='gr').first()
