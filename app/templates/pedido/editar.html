@@ -40,7 +40,7 @@
                                                 <tr>
                                                     <td><img src="{{ url_for('static', filename='img/') }}{{ detalle_pedido.producto.imagen }}" alt=" " style="max-height: 15px;"></td>
                                                     <td>{{ loop.index }}. {{ detalle_pedido.producto.nombre }}</td>
-                                                    <td>{{ detalle_pedido.cantidad }} unidades<br></td>
+                                                    <td>{{ detalle_pedido.cantidad }} unidad(es)<br></td>
                                                 </tr>
                                             {% endfor %}
                                         </tbody>
@@ -96,15 +96,15 @@
                             <td>
                             {% if not producto.tiene_receta %}
                                 {% if producto.stock %}
-                                    {{ producto.stock }} unidades<br>
+                                    {{ producto.stock }} unidad(es)<br>
                                 {% else %}
                                     Sin stock<br>
                                 {% endif %}
                             {% else %}
                                 {% if producto.stock_disponible %}
-                                    {{ producto.stock_disponible }} unidades preparables
+                                    {{ producto.stock_disponible }} unidad(es) preparable(s)
                                 {% else %}
-                                    No hay unidades preparables
+                                    No hay unidad(es) preparable(s)
                                 {% endif %}
                             {% endif %}
                             </td>
