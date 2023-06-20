@@ -3,6 +3,7 @@ from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from config import *
+from flask_security import RoleMixin, UserMixin
 # Crear objeto de base de datos SQLAlchemy
 db = SQLAlchemy()
 
@@ -21,12 +22,12 @@ db_session = Session()
 Base = declarative_base()
 
 # Creamos tabla para almacenar usuarios
-class Usuario(Base):
+class Usuario(Base, UserMixin):
     __tablename__ = 'usuario'
     id = Column(Integer, primary_key=True)
-    nombre_usuario = Column(String(50), unique=True, nullable=False)
-    correo = Column(String(255), unique=True, nullable=False)
-    contrasena = Column(String(60), nullable=False)
+    nombre_usuario = Column(String(30), unique=True, nullable=False)
+    correo = Column(String(30), unique=True, nullable=False)
+    contrasena = Column(String(30), nullable=False)
     rol_id = Column(Integer, ForeignKey('rol.id'))
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
     ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
@@ -34,10 +35,10 @@ class Usuario(Base):
     # Crea la relación con Rol
     rol = relationship('Rol')
 
-class Rol(Base):
+class Rol(Base, RoleMixin):
     __tablename__ = 'rol'
     id = Column(Integer, primary_key=True)
-    nombre = Column(String(50), unique=True, nullable=False)
+    nombre = Column(String(30), unique=True, nullable=False)
     activo = Column(Boolean, default=True, nullable=False)
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
     ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
@@ -51,7 +52,7 @@ class Persona(Base):
     nombre = Column(String(30), nullable=False)
     apellido_paterno = Column(String(30), nullable=False)
     apellido_materno = Column(String(30), nullable=False)
-    celular = Column(String(22), unique=True, nullable=False)
+    celular = Column(String(12), unique=True, nullable=False)
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
     ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
     activo = Column(Boolean, default=True, nullable=False)
@@ -72,8 +73,8 @@ class Producto(Base):
     __tablename__ = 'producto'
     id = Column(Integer, primary_key=True)
     imagen = Column(String(255))
-    codigo_barra = Column(String(50), unique=True, nullable=False)
-    nombre = Column(String(50), nullable=False)
+    codigo_barra = Column(String(30), unique=True, nullable=False)
+    nombre = Column(String(30), nullable=False)
     descripcion = Column(Text)
     precio = Column(Integer, nullable=False)
     stock = Column(Integer)
@@ -89,7 +90,7 @@ class Producto(Base):
 class Ingrediente(Base):
     __tablename__ = 'ingrediente'
     id = Column(Integer, primary_key=True)
-    nombre = Column(String(50), unique=True, nullable=False)
+    nombre = Column(String(30), unique=True, nullable=False)
     cantidad = Column(Integer, nullable=False)
     activo = Column(Boolean, default=True, nullable=False)
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
@@ -101,7 +102,7 @@ class Ingrediente(Base):
 class UnidadMedida(Base):
     __tablename__ = 'unidadmedida'
     id = Column(Integer, primary_key=True)
-    nombre = Column(String(50), unique=True, nullable=False)
+    nombre = Column(String(30), unique=True, nullable=False)
     activo = Column(Boolean, default=True, nullable=False)
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
     ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)

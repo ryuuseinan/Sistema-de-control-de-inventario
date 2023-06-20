@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask_security import login_required, roles_required, roles_accepted
 from models.database import Producto, Categoria, db_session
 from datetime import datetime
 from werkzeug.utils import secure_filename
@@ -12,6 +13,7 @@ def create_producto_blueprint():
 
     # Definir las rutas y las funciones controladoras
     @producto_blueprint.route('/productos')
+    #@login_required
     def listar():
         # Obtenemos todas los productos de la base de datos
         productos = db_session.query(Producto).filter(Producto.activo == True).all()
@@ -23,6 +25,7 @@ def create_producto_blueprint():
         productos = db_session.query(Producto).filter(Categoria.activo == False).all()
         return render_template('producto/papelera.html', productos=productos)
 
+    #@roles_required('Administrdor')
     @producto_blueprint.route('/producto/nuevo', methods=['GET', 'POST'])
     def nuevo():
         # Obtener las categorías para mostrarlas en el formulario
