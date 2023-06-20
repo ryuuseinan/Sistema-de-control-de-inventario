@@ -127,27 +127,27 @@
                             </td>
                             <td>
                                 <form method="post" action="{{ url_for('pedido.actualizar_pedido', id=pedido.id) }}">
-                                    <input type="hidden" name="producto_id" value="{{ producto.id }}">
-                                    <input type="hidden" name="stock" value="{{ stock }}">
-                                    <input type="hidden" name="unidades_preparables" value="{{ producto.stock_disponible }}">
-                                    <div class="field is-grouped">
-                                        <div class="control">
-                                            <input type="number" name="cantidad" class="input" value="1" min="1">
-                                        </div>
-                                        <div class="control">
-                                            <button type="submit" name="action" value="agregar" class="button is-primary"><i class="fas fa-plus"></i></button>
-                                        </div>
-                                        <div class="control">
-                                            <button type="submit" name="action" value="quitar" class="button is-danger"><i class="fas fa-minus"></i></button>
-                                        </div>
+                                <input type="hidden" name="producto_id" value="{{ producto.id }}">
+                                <input type="hidden" name="stock" value="{{ stock }}">
+                                <input type="hidden" name="unidades_preparables" value="{{ producto.stock_disponible }}">
+                                <div class="field is-grouped">
+                                    <div class="control">
+                                        <input type="number" name="cantidad" class="input" value="1" min="1">
                                     </div>
+                                    <div class="control">
+                                        <button type="submit" name="action" value="agregar" class="button is-primary"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                    <div class="control">
+                                        <button type="submit" name="action" value="quitar" class="button is-danger"><i class="fas fa-minus"></i></button>
+                                    </div>
+                                </div> 
                                 </form>
-                                
                             </td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
+
                 {% else %}
                     <p>No se han encontrado resultados.</p>
             {% endif %}
