@@ -3,7 +3,6 @@ from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from config import *
-from flask_security import RoleMixin, UserMixin
 # Crear objeto de base de datos SQLAlchemy
 db = SQLAlchemy()
 
@@ -22,7 +21,7 @@ db_session = Session()
 Base = declarative_base()
 
 # Creamos tabla para almacenar usuarios
-class Usuario(Base, UserMixin):
+class Usuario(Base):
     __tablename__ = 'usuario'
     id = Column(Integer, primary_key=True)
     nombre_usuario = Column(String(30), unique=True, nullable=False)
@@ -35,7 +34,7 @@ class Usuario(Base, UserMixin):
     # Crea la relación con Rol
     rol = relationship('Rol')
 
-class Rol(Base, RoleMixin):
+class Rol(Base):
     __tablename__ = 'rol'
     id = Column(Integer, primary_key=True)
     nombre = Column(String(30), unique=True, nullable=False)

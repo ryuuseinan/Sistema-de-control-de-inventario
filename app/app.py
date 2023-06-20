@@ -1,5 +1,4 @@
 from flask import Flask, render_template, redirect, url_for
-from flask_security import Security, SQLAlchemyUserDatastore
 from models.database import db, db_session, Usuario, Rol
 from db_init import init_db
 import arrow
@@ -23,9 +22,6 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{mysql['usuario_db']}:{mysql['contrasena_db']}@{mysql['host_db']}:{mysql['puerto_db']}/{mysql['nombre_base_datos_db']}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.secret_key = secret_key_cfg
-
-user_datastore = SQLAlchemyUserDatastore(db, Usuario, Rol)
-security = Security(app, user_datastore)
 
 # Importar y registrar los controladores
 categoria_blueprint = create_categoria_blueprint()
