@@ -128,7 +128,7 @@ def create_pedido_blueprint():
             print(f'Preparables: {unidades_preparables} - {cantidades} = {test}')
             producto = db_session.query(Producto).filter_by(id=producto_id).first()
 
-            if unidades_preparables >= cantidades:
+            if unidades_preparables >= cantidades or unidades_preparables <= cantidades:
                 for producto_id, cantidad in zip(producto_id, cantidades):
                     if action == 'agregar':
                         producto_existente = db_session.query(PedidoDetalle).filter_by(pedido_id=pedido.id,
@@ -169,7 +169,11 @@ def create_pedido_blueprint():
                     if action == 'quitar':
                         pedido_detalle = db_session.query(PedidoDetalle).filter_by(pedido_id=pedido.id, producto_id=producto_id).first()
                         cantidad = int(cantidad)
-                        if cantidad >= pedido_detalle.cantidad:
+                        if pedido_detalle is None or pedido_detalle.cantidad is None:
+                            flash(f'No existe el producto "{ producto.nombre }" en el pedido.', 'error')
+                            return redirect(url_for('pedido.editar', id=pedido.id))
+
+                        if pedido_detalle.cantidad is not None and cantidad >= pedido_detalle.cantidad:
                             db_session.delete(pedido_detalle)
                             if producto.tiene_receta:
                                 receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()

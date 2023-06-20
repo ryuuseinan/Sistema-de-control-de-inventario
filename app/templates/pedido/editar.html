@@ -130,12 +130,7 @@
                                 <input type="hidden" name="unidades_preparables" value="{{ producto.stock_disponible }}">
                                 <div class="field is-grouped">
                                     <div class="control">
-                                        {% if producto.receta %}
-                                            <input type="number" name="cantidad" class="input" value="1" min="1" max="99">
-                                        {% endif %}
-                                        {% if not producto.receta %}
-                                            <input type="number" name="cantidad" class="input" value="1" min="1" max="99">
-                                        {% endif %}
+                                        <input type="number" name="cantidad" class="input" value="1" min="1" max="9999">
                                     </div>
                                     <div class="control">
                                         <button type="submit" name="action" value="agregar" class="button is-primary"><i class="fas fa-plus"></i></button>
