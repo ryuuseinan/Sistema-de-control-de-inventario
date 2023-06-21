@@ -20,25 +20,18 @@
                       <thead>
                         <tr>
                           <th>ID</th>
-                          <th>Vendedor</th>
-                          <th>Detalle del pedido</th>
-                          <th>Fecha</th>
-                          <th>Total</th>
-                          <th>Estado</th>
+                          <th>Imagen</th>
+                          <th>Nombre del producto</th>
+                          <th>Añadidos</th>
                         </tr>
                       </thead>
                       <tbody>
-                          <tr>
-                            <tr>
-                                <td>{{ detalle_pedido.id }}</td>
-                                <td><img src="{{ url_for('static', filename='img/') }}{{ detalle_pedido.producto.imagen }}" alt=" " style="max-height: 30px;"></td>
-                                <td>{{ detalle_pedido.producto.nombre }} ({{ detalle_pedido.producto.categoria.nombre }})</td>
-                                <td>{{ detalle_pedido.cantidad }} unidad(es)<br></td>
-                                <td><a href="{{ url_for('pedido.editar_extra', id=detalle_pedido.id) }}">
-                                    Agregar añadidos
-                                </a></td>
-                            </tr>
-                          </tr>
+                        <tr>
+                            <td>{{ detalle_pedido.id }}</td>
+                            <td><img src="{{ url_for('static', filename='img/') }}{{ detalle_pedido.producto.imagen }}" alt=" " style="max-height: 30px;"></td>
+                            <td>{{ detalle_pedido.producto.nombre }} ({{ detalle_pedido.producto.categoria.nombre }})</td>
+                            <td></td>
+                        </tr>
                       </tbody>
                     </table>
                 <h1 class="title">Añadir ingredientes extras al producto</h1>

@@ -135,7 +135,7 @@ def create_pedido_blueprint():
                                                                                         producto_id=producto.id).all()
                         
                         if producto_existente and producto.tiene_receta is False:
-                            flash(f'El producto {producto.nombre} ya existe en la pedido, por lo que se ha(n) añadido {int(cantidades[0])} unidad(es) adicional(es).', 'error')
+                            flash(f'El producto "{producto.nombre} ({producto.categoria.nombre})" ya existe en la pedido, por lo que se ha(n) añadido {int(cantidades[0])} unidad(es) adicional(es).', 'error')
                             for pedido_detalle in producto_existente:
                                 pedido_detalle.cantidad += int(cantidad)
                                 if producto.tiene_receta:
@@ -148,7 +148,7 @@ def create_pedido_blueprint():
                                 else:
                                     producto.stock -= int(cantidad)
                         else:
-                            flash(f'El producto {producto.nombre} no existe en la pedido, por lo que se ha(n) añadido {int(cantidades[0])} unidad(es) al pedido.', 'error')
+                            flash(f'Se ha añadido una unidad de "{producto.nombre} ({producto.categoria.nombre})" al pedido.', 'error')
                             pedido_detalle = PedidoDetalle(pedido_id=pedido.id, producto_id=producto_id,
                                                         cantidad=int(cantidad))
 
@@ -208,8 +208,11 @@ def create_pedido_blueprint():
     def editar_extra(id):
         detalle_pedido = db_session.query(PedidoDetalle).filter_by(id=id).one()
         ingrediente = db_session.query(Ingrediente).filter(Ingrediente.activo == True).all()
+
         if request.method == 'POST':
-            print("test")
+            action = request.form.get('action')
+            cantidad = request.form.getlist('cantidad')
+
         return render_template('pedido/editar_extra.html', detalle_pedido=detalle_pedido, ingrediente=ingrediente)
     
     @pedido_blueprint.route('/pedido/listar/<int:id>', methods=['POST'])

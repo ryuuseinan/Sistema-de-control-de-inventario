@@ -20,6 +20,8 @@ db_session = Session()
 
 Base = declarative_base()
 
+# Usar una base de datos en utf8mb4_general_ci para no tener problemas con el rut.
+
 # Creamos tabla para almacenar usuarios
 class Usuario(Base):
     __tablename__ = 'usuario'
@@ -47,7 +49,7 @@ class Persona(Base):
     __tablename__ = 'persona'
     id = Column(Integer, primary_key=True)
     usuario_id = Column(Integer, ForeignKey('usuario.id'))
-    rut = Column(String(12), unique=True, nullable=False)
+    rut = Column(String(12, collation='utf8mb4_general_ci'), unique=True, nullable=False) 
     nombre = Column(String(30), nullable=False)
     apellido_paterno = Column(String(30), nullable=False)
     apellido_materno = Column(String(30), nullable=False)
@@ -178,6 +180,7 @@ class PedidoDetalleIngrediente(Base):
     id = Column(Integer, primary_key=True)
     pedido_detalle_id = Column(Integer, ForeignKey('pedido_detalle.id'))
     ingrediente_id = Column(Integer, ForeignKey('ingrediente.id'))
+    cantidad = Column(Integer, nullable=False)
     pedido_detalle = relationship('PedidoDetalle')
     ingrediente = relationship('Ingrediente')
 

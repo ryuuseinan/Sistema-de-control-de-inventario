@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% include 'head.html' %}
+	{% include 'header.html' %}
+</head>
+<body id="body_lista_opciones">
+	<div id="columnas" class="columns">
+		<div id="lista_de_opciones" class="column is-one-fifth">
+			<aside class="menu">
+			<ul class="menu-list">
+				<li>
+				<a href="{{ url_for('index') }}">
+					<span class="icon is-small"><i class="fas fa-home"></i></span>
+					<span>Inicio</span>
+				</a>
+				</li>
+				<li>
+				<a href="{{ url_for('ventas.listar') }}">
+					<span class="icon is-small"><i class="fas fa-dollar-sign"></i></span>
+					<span>Ver ventas</span>
+				</a>
+				</li>
+				<li>
+					<a href="{{ url_for('pedido.listar') }}">
+						<span class="icon is-small"><i class="fas fa-shopping-cart"></i></span>
+						<span>Pedidos</span>
+					</a>
+					</li>
+				<li>
+				<a href="{{ url_for('producto.listar') }}">
+					<span class="icon is-small"><i class="fas fa-utensils"></i></span>
+					<span>Productos</span>
+				</a>
+				</li>
+				<li>
+				<a href="{{ url_for('categoria.listar') }}">
+					<span class="icon is-small"><i class="fas fa-list"></i></span>
+					<span>Categorías</span>
+				</a>
+				</li>
+				<li>
+					<a href="{{ url_for('ingrediente.listar') }}">
+						<span class="icon is-small"><i class="fas fa-pepper-hot"></i></span>
+						<span>Ingredientes</span>
+					</a>
+				</li>
+			</ul>
+			<p id=admin class="menu-label">Administración</p>
+			<ul class="menu-list">
+				<li>
+				<a href="{{ url_for('usuario.listar') }}">
+					<span class="icon is-small"><i class="fas fa-users"></i></span>
+					<span>Usuarios</span>
+				</a>
+				</li>
+				<li>
+					<a href="{{ url_for('persona.listar') }}">
+						<span class="icon is-small"><i class="fas fa-user-circle"></i></span>
+						<span>Personas</span>
+					</a>
+				</li>
+			</ul>
+			</aside>
+		</div>
+		<div class="column">
+			{% block content %}{% endblock %}
+		</div>
+	</div>
+</body>
+</html>

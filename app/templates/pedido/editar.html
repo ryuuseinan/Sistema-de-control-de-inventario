@@ -40,7 +40,11 @@
                                                 <tr>
                                                     <td><img src="{{ url_for('static', filename='img/') }}{{ detalle_pedido.producto.imagen }}" alt=" " style="max-height: 30px;"></td>
                                                     <td>{{ loop.index }}. {{ detalle_pedido.producto.nombre }} ({{ detalle_pedido.producto.categoria.nombre }})</td>
-                                                    <td>{{ detalle_pedido.cantidad }} unidad(es)<br></td>
+                                                    <td>
+                                                        {% if detalle_pedido.producto.tiene_receta == False %}
+                                                        {{ detalle_pedido.cantidad }} unidad(es)<br>
+                                                        {% endif %}
+                                                    </td>
                                                     <td>
                                                         {% if detalle_pedido.producto.tiene_receta == True %}
                                                             <a href="{{ url_for('pedido.editar_extra', id=detalle_pedido.id) }}">
@@ -48,7 +52,7 @@
                                                             </a>
                                                         {% endif %}
                                                         {% if detalle_pedido.producto.tiene_receta == False %}
-                                                            <p>No se puede agregar ingredientes a un producto no preparable.</p>
+                                                            Producto no preparable
                                                         {% endif %}
                                                     </td>
                                                 </tr>
@@ -90,6 +94,8 @@
                             <th>Precio</th>
                             <th>Stock</th>
                             <th>Receta</th>
+                            <th>Cantidad</th>
+                            <th></th>
                             <th></th>
                         </tr>
                     </thead>
@@ -132,23 +138,46 @@
                                     No se encontraron ingredientes
                                 {% endif %}
                             </td>
-                            <td>
-                                <form method="post" action="{{ url_for('pedido.actualizar_pedido', id=pedido.id) }}">
-                                <input type="hidden" name="producto_id" value="{{ producto.id }}">
-                                <input type="hidden" name="unidades_preparables" value="{{ producto.stock_disponible }}">
-                                <div class="field is-grouped">
+                            <form method="post" action="{{ url_for('pedido.actualizar_pedido', id=pedido.id) }}">
+                            <input type="hidden" name="producto_id" value="{{ producto.id }}">
+                            <input type="hidden" name="unidades_preparables" value="{{ producto.stock_disponible }}">
+                            <div class="field is-grouped">
+                                {% if producto.tiene_receta == True %}
+                                <td>
                                     <div class="control">
-                                        <input type="number" name="cantidad" class="input" value="1" min="1" max="9999">
+                                        <input type="hidden" name="cantidad" class="input" value="1">
                                     </div>
+                                </td>
+                                <td>
                                     <div class="control">
                                         <button type="submit" name="action" value="agregar" class="button is-primary"><i class="fas fa-plus"></i></button>
                                     </div>
+                                </td>
+                                <td>
                                     <div class="control">
                                         <button type="submit" name="action" value="quitar" class="button is-danger"><i class="fas fa-minus"></i></button>
                                     </div>
-                                </div> 
-                                </form>
-                            </td>
+                                </td>
+                                {% endif %}
+                                {% if producto.tiene_receta == False %}
+                                <td>
+                                    <div class="control">
+                                        <input type="number" name="cantidad" class="input" value="1" min="1" max="9999">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="control">
+                                        <button type="submit" name="action" value="agregar" class="button is-primary"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="control">
+                                        <button type="submit" name="action" value="quitar" class="button is-danger"><i class="fas fa-minus"></i></button>
+                                    </div>
+                                </td>
+                                {% endif %}
+                            </div> 
+                            </form>
                         </tr>
                         {% endfor %}
                     </tbody>
