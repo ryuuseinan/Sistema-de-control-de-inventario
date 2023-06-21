@@ -38,13 +38,19 @@
                                         <tbody>
                                             {% for detalle_pedido in pedido.detalles %}
                                                 <tr>
-                                                    <td>{{ detalle_pedido.id }}</td>
                                                     <td><img src="{{ url_for('static', filename='img/') }}{{ detalle_pedido.producto.imagen }}" alt=" " style="max-height: 30px;"></td>
                                                     <td>{{ loop.index }}. {{ detalle_pedido.producto.nombre }} ({{ detalle_pedido.producto.categoria.nombre }})</td>
                                                     <td>{{ detalle_pedido.cantidad }} unidad(es)<br></td>
-                                                    <td><a href="{{ url_for('pedido.editar_extra', id=detalle_pedido.id) }}">
-                                                        Agregar añadidos
-                                                    </a></td>
+                                                    <td>
+                                                        {% if detalle_pedido.producto.tiene_receta == True %}
+                                                            <a href="{{ url_for('pedido.editar_extra', id=detalle_pedido.id) }}">
+                                                                Agregar ingredientes
+                                                            </a>
+                                                        {% endif %}
+                                                        {% if detalle_pedido.producto.tiene_receta == False %}
+                                                            <p>No se puede agregar ingredientes a un producto no preparable.</p>
+                                                        {% endif %}
+                                                    </td>
                                                 </tr>
                                             {% endfor %}
                                         </tbody>

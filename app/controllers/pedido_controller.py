@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
-from models.database import Usuario, Pedido, PedidoEstado, Persona, Producto, Categoria, Receta, RecetaDetalle, PedidoDetalle, PedidoDetalleIngrediente, db_session
+from models.database import Usuario, Pedido, PedidoEstado, Persona, Producto, Categoria, Receta, RecetaDetalle, PedidoDetalle, PedidoDetalleIngrediente, Ingrediente, db_session
 import bcrypt, arrow
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
@@ -207,21 +207,10 @@ def create_pedido_blueprint():
     @pedido_blueprint.route('/pedido/editar_extra/<int:id>', methods=['GET', 'POST'])
     def editar_extra(id):
         detalle_pedido = db_session.query(PedidoDetalle).filter_by(id=id).one()
-        
-        return render_template('pedido/editar.html', productos=productos, producto_busqueda=producto_busqueda, pedido=pedido)
-
-    
-    @pedido_blueprint.route('/agregar_extras/<int:id>', methods=['GET', 'POST'])
-    def agregar_extras(id):
-        detalle_pedido = db_session.query(PedidoDetalle).filter_by(id=id).all()
-
-        return redirect(url_for('pedido.editar_extra', id=detalle_pedido.id))
-    
-    @pedido_blueprint.route('/eliminar_extras/<int:id>', methods=['GET', 'POST'])
-    def eliminar_extras(id):
-        detalle_pedido = db_session.query(PedidoDetalle).filter_by(id=id).all()
-
-        return redirect(url_for('pedido.editar_extra', id=detalle_pedido.id))
+        ingrediente = db_session.query(Ingrediente).filter(Ingrediente.activo == True).all()
+        if request.method == 'POST':
+            print("test")
+        return render_template('pedido/editar_extra.html', detalle_pedido=detalle_pedido, ingrediente=ingrediente)
     
     @pedido_blueprint.route('/pedido/listar/<int:id>', methods=['POST'])
     def restaurar(id):
