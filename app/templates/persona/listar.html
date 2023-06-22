@@ -18,22 +18,22 @@
                     <table class="table is-striped is-hoverable">
                         <thead>
                             <tr>
-                                <th>Usuario</th>
                                 <th>RUT</th>
+                                <th>Usuario</th>
                                 <th>Nombre</th>
                                 <th>Apellidos</th>
                                 <th>Celular</th>
                                 <th>Fecha creación</th>
                                 <th>Última modificación</th>
                                 <th>Activo</th>
-                                <!-- <th>Editar/Eliminar</th> -->
+                                <th>Editar/Eliminar</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for persona in personas %}
                             <tr>
-                                <td>{{ persona.usuario.nombre_usuario }}</td>
                                 <td>{{ persona.rut }}</td>
+                                <td>{{ persona.usuario.nombre_usuario }}</td>
                                 <td>{{ persona.nombre }}</td>
                                 <td>{{ persona.apellido_paterno }} {{ persona.apellido_materno }}</td>
                                 <td>{{ persona.celular }}</td>
@@ -41,9 +41,12 @@
                                 <td>{{ arrow.get(persona.ultima_modificacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if persona.ultima_modificacion != persona.fecha_creacion else 'Nunca modificado' }}</td>
                                 <td>{{ 'Sí' if persona.activo else 'No' }}</td>
                                 <td>
-                                    <!-- <a href="{{ url_for('persona.eliminar', id=persona.id) }}" class="button is-danger is-light">
+                                    <a href="{{ url_for('usuario.editar', id=usuario.id) }}" class="button is-info is-light">
+                                      <span class="icon is-small"><i class="fa fa-pencil-alt" aria-hidden="true"></i></i></span>
+                                    </a>
+                                    <a href="{{ url_for('usuario.eliminar', id=usuario.id) }}" class="button is-danger is-light">
                                       <span class="icon is-small"><i class="fas fa-trash" aria-hidden="true"></i></span>
-                                    </a> -->
+                                    </a>
                                 </td>
                             </tr>
                         {% endfor %}

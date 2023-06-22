@@ -65,7 +65,7 @@ def create_pedido_blueprint():
 
     @pedido_blueprint.route('/nuevo', methods=['GET', 'POST'])
     def nuevo():
-        pedido = Pedido(persona_id=1)
+        pedido = Pedido(persona_id=session['user_id'])
         db_session.add(pedido)
         db_session.commit()
         return redirect(url_for('pedido.editar', id=pedido.id))
@@ -211,7 +211,20 @@ def create_pedido_blueprint():
 
         if request.method == 'POST':
             action = request.form.get('action')
+            nombre = request.form.getlist('nombre')
             cantidad = request.form.getlist('cantidad')
+            unidadmedida = request.form.getlist('unidadmedida')
+
+            if action == "agregar":
+                flash(f'Se ha(n) añadido {cantidad} {unidadmedida} de "{nombre}" al producto.', 'error')
+                pedido_detalle_ingrediente = PedidoDetalleIngrediente(detalle_pedido_id=detalle_pedido.id, ingrediente_id=ingrediente.id,
+                                            cantidad=int(cantidad))
+
+
+                ingrediente.stock -= int(cantidad)
+                db_session.add(pedido_detalle_ingrediente)
+                db_session.commit()
+
 
         return render_template('pedido/editar_extra.html', detalle_pedido=detalle_pedido, ingrediente=ingrediente)
     

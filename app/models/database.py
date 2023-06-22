@@ -93,6 +93,7 @@ class Ingrediente(Base):
     id = Column(Integer, primary_key=True)
     nombre = Column(String(30), unique=True, nullable=False)
     cantidad = Column(Integer, nullable=False)
+    precio = Column(Integer, default=1000, nullable=False)
     activo = Column(Boolean, default=True, nullable=False)
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
     ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)

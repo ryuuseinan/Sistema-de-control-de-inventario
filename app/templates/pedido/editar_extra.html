@@ -54,9 +54,10 @@
                         <thead>
                           <tr>
                             <th>Nombre</th>
+                            <th>Precio</th>
                             <th>Stock</th>
                             <th></th>
-                            <th></th>
+                            <th>Cantidad extra</th>
                             <th></th>
                           </tr>
                         </thead>
@@ -64,15 +65,16 @@
                             {% for ingrediente in ingrediente %}
                             <tr>
                               <td>{{ ingrediente.nombre }}</td>
+                              <td>${{ ingrediente.precio }}</td>
                               <td>{{ ingrediente.cantidad }} {{ ingrediente.unidadmedida.nombre }}</td>
                               <td>
                                 <td>
                                     <form method="post" action="{{ url_for('pedido.editar_extra', id=detalle_pedido.id) }}">
                                     <input type="hidden" name="ingrediente_id" value="{{ ingrediente.id }}">
-                                    <input type="hidden" name="unidades_preparables" value="{{ ingrediente.stock_disponible }}">
+                                    <input type="hidden" name="nombre" value="{{ ingrediente.nombre }}">
                                     <div class="field is-grouped">
                                         <div class="control">
-                                            <input type="number" name="cantidad" class="input" value="1" min="1" max="9999">
+                                            <input type="number" name="cantidad" class="input" value="" min="1" max="999999" placeholder="{{ ingrediente.unidadmedida.nombre }}">
                                         </div>
                                         <div class="control">
                                             <button type="submit" name="action" value="agregar" class="button is-primary"><i class="fas fa-plus"></i></button>

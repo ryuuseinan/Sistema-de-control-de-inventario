@@ -28,10 +28,12 @@ def create_ingrediente_blueprint():
             try:
                 # Obtener los datos del formulario
                 nombre = request.form['nombre']
+                precio = request.form['precio']
                 cantidad = request.form['cantidad']
                 unidadmedida_id = request.form['unidadmedida_id']
                 # Crear una nueva instancia de Producto con los datos del formulario
-                nuevo_ingrediente = Ingrediente(nombre=nombre, 
+                nuevo_ingrediente = Ingrediente(nombre=nombre,
+                                        precio=precio, 
                                         cantidad=cantidad, 
                                         unidadmedida_id=unidadmedida_id,
                                         fecha_creacion=datetime.now(),
@@ -60,12 +62,15 @@ def create_ingrediente_blueprint():
             try:
                 # Obtener los datos del formulario
                 nombre = request.form['nombre']
+                precio = request.form['precio']
                 cantidad = request.form['cantidad']
                 unidadmedida_id = request.form['unidadmedida_id']
 
                 # Actualizar los datos del ingrediente con los nuevos datos del formulario
                 if nombre:
                     ingrediente.nombre = nombre
+                if precio:
+                    ingrediente.precio = precio
                 if cantidad:
                     ingrediente.cantidad = cantidad
                 if unidadmedida_id:

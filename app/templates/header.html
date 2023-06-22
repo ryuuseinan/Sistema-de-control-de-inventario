@@ -11,7 +11,7 @@
         </a>
     </div>
         <div class="navbar-end">
-            <p class="navbar-item">{{ session.user_nombre }}</p>
+            <p class="navbar-item">{{ session['user_nombre'] }}</p>
             <a class="navbar-item" href="{{ url_for('sesion.logout') }}">Cerrar sesión</a>
         </div>
     </div>

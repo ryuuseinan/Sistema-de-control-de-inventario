@@ -25,6 +25,7 @@
           <thead>
             <tr>
               <th>Nombre</th>
+              <th>Precio por ingrediente extra</th>
               <th>Cantidad</th>
               <th>Fecha creación</th>
               <th>Fecha modificación</th>
@@ -35,6 +36,7 @@
             {% for ingrediente in ingredientes %}
                 <tr>
                   <td>{{ ingrediente.nombre }}</td>
+                  <td>${{ ingrediente.precio }}</td>
                   <td>{{ ingrediente.cantidad }} {{ ingrediente.unidadmedida.nombre }}</td>
                   <td>{{ arrow.get(ingrediente.fecha_creacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if ingrediente.fecha_creacion else None }}</td>
                   <td>{{ arrow.get(ingrediente.ultima_modificacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if ingrediente.ultima_modificacion != ingrediente.fecha_creacion else 'Nunca modificado' }}</td>
