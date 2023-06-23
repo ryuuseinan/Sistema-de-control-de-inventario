@@ -28,7 +28,7 @@ class Usuario(Base):
     id = Column(Integer, primary_key=True)
     nombre_usuario = Column(String(30), unique=True, nullable=False)
     correo = Column(String(30), unique=True, nullable=False)
-    contrasena = Column(String(30), nullable=False)
+    contrasena = Column(String(255), nullable=False)
     rol_id = Column(Integer, ForeignKey('rol.id'))
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
     ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)

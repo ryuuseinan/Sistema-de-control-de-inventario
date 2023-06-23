@@ -4,7 +4,24 @@
     {% include 'head.html' %}
 	{% include 'header.html' %}
 </head>
-<body id="body_lista_opciones">
+<nav id="nav-superior" class="navbar navbar-pink" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="{{ url_for('index') }}">
+            <h2 style="color: #ccc;">{{ appName() }}</h2>
+        </a>
+        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarMenu">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        </a>
+    </div>
+        <div class="navbar-end">
+            <p class="navbar-item">{{ session['user_nombre'] }}</p>
+            <a class="navbar-item" href="{{ url_for('sesion.logout') }}">Cerrar sesión</a>
+        </div>
+    </div>
+</nav>
+<div id="body_lista_opciones">
 	<div id="columnas" class="columns">
 		<div id="lista_de_opciones" class="column is-one-fifth">
 			<aside class="menu">
@@ -61,11 +78,14 @@
 					</a>
 				</li>
 			</ul>
+			<div class="side-menu-footer"></div>
 			</aside>
 		</div>
-		<div class="column">
-			{% block content %}{% endblock %}
-		</div>
+		<body>
+			<div class="column">
+				{% block content %}{% endblock %}
+			</div>
+		</body>
 	</div>
-</body>
+</div>
 </html>
