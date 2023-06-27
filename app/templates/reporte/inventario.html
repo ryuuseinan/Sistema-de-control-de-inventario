@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Control de Inventario - Restaurante XYZ{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="columns">
+            <div class="column is-two-thirds">
+                <div class="buttons is-pulled-right">
+                    <a href="/agregar_ingrediente" class="button is-primary">Agregar Ingrediente</a>
+                </div>
+
+                <h1 class="title">Control de Inventario - Restaurante XYZ</h1>
+                {% include 'messages.html' %}
+                <div class="columns">
+                    <div class="column">
+                        <h2 class="subtitle">Inventario de Ingredientes</h2>
+                        <table class="table is-striped is-hoverable">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Cantidad</th>
+                                    <th>Última Entrada</th>
+                                    <th>Última Salida</th>
+                                    <th>Proveedor</th>
+                                    <th>Precio Unitario</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Tomates</td>
+                                    <td>150 kg</td>
+                                    <td>2023-06-25</td>
+                                    <td>2023-06-20</td>
+                                    <td>Proveedor A</td>
+                                    <td>$1.50</td>
+                                    <td>
+                                        <a href="/editar_ingrediente/1" class="button is-small is-primary">Editar</a>
+                                        <a href="/eliminar_ingrediente/1" class="button is-small is-danger">Eliminar</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Lechuga</td>
+                                    <td>50 unidades</td>
+                                    <td>2023-06-24</td>
+                                    <td>2023-06-22</td>
+                                    <td>Proveedor B</td>
+                                    <td>$0.80</td>
+                                    <td>
+                                        <a href="/editar_ingrediente/2" class="button is-small is-primary">Editar</a>
+                                        <a href="/eliminar_ingrediente/2" class="button is-small is-danger">Eliminar</a>
+                                    </td>
+                                </tr>
+                                <!-- Agregar más filas para otros ingredientes -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="column">
+                        <h2 class="subtitle">Resumen del Inventario</h2>
+                        <div class="card">
+                            <div class="card-content">
+                                <div class="content">
+                                    <p><strong>Total de Ingredientes:</strong> 15</p>
+                                    <p><strong>Ingredientes Críticos:</strong> 3</p>
+                                    <p><strong>Valor del Inventario:</strong> $2500</p>
+                                    <p><strong>Última Actualización:</strong> 2023-06-26</p>
+                                </div>
+                            </div>
+                        </div>
+                        <h2 class="subtitle">Indicadores de Inventario</h2>
+                        <div class="columns">
+                            <div class="column">
+                                <div class="card">
+                                    <div class="card-content">
+                                        <div class="content">
+                                            <p><strong>Rotación de Inventario:</strong> 2.5 veces/mes</p>
+                                            <p><strong>Valor del Inventario por Venta:</strong> $200</p>
+                                            <p><strong>Índice de Obsolescencia:</strong> 5%</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="card">
+                                    <div class="card-content">
+                                        <div class="content">
+                                            <p><strong>Top 5 Ingredientes más Utilizados:</strong></p>
+                                            <ol>
+                                                <li>Tomates</li>
+                                                <li>Lechuga</li>
+                                                <li>Cebollas</li>
+                                                <li>Pimientos</li>
+                                                <li>Queso</li>
+                                            </ol>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <h2 class="subtitle">Alertas de Stock</h2>
+                <div class="card">
+                    <div class="card-content">
+                        <div class="content">
+                            <div class="notification is-warning">
+                                <p><strong>Ingrediente Crítico:</strong> Tomates</p>
+                                <p>La cantidad actual es inferior al umbral mínimo establecido.</p>
+                            </div>
+                            <div class="notification is-warning">
+                                <p><strong>Ingrediente Crítico:</strong> Queso</p>
+                                <p>La cantidad actual es inferior al umbral mínimo establecido.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

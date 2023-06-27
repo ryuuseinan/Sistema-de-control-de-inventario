@@ -11,11 +11,11 @@ from controllers.sesion_controller import create_sesion_blueprint
 from controllers.persona_controller import create_persona_blueprint
 from controllers.usuario_controller import create_usuario_blueprint
 from controllers.receta_controller import create_receta_blueprint
-from controllers.vender_controller import create_vender_blueprint
 from controllers.ventas_controller import create_ventas_blueprint
 from controllers.unidadmedida_controller import create_unidadmedida_blueprint
 from controllers.rol_controller import create_rol_blueprint
 from controllers.pedido_controller import create_pedido_blueprint
+from controllers.reporte_controller import create_reporte_blueprint
 
 # Configurar la aplicación
 app = Flask(__name__)
@@ -56,6 +56,9 @@ app.register_blueprint(rol_blueprint)
 
 pedido_blueprint = create_pedido_blueprint()
 app.register_blueprint(pedido_blueprint)
+
+reporte_blueprint = create_reporte_blueprint()
+app.register_blueprint(reporte_blueprint)
 
 # Forzar eliminación de caché
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0

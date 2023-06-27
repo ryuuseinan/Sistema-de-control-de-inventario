@@ -208,27 +208,27 @@ def create_pedido_blueprint():
     
     @pedido_blueprint.route('/pedido/editar_extra/<int:id>', methods=['GET', 'POST'])
     def editar_extra(id):
-        detalle_pedido = db_session.query(PedidoDetalle).filter_by(id=id).one()
+        pedido_detalle = db_session.query(PedidoDetalle).filter_by(id=id).one()
         ingrediente = db_session.query(Ingrediente).filter(Ingrediente.activo == True).all()
-
+        pedido_detalle_ingrediente = db_session.query(PedidoDetalleIngrediente).filter_by(pedido_detalle_id=id).all()
         if request.method == 'POST':
             action = request.form.get('action')
             nombre = request.form.getlist('nombre')
+            ingrediente_id = request.form.getlist('ingrediente_id')
             cantidad = request.form.getlist('cantidad')
             unidadmedida = request.form.getlist('unidadmedida')
 
             if action == "agregar":
                 flash(f'Se ha(n) añadido {cantidad} {unidadmedida} de "{nombre}" al producto.', 'error')
-                pedido_detalle_ingrediente = PedidoDetalleIngrediente(detalle_pedido_id=detalle_pedido.id, ingrediente_id=ingrediente.id,
-                                            cantidad=int(cantidad))
+                nuevo_pedido_detalle_ingrediente = PedidoDetalleIngrediente(pedido_detalle_id=pedido_detalle.id, ingrediente_id=ingrediente_id,
+                                            cantidad=cantidad)
 
 
-                ingrediente.stock -= int(cantidad)
-                db_session.add(pedido_detalle_ingrediente)
+                ingrediente[0].cantidad -= int(cantidad[0])
+                db_session.add(nuevo_pedido_detalle_ingrediente)
                 db_session.commit()
 
-
-        return render_template('pedido/editar_extra.html', detalle_pedido=detalle_pedido, ingrediente=ingrediente)
+        return render_template('pedido/editar_extra.html', pedido_detalle=pedido_detalle, ingrediente=ingrediente, pedido_detalle_ingrediente=pedido_detalle_ingrediente)
     
     @pedido_blueprint.route('/pedido/listar/<int:id>', methods=['POST'])
     def restaurar(id):

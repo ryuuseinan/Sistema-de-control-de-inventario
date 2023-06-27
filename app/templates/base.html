@@ -33,6 +33,12 @@
 				</a>
 				</li>
 				<li>
+				<a href="{{ url_for('reporte.inventario') }}">
+					<span class="icon is-small"><i class="fas fa-dollar-sign"></i></span>
+					<span>Inventario</span>
+				</a>
+				</li>
+				<li>
 				<a href="{{ url_for('ventas.listar') }}">
 					<span class="icon is-small"><i class="fas fa-dollar-sign"></i></span>
 					<span>Ver ventas</span>
@@ -44,6 +50,10 @@
 						<span>Pedidos</span>
 					</a>
 					</li>
+				<li>
+			</ul>
+			<p id=admin class="menu-label">Configuración</p>
+			<ul class="menu-list">
 				<li>
 				<a href="{{ url_for('producto.listar') }}">
 					<span class="icon is-small"><i class="fas fa-utensils"></i></span>

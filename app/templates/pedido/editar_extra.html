@@ -4,98 +4,110 @@
 
 {% block content %}
 <section class="section">
-    <div class="container">
-        <div class="columns">
-            <div class="column">
-                <div class="column">
-                    <div class="buttons is-pulled-right">
-                        <a href="{{ url_for('pedido.editar', id=detalle_pedido.pedido_id) }}" class="button is-link is-light">Volver</a>
-                    </div>
-                    <div class="columns">
-                      <div class="column">
-                        <h1 class="title">Detalle del pedido</h1>
-                      </div>
-                    </div>
-                    <table class="table is-striped is-hoverable">
-                      <thead>
-                        <tr>
-                          <th>ID</th>
-                          <th>Imagen</th>
-                          <th>Nombre del producto</th>
-                          <th>Añadidos</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                            <td>{{ detalle_pedido.id }}</td>
-                            <td><img src="{{ url_for('static', filename='img/') }}{{ detalle_pedido.producto.imagen }}" alt=" " style="max-height: 30px;"></td>
-                            <td>{{ detalle_pedido.producto.nombre }} ({{ detalle_pedido.producto.categoria.nombre }})</td>
-                            <td></td>
-                        </tr>
-                      </tbody>
-                    </table>
-                <h1 class="title">Añadir ingredientes extras al producto</h1>
-                    {% include 'messages.html' %}
-                    <p><b>Buscar producto por nombre o por código de barras:</b></p>
-                    <form id="searchp" method="POST">
-                        <div class="field is-grouped">
-                            <div class="control is-expanded">
-                                <input type="text" name="producto_busqueda" class="input" placeholder="Nombre o código de barras">
-                            </div>
-                            <div class="control">
-                                <button type="submit" class="button is-primary"><i class="fas fa-search"></i> Buscar</button>
-                            </div>
-                        </div>
-                    </form>                
-                </div>
-            {% if ingrediente %}
-                <table class="table is-striped is-hoverable">
-                    <table class="table is-striped is-hoverable">
-                        <thead>
-                          <tr>
-                            <th>Nombre</th>
-                            <th>Precio</th>
-                            <th>Stock</th>
-                            <th></th>
-                            <th>Cantidad extra</th>
-                            <th></th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                            {% for ingrediente in ingrediente %}
-                            <tr>
-                              <td>{{ ingrediente.nombre }}</td>
-                              <td>${{ ingrediente.precio }}</td>
-                              <td>{{ ingrediente.cantidad }} {{ ingrediente.unidadmedida.nombre }}</td>
-                              <td>
-                                <td>
-                                    <form method="post" action="{{ url_for('pedido.editar_extra', id=detalle_pedido.id) }}">
-                                    <input type="hidden" name="ingrediente_id" value="{{ ingrediente.id }}">
-                                    <input type="hidden" name="nombre" value="{{ ingrediente.nombre }}">
-                                    <div class="field is-grouped">
-                                        <div class="control">
-                                            <input type="number" name="cantidad" class="input" value="" min="1" max="999999" placeholder="{{ ingrediente.unidadmedida.nombre }}">
-                                        </div>
-                                        <div class="control">
-                                            <button type="submit" name="action" value="agregar" class="button is-primary"><i class="fas fa-plus"></i></button>
-                                        </div>
-                                        <div class="control">
-                                            <button type="submit" name="action" value="quitar" class="button is-danger"><i class="fas fa-minus"></i></button>
-                                        </div>
-                                    </div> 
-                                    </form>
-                                </td>
-                              </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                      </table>
-                </table>
-                {% else %}
-                    <p>No se han encontrado resultados.</p>
-            {% endif %}
-            </div>
+  <div class="container">
+    <div class="columns">
+      <div class="column">
+        <div class="buttons is-pulled-right">
+          <a href="{{ url_for('pedido.editar', id=pedido_detalle.pedido_id) }}" class="button is-link is-light">Volver</a>
         </div>
+        <h1 class="title">Añadir ingredientes extras al producto</h1>
+            {% include 'messages.html' %}
+            <p><b>Buscar ingrediente por nombre:</b></p>
+            <form id="searchp" method="POST">
+                <div class="field is-grouped">
+                    <div class="control is-expanded">
+                        <input type="text" name="producto_busqueda" class="input" placeholder="Nombre del ingrediente" maxlength="30">
+                    </div>
+                    <div class="control">
+                        <button type="submit" class="button is-primary"><i class="fas fa-search"></i> Buscar</button>
+                    </div>
+                </div>
+            </form>
+      {% if ingrediente %}
+      <div class="columns">
+        <div class="column">
+          <div class="column">
+          </div>
+        <table class="table is-striped is-hoverable">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Precio</th>
+              <th>Stock</th>
+              <th></th>
+              <th>Cantidad extra</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+              {% for ingrediente in ingrediente %}
+              <tr>
+                <td>{{ ingrediente.nombre }}</td>
+                <td>${{ ingrediente.precio }}</td>
+                <td>{{ ingrediente.cantidad }} {{ ingrediente.unidadmedida.nombre }}</td>
+                <td>
+                  <td>
+                      <form method="post" action="{{ url_for('pedido.editar_extra', id=pedido_detalle.id) }}">
+                      <input type="hidden" name="ingrediente_id" value="{{ ingrediente.id }}">
+                      <input type="hidden" name="nombre" value="{{ ingrediente.nombre }}">
+                      <div class="field is-grouped">
+                          <div class="control">
+                              <input type="number" name="cantidad" class="input" value="" min="1" max="999999" placeholder="{{ ingrediente.unidadmedida.nombre }}">
+                          </div>
+                          <div class="control">
+                              <button type="submit" name="action" value="agregar" class="button is-primary"><i class="fas fa-plus"></i></button>
+                          </div>
+                      </div> 
+                      </form>
+                  </td>
+                </td>
+              </tr>
+          {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p>No se han encontrado resultados.</p>
+    {% endif %}
     </div>
+      <div class="column">
+          <div class="columns">
+            <div class="column">
+            </div>
+          </div>
+          <table class="table is-striped is-hoverable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Imagen</th>
+                <th>Nombre del producto</th>
+                <th>Precio total</th>
+                <th>Añadidos</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{{ pedido_detalle.id }}</td>
+                <td><img src="{{ url_for('static', filename='img/') }}{{ pedido_detalle.producto.imagen }}" alt=" " style="max-height: 30px;"></td>
+                <td>{{ pedido_detalle.producto.nombre }} ({{ pedido_detalle.producto.categoria.nombre }})</td>
+                <td>${{ pedido_detalle.producto.precio }}</td>
+                <td>
+                  <table class="table is-striped is-hoverable">
+                    <tbody>
+                      {% for detalle_ingrediente in pedido_detalle_ingrediente %}
+                      <tr>
+                        <td>{{ loop.index }}. {{ detalle_ingrediente.ingrediente.nombre }}</td>
+                        <td>{{ detalle_ingrediente.cantidad }} {{ detalle_ingrediente.ingrediente.unidadmedida.nombre }}</td>
+                        <td><a href="">Eliminar</a> <br></td>
+                      {% endfor %}
+                      </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </section>
 {% endblock %}
