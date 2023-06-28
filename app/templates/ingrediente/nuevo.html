@@ -18,20 +18,20 @@
       <div class="field">
         <label class="label">Nombre</label>
         <div class="control">
-          <input class="input" type="text" name="nombre" maxlength="50">
+          <input class="input" type="text" name="nombre" minlength="3" maxlength="50" required>
         </div>
       </div>
       <div class="field">
         <label class="label">Precio</label>
         <div class="control">
-          <input class="input" type="text" name="precio" value="1000" max="99999">
+          <input class="input" type="text" name="precio" value="1000" max="99999" required>
         </div>
       </div>
       <div class="field">
         <label class="label">Cantidad</label><p class="help">Si no encuentras la unidad de medida que buscas, ¡puedes crearla <a href="/unidadmedidas">aqui</a>!</p>
         <div class="control">
           <div class="input-select-wrapper">
-            <input class="input" type="number" name="cantidad" max="999999999">
+            <input class="input" type="number" name="cantidad" max="2147483646">
             <div class="select-wrapper">
               <div class="select">
                 <select name="unidadmedida_id">
@@ -42,6 +42,24 @@
               </div>
             </div>
           </div>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Alerta de stock</label><p class="help">Aquí debes asignar un valor para que te notifique alerta de stock del ingrediente en la unidad de medida elegida anteriormente. Por ejemplo: si se eligió gr, se asigna la alerta en gr.</p>
+        <div class="control">
+          <input class="input" type="number" name="alerta_stock" value="1" min="0" max="99999" required>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Porción de ingrediente extra para pizza mediana</label><p class="help">Aquí debes asignar la porción del ingrediente en la unidad de medida elegida anteriormente. Por ejemplo: si se eligió gr, se asigna la porción en gr.</p>
+        <div class="control">
+          <input class="input" type="number" name="extra_mediana" value="1" min="0" max="99999" required>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Porción de ingrediente extra para pizza familiar</label><p class="help">Aquí debes asignar la porción del ingrediente en la unidad de medida elegida anteriormente. Por ejemplo: si se eligió gr, se asigna la porción en gr.</p>
+        <div class="control">
+          <input class="input" type="number" name="extra_familiar" value="1" min="0" max="99999" required>
         </div>
       </div>
       <div class="field is-grouped">

@@ -12,27 +12,37 @@
 </section>
 
 <section class="section">
-  <div class="container">
+  <div id="login" class="container">
+    <div class="columns is-flex is-flex-direction-column box" style="width: 25%;">
     <form action="{{ url_for('sesion.login') }}" method="POST">
       <div class="field">
         <div class="control">
-			<label class="label">Nombre de usuario</label>
-        <input class="input" type="text" name="nombre_usuario">
+          <div class="column">
+            <label class="label">Nombre de usuario</label>
+            <input class="input is-fullwidth" type="text" name="nombre_usuario" placeholder="pizzeria_fratelli" required>
+          </div>
         </div>
       </div>
       <div class="field">
-        <label class="label">Contraseña</label>
-        <div class="control">
-          <input class="input" type="password" name="contrasena" required>
+        <div class="column">
+          <label class="label">Contraseña</label>
+          <div class="control">
+            <input class="input is-fullwidth" type="password" name="contrasena" placeholder="*******" required>
+          </div>
         </div>
       </div>
       <div class="field">
         <div class="control">
-          <button class="button is-primary" type="submit">Iniciar sesión</button>
+          <div class="column">
+            <button class="button is-primary is-fullwidth" type="submit">Iniciar sesión</button>
+          </div>
         </div>
       </div>
-      {% include 'messages.html' %}
-    </form>
+      </form>
+    </div>
   </div>
 </section>
+<div class="container">
+  {% include 'messages.html' %}
+</div>
 {% endblock %}
