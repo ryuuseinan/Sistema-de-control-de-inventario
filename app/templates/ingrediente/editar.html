@@ -25,34 +25,32 @@
       <div class="field">
         <label class="label">Nombre</label>
         <div class="control">
-          <input class="input" type="text" name="nombre" value="{{ ingrediente.nombre }}">
+          <input class="input" type="text" name="nombre" value="{{ ingrediente.nombre }}" maxlength="50">
         </div>
       </div>
       <div class="field">
         <label class="label">Precio por ingrediente extra</label>
         <div class="control">
-          <input class="input" type="text" name="precio" value="{{ ingrediente.precio }}">
+          <input class="input" type="number" name="precio" value="{{ ingrediente.precio }}" max="99999">
         </div>
       </div>
       <div class="field">
         <label class="label">Cantidad</label>
         <div class="control">
-          <input class="input" type="text" name="cantidad" value="{{ ingrediente.cantidad }}">
-        </div>
-      </div>
-      <div class="field">
-        <label class="label">Unidad de medida</label>
-        <div class="control">
-          <div class="select">
-            <select name="unidadmedida_id">
-              {% for unidadmedida in unidadmedida %}
-                <option value="{{ unidadmedida.id }}">{{ unidadmedida.nombre }}</option>
-              {% endfor %}
-            </select>
+          <div class="input-select-wrapper">
+            <input class="input" type="number" name="cantidad" value="{{ ingrediente.cantidad }}" max="2147483646">
+            <div class="select-wrapper">
+              <div class="select">
+                <select name="unidadmedida_id">
+                  {% for unidadmedida in unidadmedida %}
+                  <option value="{{ unidadmedida.id }}">{{ unidadmedida.nombre }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      
       <div class="field is-grouped">
         <div class="control">
           <button type="submit" class="button is-link">Guardar</button>

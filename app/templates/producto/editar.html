@@ -9,17 +9,17 @@
       <div class="field">
         <label class="label">Código de barras</label>
         <div class="control">
-          <input class="input" type="text" name="codigo_barra" value="{{ producto.codigo_barra }}">
+          <input class="input" type="text" name="codigo_barra" value="{{ producto.codigo_barra }}" minlength="1" maxlength="30" required>
         </div>
       </div>
       <div class="field">
         <label class="label">Nombre</label>
         <div class="control">
-          <input class="input" type="text" name="nombre" value="{{ producto.nombre }}">
+          <input class="input" type="text" name="nombre" value="{{ producto.nombre }}" minlength="3" maxlength="30" required>
         </div>
       </div>
       <div class="field">
-        <label class="label">Categoría</label>
+        <label class="label">Categoría</label><p class="help">Si no encuentras la categoría del producto, ¡puedes crearla <a href="/categorias">aqui</a>!</p>
         <div class="control">
           <div class="select">
             <select name="categoria_id">
@@ -43,14 +43,14 @@
       <div class="field">
         <label class="label">Precio</label>
         <div class="control">
-          <input class="input" type="text" name="precio" value="{{ producto.precio }}">
+          <input class="input" type="number" name="precio" value="{{ producto.precio }}" min="0" max="999999" required>
         </div>
       </div>
       <div class="field">
         <label class="label">¿Tiene receta de preparación?</label>
         <div class="control">
           <label class="radio">
-            <input type="radio" name="tiene_receta" value="True" >
+            <input type="radio" name="tiene_receta" value="True">
             Sí
           </label>
           <label class="radio">

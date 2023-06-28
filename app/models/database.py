@@ -91,7 +91,7 @@ class Producto(Base):
 class Ingrediente(Base):
     __tablename__ = 'ingrediente'
     id = Column(Integer, primary_key=True)
-    nombre = Column(String(30), unique=True, nullable=False)
+    nombre = Column(String(50), unique=True, nullable=False)
     cantidad = Column(Integer, nullable=False)
     precio = Column(Integer, default=1000, nullable=False)
     stock_minimo = Column(Integer, default=1000, nullable=False)

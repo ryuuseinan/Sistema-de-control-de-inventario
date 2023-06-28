@@ -14,13 +14,13 @@
                     <div class="field">
                         <label class="label">Nombre de usuario:</label>
                         <div class="control">
-                            <input class="input" type="text" name="nombre_usuario" value="{{ usuario.nombre_usuario }}" required>
+                            <input class="input" type="text" name="nombre_usuario" value="{{ usuario.nombre_usuario }}" minlength="5" maxlength="30" required>
                         </div>
                     </div>
                     <div class="field">
                         <label class="label">Correo electrónico:</label>
                         <div class="control">
-                            <input class="input" type="email" name="correo" value="{{ usuario.correo }}" required>
+                            <input class="input" type="email" name="correo" value="{{ usuario.correo }}" minlength="5" maxlength="30" required>
                         </div>
                     </div>
                     <div class="field">
@@ -54,31 +54,31 @@
                     <div class="field">
                         <label class="label">RUT:</label>
                         <div class="control">
-                            <input class="input" type="text" name="rut" value="{{ persona.rut }}" required>
+                            <input class="input" type="text" name="rut" value="{{ persona.rut }}" minlength="5" maxlength="12" required>
                         </div>
                     </div>
                     <div class="field">
                         <label class="label">Nombre:</label>
                         <div class="control">
-                            <input class="input" type="text" name="nombre" value="{{ persona.nombre }}" required>
+                            <input class="input" type="text" name="nombre" value="{{ persona.nombre }}" minlength="2" maxlength="30" required>
                         </div>
                     </div>
                     <div class="field">
                         <label class="label">Apellido paterno:</label>
                         <div class="control">
-                            <input class="input" type="text" name="apellido_paterno" value="{{ persona.apellido_paterno }}" required>
+                            <input class="input" type="text" name="apellido_paterno" value="{{ persona.apellido_paterno }}" minlength="2" maxlength="30" required>
                         </div>
                     </div>
                     <div class="field">
                         <label class="label">Apellido materno:</label>
                         <div class="control">
-                            <input class="input" type="text" name="apellido_materno" value="{{ persona.apellido_materno }}" required>
+                            <input class="input" type="text" name="apellido_materno" value="{{ persona.apellido_materno }}" minlength="2" maxlength="30" required>
                         </div>
                     </div>
                     <div class="field">
                         <label class="label">Celular:</label>
                         <div class="control">
-                            <input class="input" type="text" name="celular" value="{{ persona.celular }}" required>
+                            <input class="input" type="text" name="celular" value="{{ persona.celular }}" maxlength="12">
                         </div>
                     </div>                   
                     <div class="field">

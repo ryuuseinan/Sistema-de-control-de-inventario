@@ -9,13 +9,13 @@
       <div class="field">
         <label class="label">Código de barras</label>
         <div class="control">
-          <input class="input" type="text" name="codigo_barra" required>
+          <input class="input" type="text" name="codigo_barra" minlength="1" maxlength="30" required>
         </div>
       </div>
       <div class="field">
         <label class="label">Nombre</label>
         <div class="control">
-          <input class="input" type="text" name="nombre" required>
+          <input class="input" type="text" name="nombre" minlength="3" maxlength="30" required>
         </div>
       </div>
       <div class="field">
@@ -39,7 +39,7 @@
       <div class="field">
         <label class="label">Precio</label>
         <div class="control">
-          <input class="input" type="text" name="precio" required>
+          <input class="input" type="text" name="precio" min="0" max="999999" required>
         </div>
       </div>
       <div class="field">

@@ -6,6 +6,28 @@
 #nav-superior{
 
 }
+.input{
+  width: 50%;
+}
+
+.textarea{
+  width: 50%;
+}
+
+.input-select-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.input-select-wrapper .input {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.input-select-wrapper .select-wrapper {
+  flex: 1;
+}
+
 .menu-label {
     color: #111;
   }
