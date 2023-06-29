@@ -10,7 +10,7 @@ def create_reporte_blueprint():
     # Definir las rutas y las funciones controladoras
     @reporte_blueprint.route('/reporte')
     def inventario():
-
+        ingredientes = db_session.query(Ingrediente).filter(Ingrediente.activo == True).all() 
         total_ingredientes = db_session.query(func.count()).filter(Ingrediente.activo == True).scalar()
         
         alerta_stock = db_session.query(func.count()).filter(Ingrediente.cantidad <= Ingrediente.alerta_stock, Ingrediente.activo == True).scalar()
@@ -20,7 +20,8 @@ def create_reporte_blueprint():
         return render_template('reporte/inventario.html', 
                                alerta_stock=alerta_stock, 
                                ingredientes_criticos=ingredientes_criticos,
-                               total_ingredientes=total_ingredientes)
+                               total_ingredientes=total_ingredientes,
+                               ingredientes=ingredientes)
 
     # Devolver el blueprint
     return reporte_blueprint

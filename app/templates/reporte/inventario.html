@@ -12,46 +12,31 @@
                     <div class="column">
                         <table class="table is-striped is-hoverable">
                             <thead>
-                                <tr>
-                                    <th>Producto</th>
-                                    <th>Cantidad</th>
-                                    <th>Última Entrada</th>
-                                    <th>Última Salida</th>
-                                    <th>Proveedor</th>
-                                    <th>Precio Unitario</th>
-                                    <th>Acciones</th>
-                                </tr>
+                              <tr>
+                                <th>Nombre</th>
+                                <th>Stock</th>
+                                <th>Alerta de stock</th>
+                                <th>Fecha modificación</th>
+                                <th>Editar</th>
+                              </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>Tomates</td>
-                                    <td>150 kg</td>
-                                    <td>2023-06-25</td>
-                                    <td>2023-06-20</td>
-                                    <td>Proveedor A</td>
-                                    <td>$1.50</td>
+                              {% for ingrediente in ingredientes %}
+                                  <tr>
+                                    <td>{{ ingrediente.nombre }}</td>
+                                    <td>{{ ingrediente.cantidad }} {{ ingrediente.unidadmedida.nombre }}</td>
+                                    <td>{{ ingrediente.alerta_stock }} {{ ingrediente.unidadmedida.nombre }}</td>
+                                    <td>{{ arrow.get(ingrediente.ultima_modificacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if ingrediente.ultima_modificacion != ingrediente.fecha_creacion else 'Nunca modificado' }}</td>
                                     <td>
-                                        <a href="/editar_ingrediente/1" class="button is-small is-primary">Editar</a>
-                                        <a href="/eliminar_ingrediente/1" class="button is-small is-danger">Eliminar</a>
+                                      <a href="{{ url_for('ingrediente.editar', id=ingrediente.id) }}" class="button is-warning is-small">
+                                        <span class="icon is-small"><i class="fa fa-pencil-alt" aria-hidden="true"></i></i></span>
+                                      </a>
                                     </td>
-                                </tr>
-                                <tr>
-                                    <td>Lechuga</td>
-                                    <td>50 unidades</td>
-                                    <td>2023-06-24</td>
-                                    <td>2023-06-22</td>
-                                    <td>Proveedor B</td>
-                                    <td>$0.80</td>
-                                    <td>
-                                        <a href="/editar_ingrediente/2" class="button is-small is-primary">Editar</a>
-                                        <a href="/eliminar_ingrediente/2" class="button is-small is-danger">Eliminar</a>
-                                    </td>
-                                </tr>
-                                <!-- Agregar más filas para otros ingredientes -->
+                                  </tr>
+                              {% endfor %}
                             </tbody>
-                        </table>
+                          </table>
                     </div>
-
                     <div class="column">
                         <h2 class="subtitle">Resumen del Inventario</h2>
                         <div class="card">
@@ -59,11 +44,31 @@
                                 <div class="content">
                                     <p><strong>Total de Ingredientes:</strong> {{ total_ingredientes }}</p>
                                     <p><strong>Ingredientes Críticos:</strong> {{ alerta_stock }}</p>
-                                    <p><strong>Última Actualización:</strong> x</p>
+                                    {% if ingredientes_criticos %}
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Nombre</th>
+                                                <th>Stock</th>
+                                                <th>Última modificación</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for ingrediente in ingredientes_criticos %}
+                                            <tr>
+                                                <td>{{ ingrediente.nombre }}</td>
+                                                <td>El stock es de {{ ingrediente.cantidad }} {{ ingrediente.unidadmedida.nombre }}, lo cual es inferior al valor de alerta de stock establecido en {{ ingrediente.alerta_stock }} {{ ingrediente.unidadmedida.nombre }}</td>
+                                                <td>{{ ingrediente.ultima_modificacion }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                {% else %}
+                                    <p>No hay ingredientes críticos.</p>
+                                {% endif %}
                                 </div>
                             </div>
                         </div>
-
                         <h2 class="subtitle">Indicadores de Inventario</h2>
                         <div class="columns">
                             <div class="column">
@@ -82,24 +87,19 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <h2 class="subtitle">Alertas de Stock</h2>
-                        <div class="card">
-                            <div class="card-content">
-                                <div class="content">
-                                    <div class="notification is-warning">
-                                        {% if ingredientes_criticos %}
-                                        <p><strong>Ingredientes Críticos:</strong></p>
-                                        <ul>
-                                            {% for ingrediente in ingredientes_criticos %}
-                                            <li>{{ ingrediente.nombre }}</li>
-                                            <li>Última actualización: {{ ingrediente.ultima_modificacion }}</li>
-                                            {% endfor %}
-                                        </ul>
-                                        {% else %}
-                                        <p>No hay ingredientes críticos.</p>
-                                        {% endif %}
+                            <div class="column">
+                                <div class="card">
+                                    <div class="card-content">
+                                        <div class="content">
+                                            <p><strong>Top 5 productos más vendidos:</strong></p>
+                                            <ol>
+                                                <li>Lorem</li>
+                                                <li>Ipsum</li>
+                                                <li>Napolitana</li>
+                                                <li>Peperonni</li>
+                                                <li>Vegetariana</li>
+                                            </ol>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
