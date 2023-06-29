@@ -1,6 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
-from models.database import Usuario, Pedido, PedidoEstado, Persona, Producto, Categoria, Receta, RecetaDetalle, PedidoDetalle, PedidoDetalleIngrediente, Ingrediente, db_session
-import bcrypt, arrow
+from models.database import Pedido, PedidoEstado, Producto, Categoria, Receta, RecetaDetalle, PedidoDetalle, PedidoDetalleIngrediente, Ingrediente, db_session
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime
@@ -175,6 +174,14 @@ def create_pedido_blueprint():
                             return redirect(url_for('pedido.editar', id=pedido.id))
 
                         if pedido_detalle.cantidad is not None and cantidad >= pedido_detalle.cantidad:
+                            detalles_ingrediente = db_session.query(PedidoDetalleIngrediente).filter_by(pedido_detalle_id=pedido_detalle.id).all()
+                            db_session.query(PedidoDetalleIngrediente).filter_by(pedido_detalle_id=pedido_detalle.id).delete()
+
+                            for detalle_ingrediente in detalles_ingrediente:
+                                ingrediente = detalle_ingrediente.ingrediente
+                                cantidad_eliminada = detalle_ingrediente.cantidad
+                                ingrediente.cantidad += cantidad_eliminada
+
                             db_session.delete(pedido_detalle)
                             if producto.tiene_receta:
                                 receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
@@ -211,25 +218,81 @@ def create_pedido_blueprint():
         pedido_detalle = db_session.query(PedidoDetalle).filter_by(id=id).one()
         ingrediente = db_session.query(Ingrediente).filter(Ingrediente.activo == True).all()
         pedido_detalle_ingrediente = db_session.query(PedidoDetalleIngrediente).filter_by(pedido_detalle_id=id).all()
-        if request.method == 'POST':
-            action = request.form.get('action')
-            nombre = request.form.getlist('nombre')
-            ingrediente_id = request.form.getlist('ingrediente_id')
-            cantidad = request.form.getlist('cantidad')
-            unidadmedida = request.form.getlist('unidadmedida')
+        total_pedido = pedido_detalle.producto.precio
 
-            if action == "agregar":
-                flash(f'Se ha(n) añadido {cantidad} {unidadmedida} de "{nombre}" al producto.', 'error')
-                nuevo_pedido_detalle_ingrediente = PedidoDetalleIngrediente(pedido_detalle_id=pedido_detalle.id, ingrediente_id=ingrediente_id,
-                                            cantidad=cantidad)
+        for detalle_ingrediente in pedido_detalle_ingrediente:
+            total_pedido += detalle_ingrediente.ingrediente.precio
+            print(total_pedido)
 
+        return render_template('pedido/editar_extra.html', pedido_detalle=pedido_detalle, ingrediente=ingrediente, pedido_detalle_ingrediente=pedido_detalle_ingrediente, total_pedido=total_pedido)
 
-                ingrediente[0].cantidad -= int(cantidad[0])
-                db_session.add(nuevo_pedido_detalle_ingrediente)
+    @pedido_blueprint.route('/pedido/agregar_extra/<int:id>', methods=['GET', 'POST'])
+    def agregar_extra(id):
+        pedido_detalle_ingrediente = db_session.query(PedidoDetalleIngrediente).filter_by(id=id).first()
+        pedido_detalle = db_session.query(PedidoDetalle).filter_by(id=id).one()
+        extra_mediana = request.form.get('extra_mediana')
+        extra_familiar = request.form.get('extra_familiar')
+        nombre = request.form.getlist('nombre')
+        ingrediente_id = request.form.getlist('ingrediente_id')
+        unidadmedida = request.form.getlist('unidadmedida')
+
+        ingrediente = db_session.query(Ingrediente).filter_by(id=ingrediente_id).first()
+        print(ingrediente)
+
+        if extra_mediana is None:
+            extra_mediana = 0
+        else:
+            extra = extra_mediana
+
+        if extra_familiar is None:
+            extra_familiar = 0
+        else:
+            extra = extra_familiar
+            
+        extra_mediana = int(extra_mediana)
+        extra_familiar = int(extra_familiar)
+        print(extra_mediana)
+        print(extra_familiar)
+        print(extra)
+
+        if int(extra) >= 1 and int(extra) <= ingrediente.cantidad:
+            nuevo_pedido_detalle_ingrediente = PedidoDetalleIngrediente(
+                pedido_detalle_id=pedido_detalle.id,
+                ingrediente_id=ingrediente_id,
+                cantidad=extra)
+            print(ingrediente_id)
+            ingrediente_id = int(ingrediente_id[0])
+            print(ingrediente_id)
+            ingrediente.cantidad -= int(extra)
+            db_session.add(nuevo_pedido_detalle_ingrediente)
+            db_session.commit()
+            flash(f'Se ha(n) añadido {extra} {ingrediente.unidadmedida.nombre} de "{ingrediente.nombre}" al producto.', 'error')
+
+        else:
+            flash(f'No hay stock suficiente.', 'error')
+
+        return redirect(url_for('pedido.editar_extra', id=id))
+
+    @pedido_blueprint.route('/pedido/eliminar_extra/<int:id>', methods=['GET', 'POST'])
+    def eliminar_extra(id):
+        pedido_detalle_ingrediente = db_session.query(PedidoDetalleIngrediente).filter_by(id=id).first()
+
+        if pedido_detalle_ingrediente:
+            cantidad_eliminar = pedido_detalle_ingrediente.cantidad
+            ingrediente = db_session.query(Ingrediente).filter_by(id=pedido_detalle_ingrediente.ingrediente_id).first()
+
+            if ingrediente:
+                db_session.delete(pedido_detalle_ingrediente)
+                ingrediente.cantidad += cantidad_eliminar
                 db_session.commit()
+                flash('El registro se eliminó correctamente.', 'success')
+            else:
+                flash('No se encontró el ingrediente asociado al registro.', 'error')
+        else:
+            flash('No se encontró el registro en el detalle.', 'error')
 
-        return render_template('pedido/editar_extra.html', pedido_detalle=pedido_detalle, ingrediente=ingrediente, pedido_detalle_ingrediente=pedido_detalle_ingrediente)
-    
+        return redirect(url_for('pedido.editar_extra', id=pedido_detalle_ingrediente.pedido_detalle_id))
+
     @pedido_blueprint.route('/pedido/listar/<int:id>', methods=['POST'])
     def restaurar(id):
         pedido = db_session.query(Pedido).filter_by(id=id).one()
