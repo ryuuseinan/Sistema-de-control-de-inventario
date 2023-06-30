@@ -25,13 +25,14 @@ def create_sesion_blueprint():
 
             # Verificar si el nombre_usuario y la contraseña coinciden con un usuario en la base de datos
             usuario = db_session.query(Usuario).filter_by(nombre_usuario=nombre_usuario).first()
-            persona = db_session.query(Persona).filter_by(usuario_id=usuario.id).first()
 
             if usuario and bcrypt.checkpw(contrasena.encode(), usuario.contrasena.encode()):
                 # Establecer la sesión del usuario como iniciada
+                persona = db_session.query(Persona).filter_by(usuario_id=usuario.id).first()
                 session['logged_in'] = True
                 session['user_id'] = usuario.id
-                session['user_nombre'] = persona.nombre  # Guardar el nombre de usuario en la sesión
+                session['user_nombre'] = persona.nombre
+                session['user_apellido'] = persona.apellido_paterno  # Guardar el nombre de usuario en la sesión
 
                 flash('Sesión iniciada correctamente', 'success')
                 return redirect(url_for('index'))

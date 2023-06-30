@@ -82,7 +82,7 @@
 				</li>
 			</ul>
 			<div class="side-menu-footer">
-				<p class="navbar-item">{{ session['user_nombre'] }}</p>
+				<p class="navbar-item">{{ session['user_nombre'] }} {{ session['user_apellido'] }}</p>
 				<a class="navbar-item" href="{{ url_for('sesion.logout') }}">
 					<span class="icon is-small"><i class="fas fa-sign-out-alt"></i></span>
 					<span>Cerrar sesión</span>
