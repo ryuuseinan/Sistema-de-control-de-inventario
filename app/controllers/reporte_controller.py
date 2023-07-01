@@ -19,12 +19,20 @@ def create_reporte_blueprint():
         ingredientes_criticos = db_session.query(Ingrediente).filter(Ingrediente.cantidad <= Ingrediente.alerta_stock, Ingrediente.activo == True).order_by(Ingrediente.nombre).all()
         print(ingredientes_criticos)
 
+        umbral_proporcional = 1.50  # Ajusta el valor proporcional según tus necesidades
+    
+        ingredientes_cerca_alerta = db_session.query(Ingrediente).filter(
+            Ingrediente.cantidad <= Ingrediente.alerta_stock * (1 + umbral_proporcional),
+            Ingrediente.cantidad > Ingrediente.alerta_stock,
+            Ingrediente.activo == True
+        ).order_by(Ingrediente.nombre).all()
 
         return render_template('reporte/inventario.html', 
                                alerta_stock=alerta_stock, 
                                ingredientes_criticos=ingredientes_criticos,
                                total_ingredientes=total_ingredientes,
-                               ingredientes=ingredientes)
+                               ingredientes=ingredientes,
+                               ingredientes_cerca_alerta=ingredientes_cerca_alerta)
 
     # Devolver el blueprint
     return reporte_blueprint

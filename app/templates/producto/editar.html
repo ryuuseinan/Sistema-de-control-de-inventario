@@ -43,7 +43,12 @@
       <div class="field">
         <label class="label">Precio</label>
         <div class="control">
-          <input class="input" type="number" name="precio" value="{{ producto.precio }}" min="0" max="999999" required>
+          <p class="control has-icons-left has-icons-right">
+            <input class="input" type="number" name="precio" value="{{ producto.precio }}" min="0" max="999999" required>
+            <span class="icon is-small is-left">
+              <i class="fas fa-dollar-sign"></i>
+            </span>
+          </p>
         </div>
       </div>
       <div class="field">

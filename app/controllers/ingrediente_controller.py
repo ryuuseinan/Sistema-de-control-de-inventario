@@ -31,11 +31,17 @@ def create_ingrediente_blueprint():
                 precio = request.form['precio']
                 cantidad = request.form['cantidad']
                 unidadmedida_id = request.form['unidadmedida_id']
+                alerta_stock = request.form['alerta_stock']
+                extra_mediana = request.form['extra_mediana']
+                extra_familiar = request.form['extra_familiar']
                 # Crear una nueva instancia de Producto con los datos del formulario
                 nuevo_ingrediente = Ingrediente(nombre=nombre,
                                         precio=precio, 
                                         cantidad=cantidad, 
                                         unidadmedida_id=unidadmedida_id,
+                                        alerta_stock=alerta_stock,
+                                        extra_mediana=extra_mediana,
+                                        extra_familiar=extra_familiar,
                                         fecha_creacion=datetime.now(),
                                         ultima_modificacion=datetime.now())
                 
@@ -65,6 +71,9 @@ def create_ingrediente_blueprint():
                 precio = request.form['precio']
                 cantidad = request.form['cantidad']
                 unidadmedida_id = request.form['unidadmedida_id']
+                alerta_stock = request.form['alerta_stock']
+                extra_mediana = request.form['extra_mediana']
+                extra_familiar = request.form['extra_familiar']
 
                 # Actualizar los datos del ingrediente con los nuevos datos del formulario
                 if nombre:
@@ -75,6 +84,12 @@ def create_ingrediente_blueprint():
                     ingrediente.cantidad = cantidad
                 if unidadmedida_id:
                     ingrediente.unidadmedida_id = unidadmedida_id
+                if alerta_stock:
+                    ingrediente.alerta_stock = alerta_stock
+                if extra_mediana:
+                    ingrediente.extra_mediana = extra_mediana
+                if extra_familiar:
+                    ingrediente.extra_familiar = extra_familiar
 
                 # Registrar última modificación
                 ingrediente.ultima_modificacion = datetime.now()

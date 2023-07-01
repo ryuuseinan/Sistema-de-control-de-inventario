@@ -5,8 +5,9 @@
     <div class="container">
         <div class="columns">
             <div class="column">
-                <h1 class="title">Control de Inventario - </h1>
+                <h1 class="title">Control de Inventario</h1>
                 {% include 'messages.html' %}
+                <h1 class="title">Ingredientes críticos cercanos</h1>
                 <div class="columns">
                     <div class="column">
                         <table class="table is-striped is-hoverable">
@@ -20,7 +21,7 @@
                               </tr>
                             </thead>
                             <tbody>
-                              {% for ingrediente in ingredientes %}
+                              {% for ingrediente in ingredientes_cerca_alerta  %}
                                   <tr>
                                     <td>{{ ingrediente.nombre }}</td>
                                     <td>{{ ingrediente.cantidad }} {{ ingrediente.unidadmedida.nombre }}</td>

@@ -293,11 +293,76 @@ def create_pedido_blueprint():
 
         return redirect(url_for('pedido.editar_extra', id=pedido_detalle_ingrediente.pedido_detalle_id))
 
-    @pedido_blueprint.route('/pedido/listar/<int:id>', methods=['POST'])
+    @pedido_blueprint.route('/restaurar/<int:id>', methods=['GET', 'POST'])
     def restaurar(id):
         pedido = db_session.query(Pedido).filter_by(id=id).one()
-        pedido.estado_id = 1
+
+        if pedido.estado_id == 3:  # Verificar si el pedido está anulado previamente
+            pedido.estado_id = 1  # Actualizar el estado del pedido a "En proceso"
+
+            # Descontar ingredientes nuevamente basándose en la receta de cada producto en el pedido
+            for detalle in pedido.detalles:
+                producto = detalle.producto
+
+                if producto.tiene_receta:
+                    receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
+                    receta_detalles = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id).all()
+
+                    for detalle_receta in receta_detalles:
+                        ingrediente = detalle_receta.ingrediente
+                        cantidad_necesaria = detalle_receta.cantidad * detalle.cantidad
+
+                        # Descontar la cantidad de ingredientes en base a la receta
+                        ingrediente.cantidad -= cantidad_necesaria
+
+                        # Actualizar los ingredientes extras agregados al producto
+                        pedido_detalle_ingrediente = db_session.query(PedidoDetalleIngrediente).filter_by(
+                            pedido_detalle_id=detalle.id, ingrediente_id=ingrediente.id).first()
+
+                        if pedido_detalle_ingrediente:
+                            ingrediente.cantidad -= pedido_detalle_ingrediente.cantidad
+                            db_session.delete(pedido_detalle_ingrediente)
+
+            db_session.commit()
+            flash('El pedido se ha restaurado correctamente.', 'success')
+        else:
+            flash('El pedido no se encuentra anulado.', 'error')
+
+        return redirect(url_for('pedido.anulados'))
+
+    @pedido_blueprint.route('/anular/<int:id>', methods=['GET', 'POST'])
+    def anular(id):
+        pedido = db_session.query(Pedido).filter_by(id=id).one()
+
+        if pedido.estado_id != 3:  # Verificar si el pedido no está anulado previamente
+            pedido.estado_id = 3  # Actualizar el estado del pedido a "Anulado"
+
+            # Recuperar ingredientes basándose en la receta de cada producto en el pedido
+            for detalle in pedido.detalles:
+                producto = detalle.producto
+
+                if producto.tiene_receta:
+                    receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
+                    receta_detalles = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id).all()
+
+                    for detalle_receta in receta_detalles:
+                        ingrediente = detalle_receta.ingrediente
+                        cantidad_necesaria = detalle_receta.cantidad * detalle.cantidad
+
+                        # Incrementar la cantidad de ingredientes en base a la receta
+                        ingrediente.cantidad += cantidad_necesaria
+
+                        # Agregar los ingredientes extras al producto
+                        pedido_detalle_ingrediente = PedidoDetalleIngrediente(
+                            pedido_detalle_id=detalle.id,
+                            ingrediente_id=ingrediente.id,
+                            cantidad=detalle.cantidad
+                        )
+                        db_session.add(pedido_detalle_ingrediente)
+
         db_session.commit()
+        flash('El pedido se ha anulado correctamente.', 'success')
+
         return redirect(url_for('pedido.listar'))
 
     @pedido_blueprint.route('/pedido/finalizar/<int:id>', methods=['GET', 'POST'])
@@ -309,16 +374,6 @@ def create_pedido_blueprint():
             return redirect(url_for('pedido.listar'))
         else:
             return render_template('pedido/finalizar.html', pedido=pedido)
-
-    @pedido_blueprint.route('/pedido/anular/<int:id>', methods=['GET', 'POST'])
-    def anular(id):
-        pedido = db_session.query(Pedido).filter_by(id=id).one()
-        if request.method == 'POST':
-            pedido.estado_id = 3
-            db_session.commit()
-            return redirect(url_for('pedido.listar'))
-        else:
-            return render_template('pedido/anular.html', pedido=pedido)
-
+    
     # Devolver el blueprint
     return pedido_blueprint

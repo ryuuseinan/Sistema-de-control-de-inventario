@@ -10,7 +10,6 @@
     </div>
   </div>
 </section>
-
 <section class="section">
   <div id="login" class="container">
     <div class="columns is-flex is-flex-direction-column box" style="width: 25%;">
@@ -19,7 +18,15 @@
         <div class="control">
           <div class="column">
             <label class="label">Nombre de usuario</label>
-            <input class="input is-fullwidth" type="text" name="nombre_usuario" placeholder="pizzeria_fratelli" required>
+            <p class="control has-icons-left has-icons-right">
+              <input class="input is-fullwidth" type="text" name="nombre_usuario" placeholder="pizzeria_fratelli" minlength=3 maxlength="30" required>
+              <span class="icon is-small is-left">
+                <i class="fas fa-user"></i>
+              </span>
+              <span class="icon is-small is-right">
+                <i class="fas fa-check"></i>
+              </span>
+            </p>
           </div>
         </div>
       </div>
@@ -27,7 +34,12 @@
         <div class="column">
           <label class="label">Contraseña</label>
           <div class="control">
+            <p class="control has-icons-left has-icons-right">
             <input class="input is-fullwidth" type="password" name="contrasena" placeholder="*******" required>
+            <span class="icon is-small is-left">
+              <i class="fas fa-lock"></i>
+            </p>
+            </span>
           </div>
         </div>
       </div>

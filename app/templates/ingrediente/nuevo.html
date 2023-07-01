@@ -24,7 +24,12 @@
       <div class="field">
         <label class="label">Precio</label>
         <div class="control">
-          <input class="input" type="text" name="precio" value="1000" max="99999" required>
+          <p class="control has-icons-left has-icons-right">
+            <input class="input" type="text" name="precio" value="1000" max="99999" required>
+            <span class="icon is-small is-left">
+              <i class="fas fa-dollar-sign"></i>
+            </span>
+          </p>
         </div>
       </div>
       <div class="field">
@@ -34,7 +39,7 @@
             <input class="input" type="number" name="cantidad" max="2147483646">
             <div class="select-wrapper">
               <div class="select">
-                <select name="unidadmedida_id">
+                <select name="unidadmedida_id" class="unidadmedida-select">
                   {% for unidadmedida in unidadmedida %}
                   <option value="{{ unidadmedida.id }}">{{ unidadmedida.nombre }}</option>
                   {% endfor %}
@@ -47,19 +52,52 @@
       <div class="field">
         <label class="label">Alerta de stock</label><p class="help">Aquí debes asignar un valor para que te notifique alerta de stock del ingrediente en la unidad de medida elegida anteriormente. Por ejemplo: si se eligió gr, se asigna la alerta en gr.</p>
         <div class="control">
-          <input class="input" type="number" name="alerta_stock" value="1" min="0" max="99999" required>
+          <div class="input-select-wrapper">
+            <input class="input" type="number" name="alerta_stock" value="1" min="0" max="99999" required>
+            <div class="select-wrapper">
+              <div class="select">
+                <select name="unidadmedida_id" class="unidadmedida-select">
+                  {% for unidadmedida in unidadmedida %}
+                  <option value="{{ unidadmedida.id }}">{{ unidadmedida.nombre }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="field">
         <label class="label">Porción de ingrediente extra para pizza mediana</label><p class="help">Aquí debes asignar la porción del ingrediente en la unidad de medida elegida anteriormente. Por ejemplo: si se eligió gr, se asigna la porción en gr.</p>
         <div class="control">
-          <input class="input" type="number" name="extra_mediana" value="1" min="0" max="99999" required>
+          <div class="input-select-wrapper">
+            <input class="input" type="number" name="extra_mediana" value="1" min="0" max="99999" required>
+            <div class="select-wrapper">
+              <div class="select">
+                <select name="unidadmedida_id" class="unidadmedida-select">
+                  {% for unidadmedida in unidadmedida %}
+                  <option value="{{ unidadmedida.id }}">{{ unidadmedida.nombre }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="field">
         <label class="label">Porción de ingrediente extra para pizza familiar</label><p class="help">Aquí debes asignar la porción del ingrediente en la unidad de medida elegida anteriormente. Por ejemplo: si se eligió gr, se asigna la porción en gr.</p>
         <div class="control">
-          <input class="input" type="number" name="extra_familiar" value="1" min="0" max="99999" required>
+          <div class="input-select-wrapper">
+            <input class="input" type="number" name="extra_familiar" value="1" min="0" max="99999" required>
+            <div class="select-wrapper">
+              <div class="select">
+                <select name="unidadmedida_id" class="unidadmedida-select">
+                  {% for unidadmedida in unidadmedida %}
+                  <option value="{{ unidadmedida.id }}">{{ unidadmedida.nombre }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="field is-grouped">
@@ -72,4 +110,16 @@
       </div>
     </form>
   </div>
+</section>
+<script>
+  $(document).ready(function() {
+    // Capturar el evento de cambio en los select con la clase "unidadmedida-select"
+    $('.unidadmedida-select').change(function() {
+      var selectedOption = $(this).val(); // Obtener el valor seleccionado
+
+      // Establecer el mismo valor en los otros select
+      $('.unidadmedida-select').not(this).val(selectedOption);
+    });
+  });
+</script>
 {% endblock %}
