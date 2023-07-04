@@ -38,8 +38,8 @@ def create_producto_blueprint():
             descripcion = request.form['descripcion']
             categoria_id = request.form['categoria_id']
             precio = request.form['precio']
+            alerta_stock = request.form['alerta_stock'] 
             tiene_receta = True if request.form['tiene_receta'] == "True" else False
-
 
             # Crear una nueva instancia de Producto con los datos del formulario
             try:
@@ -50,6 +50,7 @@ def create_producto_blueprint():
                                         categoria_id=categoria_id, 
                                         precio=precio,
                                         tiene_receta=tiene_receta,
+                                        alerta_stock=alerta_stock,
                                         fecha_creacion=datetime.now())
                                         
                 # Resto del código para guardar el producto en la base de datos
@@ -99,6 +100,7 @@ def create_producto_blueprint():
             categoria_id = request.form['categoria_id']
             descripcion = request.form['descripcion']
             precio = request.form['precio']
+            alerta_stock = request.form['alerta_stock'] 
             tiene_receta = True if request.form['tiene_receta'] == "True" else False
 
             # Actualizar los datos del producto con los nuevos datos del formulario
@@ -112,6 +114,8 @@ def create_producto_blueprint():
                 producto.descripcion = descripcion
             if precio:
                 producto.precio = precio
+            if alerta_stock:
+                producto.alerta_stock = alerta_stock
                 
             producto.tiene_receta = tiene_receta
 
@@ -145,7 +149,7 @@ def create_producto_blueprint():
             # Actualizar los datos del producto con los nuevos datos del formulario
             if stock:
                 producto.stock = stock
-
+                
             # Registrar ultima modificación
             producto.ultima_modificacion = datetime.now()
             

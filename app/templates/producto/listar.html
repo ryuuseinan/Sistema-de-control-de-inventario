@@ -30,7 +30,9 @@
               <th>Precio</th>
               <th>Descripción</th>
               <th>Stock/Receta</th>
-              <th>Editar/Eliminar</th>
+              <th>Alerta de stock</th>
+              <th>Editar</th>
+              <th>Eliminar</th>
             </tr>
           </thead>
           <tbody>
@@ -62,10 +64,13 @@
                   </a>
                 {% endif %}
                 </td>
+                <td>{{ producto.alerta_stock }}</td>
                 <td>
                   <a href="{{ url_for('producto.editar', id=producto.id) }}" class="button is-info is-light">
                     <span class="icon is-small"><i class="fa fa-pencil-alt" aria-hidden="true"></i></i></span>
                   </a>
+                </td>
+                <td>
                   <a href="{{ url_for('producto.eliminar', id=producto.id) }}" class="button is-danger is-light">
                     <span class="icon is-small"><i class="fas fa-trash" aria-hidden="true"></i></span>
                   </a>

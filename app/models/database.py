@@ -79,6 +79,7 @@ class Producto(Base):
     descripcion = Column(Text)
     precio = Column(Integer, nullable=False)
     stock = Column(Integer)
+    alerta_stock = Column(Integer)
     tiene_receta = Column(Boolean, default=True, nullable=False)
     categoria_id = Column(Integer, ForeignKey('categoria.id'))
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)

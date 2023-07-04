@@ -5,11 +5,11 @@
     <div class="container">
         <div class="columns">
             <div class="column">
-                <h1 class="title">Control de Inventario</h1>
                 {% include 'messages.html' %}
-                <h1 class="title">Ingredientes críticos cercanos</h1>
                 <div class="columns">
                     <div class="column">
+                        <h1 class="title">Ingredientes críticos cercanos</h1>
+                        {% if ingrediente %}
                         <table class="table is-striped is-hoverable">
                             <thead>
                               <tr>
@@ -36,6 +36,41 @@
                               {% endfor %}
                             </tbody>
                           </table>
+                        {% else %}
+                          <p>No se encontraron ingrediente críticos cercanos.</p>
+                        {% endif %}
+                        <br>
+                        <h1 class="title">Productos críticos cercanos</h1>
+                        {% if producto %}
+                        <table class="table is-striped is-hoverable">
+                            <thead>
+                              <tr>
+                                <th>Nombre</th>
+                                <th>Stock</th>
+                                <th>Alerta de stock</th>
+                                <th>Fecha modificación</th>
+                                <th>Editar</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {% for producto in productos_cerca_alerta  %}
+                                  <tr>
+                                    <td>{{ producto.nombre }}</td>
+                                    <td>{{ producto.stock }}</td>
+                                    <td>{{ producto.alerta_stock }}</td>
+                                    <td>{{ arrow.get(producto.ultima_modificacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if producto.ultima_modificacion != producto.fecha_creacion else 'Nunca modificado' }}</td>
+                                    <td>
+                                      <a href="{{ url_for('producto.editar', id=producto.id) }}" class="button is-warning is-small">
+                                        <span class="icon is-small"><i class="fa fa-pencil-alt" aria-hidden="true"></i></i></span>
+                                      </a>
+                                    </td>
+                                  </tr>
+                              {% endfor %}
+                            </tbody>
+                          </table>
+                        {% else %}
+                          <p>No se encontraron producto críticos cercanos.</p>
+                        {% endif %}
                     </div>
                     <div class="column">
                         <h2 class="subtitle">Resumen del Inventario</h2>
@@ -43,7 +78,7 @@
                             <div class="card-content">
                                 <div class="content">
                                     <p><strong>Total de Ingredientes:</strong> {{ total_ingredientes }}</p>
-                                    <p><strong>Ingredientes Críticos:</strong> {{ alerta_stock }}</p>
+                                    <p><strong>Ingredientes Críticos:</strong> {{ ingrediente_alerta_stock }}</p>
                                     {% if ingredientes_criticos %}
                                     <table>
                                         <thead>
@@ -69,6 +104,37 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="card">
+                            <div class="card-content">
+                                <div class="content">
+                                    <p><strong>Total de productos:</strong> {{ total_productos }}</p>
+                                    <p><strong>Productos Críticos:</strong> {{ producto_alerta_stock }}</p>
+                                    {% if productos_criticos %}
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Nombre</th>
+                                                <th>Stock</th>
+                                                <th>Última modificación</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for producto in productos_criticos %}
+                                            <tr>
+                                                <td>{{ producto.nombre }}</td>
+                                                <td>El stock es de {{ producto.stock }} unidad(es), lo cual es inferior al valor de alerta de stock establecido en {{ producto.alerta_stock }} unidad(es)</td>
+                                                <td>{{ producto.ultima_modificacion }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                {% else %}
+                                    <p>No hay productos críticos.</p>
+                                {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <!--
                         <h2 class="subtitle">Indicadores de Inventario</h2>
                         <div class="columns">
                             <div class="column">
@@ -103,7 +169,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div>-->
                     </div>
                 </div>
             </div>
