@@ -64,8 +64,6 @@ def create_pedido_blueprint():
 
     @pedido_blueprint.route('/nuevo', methods=['GET', 'POST'])
     def nuevo():
-        
-        #pedido = Pedido(persona_id=1)
         pedido = Pedido(persona_id=session['user_id'])
         db_session.add(pedido)
         db_session.commit()

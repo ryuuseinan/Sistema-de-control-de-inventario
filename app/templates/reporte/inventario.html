@@ -86,6 +86,7 @@
                                                 <th>Nombre</th>
                                                 <th>Stock</th>
                                                 <th>Última modificación</th>
+                                                <th>Ingresar stock</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -94,6 +95,11 @@
                                                 <td>{{ ingrediente.nombre }}</td>
                                                 <td>El stock es de {{ ingrediente.cantidad }} {{ ingrediente.unidadmedida.nombre }}, lo cual es inferior al valor de alerta de stock establecido en {{ ingrediente.alerta_stock }} {{ ingrediente.unidadmedida.nombre }}</td>
                                                 <td>{{ ingrediente.ultima_modificacion }}</td>
+                                                <td>
+                                                    <a href="{{ url_for('ingrediente.ingresar_stock', id=ingrediente.id) }}" class="button is-warning is-small">
+                                                        <span class="icon is-small"><i class="fas fa-plus"></i><i class="fas fa-pepper-hot"></i></span>
+                                                    </a>
+                                                </td>
                                             </tr>
                                             {% endfor %}
                                         </tbody>
@@ -119,11 +125,15 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {% for producto in productos_criticos %}
+                                            {% for productos_criticos in productos_criticos %}
                                             <tr>
-                                                <td>{{ producto.nombre }}</td>
-                                                <td>El stock es de {{ producto.stock }} unidad(es), lo cual es inferior al valor de alerta de stock establecido en {{ producto.alerta_stock }} unidad(es)</td>
-                                                <td>{{ producto.ultima_modificacion }}</td>
+                                                <td>{{ productos_criticos.nombre }}</td>
+                                                {% if productos_criticos.tiene_receta == True %}
+                                                    <td>El stock es de {{ productos_criticos.stock_disponible }} unidad(es) preparable(s), lo cual es inferior al valor de alerta de stock establecido en {{ productos_criticos.alerta_stock }} unidad(es)</td>
+                                                {% else %}
+                                                    <td>El stock es de {{ productos_criticos.stock_disponible }} unidad(es), lo cual es inferior al valor de alerta de stock establecido en {{ productos_criticos.alerta_stock }} unidad(es)</td>
+                                                {% endif %}
+                                                <td>{{ productos_criticos.ultima_modificacion }}</td>
                                             </tr>
                                             {% endfor %}
                                         </tbody>

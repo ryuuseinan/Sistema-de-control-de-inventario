@@ -134,5 +134,11 @@ def create_ingrediente_blueprint():
             return redirect(url_for('ingrediente.listar'))
         
         return render_template('ingrediente/restaurar.html', ingrediente=ingrediente)
+    
+    @ingrediente_blueprint.route('/ingrediente/ingresar_stock/<int:id>', methods=['GET', 'POST'])
+    def ingresar_stock(id):
+        
+        return render_template('ingrediente/ingresar_stock.html', ingrediente=ingrediente)
+    
     # Devolver el blueprint
     return ingrediente_blueprint
