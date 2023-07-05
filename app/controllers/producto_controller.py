@@ -138,17 +138,17 @@ def create_producto_blueprint():
         # Renderizar la plantilla de edición de productos
         return render_template('producto/editar.html', producto=producto, categoria=categoria)
 
-    @producto_blueprint.route('/producto/actualizar_stock/<int:id>', methods=['GET', 'POST'])
-    def actualizar_stock(id):
+    @producto_blueprint.route('/producto/ingresar_stock/<int:id>', methods=['GET', 'POST'])
+    def ingresar_stock(id):
         # Obtener el producto a editar de la base de datos
         producto = db_session.query(Producto).filter_by(id=id).one()
         if request.method == 'POST':
             # Obtener los datos del formulario
-            stock = request.form['stock']
+            cantidad = request.form['cantidad']
 
             # Actualizar los datos del producto con los nuevos datos del formulario
-            if stock:
-                producto.stock = stock
+            if cantidad:
+                producto.stock = producto.stock + int(cantidad)
                 
             # Registrar ultima modificación
             producto.ultima_modificacion = datetime.now()
@@ -157,10 +157,11 @@ def create_producto_blueprint():
             db_session.commit()
 
             # Redireccionar al listado de productos
-            return redirect(url_for('producto.listar'))
+            return redirect(url_for('reporte.inventario'))
 
         # Renderizar la plantilla de edición de productos
-        return render_template('producto/actualizar_stock.html', producto=producto)
+        else:
+            return render_template('producto/ingresar_stock.html', producto=producto)
 
     @producto_blueprint.route('/producto/eliminar/<int:id>', methods=['GET', 'POST'])
     def eliminar(id):

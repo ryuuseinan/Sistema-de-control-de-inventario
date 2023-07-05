@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <h1 class="title">Ingresar inventario del ingrediente</h1>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for message in messages %}
+        <div class="notification is-success">
+            <button class="delete"></button>
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    {% if error %}
+    <div class="notification is-danger">
+        <button class="delete"></button>
+        {{ error }}
+    </div>
+    {% endif %}
+    <form method="post" enctype="multipart/form-data">
+      <div class="field">
+        <label class="label">Nombre</label>
+        <div class="control">
+          <input class="input" type="text" name="nombre" value="{{ ingrediente.nombre }}" minlength="3" maxlength="50" disabled>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Cantidad</label>
+        <div class="control">
+          <div class="input-select-wrapper">
+            <input class="input" type="number" name="cantidad" value="1" min="0" max="2147483646">
+            <div class="select-wrapper">
+              <div class="select">
+                <select name="unidadmedida_id" class="unidadmedida-select">
+                  {% for unidadmedida in unidadmedida %}
+                  {% if unidadmedida.id == ingrediente.unidadmedida_id %}
+                    <option value="{{ unidadmedida.id }}" selected disabled>{{ unidadmedida.nombre }}</option>
+                  {% else %}
+                    <option value="{{ unidadmedida.id }}" disabled>{{ unidadmedida.nombre }}</option>
+                  {% endif %}
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="field is-grouped">
+        <div class="control">
+          <button type="submit" class="button is-link">Guardar</button>
+        </div>
+        <div class="control">
+          <a href="{{ url_for('reporte.inventario') }}" class="button is-link is-light">Cancelar</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
+<script>
+  $(document).ready(function() {
+    // Capturar el evento de cambio en los select con la clase "unidadmedida-select"
+    $('.unidadmedida-select').change(function() {
+      var selectedOption = $(this).val(); // Obtener el valor seleccionado
+
+      // Establecer el mismo valor en los otros select
+      $('.unidadmedida-select').not(this).val(selectedOption);
+    });
+  });
+</script>
+{% endblock %}

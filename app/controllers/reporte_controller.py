@@ -45,7 +45,7 @@ def create_reporte_blueprint():
         productos_criticos = [producto for producto in productos if producto.stock_disponible is not None and producto.stock_disponible <= producto.alerta_stock]
         producto_alerta_stock = len(productos_criticos)
         
-        umbral_proporcional = 1.50  # Ajusta el valor proporcional según tus necesidades
+        umbral_proporcional = 0.50  # Ajusta el valor proporcional según tus necesidades
 
         productos_cerca_alerta = [producto for producto in productos if producto.stock_disponible is not None and producto.stock_disponible <= producto.alerta_stock * (1 + umbral_proporcional) and producto.stock_disponible > producto.alerta_stock]
     
@@ -54,6 +54,8 @@ def create_reporte_blueprint():
             Ingrediente.cantidad > Ingrediente.alerta_stock,
             Ingrediente.activo == True
         ).order_by(Ingrediente.nombre).all()
+
+        print(productos_cerca_alerta)
 
         return render_template('reporte/inventario.html', 
                                ingrediente_alerta_stock=ingrediente_alerta_stock, 

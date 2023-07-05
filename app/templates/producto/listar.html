@@ -49,13 +49,13 @@
                 {% if not producto.tiene_receta %}
                   {% if producto.stock %}
                     {{ producto.stock }} unidades<br>
-                    <a href="{{ url_for('producto.actualizar_stock', id=producto.id) }}">
-                      Actualizar stock
+                    <a href="{{ url_for('producto.ingresar_stock', id=producto.id) }}">
+                      Ingresar stock
                     </a>
                   {% else %}
                     Sin stock<br>
-                    <a href="{{ url_for('producto.actualizar_stock', id=producto.id) }}">
-                      Actualizar stock
+                    <a href="{{ url_for('producto.ingresar_stock', id=producto.id) }}">
+                      Ingresar stock
                     </a>
                   {% endif %}
                 {% else %}

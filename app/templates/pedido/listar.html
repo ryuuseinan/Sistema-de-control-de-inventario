@@ -39,15 +39,27 @@
               <tr>
                 <td>{{ pedido.id }}</td>
                 <td>{{ pedido.persona.nombre }} {{ pedido.persona.apellido_paterno }} {{ pedido.persona.apellido_materno}}</td>
-                <td class="descripcion">
-                {% if pedido.detalles %}
-                  {% for pedido_detalle in pedido.detalles %}
-                    <img src="{{ url_for('static', filename='img/') }}{{ pedido_detalle.producto.imagen }}" alt=" " style="max-height: 15px;">{{ loop.index }}. {{ pedido_detalle.producto.nombre }} ({{ pedido_detalle.cantidad }} unidades)<br>
-                  {% endfor %}
-                {% else %}
-                  <p>No se han añadido productos al pedido.</p>
-                {% endif %}
-                </td>
+                <td>
+                  {% if pedido.detalles %}
+                      <table class="table is-striped is-hoverable">
+                          <tbody>
+                              {% for detalle_pedido in pedido.detalles %}
+                                  <tr>
+                                      <td><img src="{{ url_for('static', filename='img/') }}{{ detalle_pedido.producto.imagen }}" alt=" " style="max-height: 15px;"></td>
+                                      <td>{{ loop.index }}. {{ detalle_pedido.producto.nombre }} ({{ detalle_pedido.producto.categoria.nombre }})</td>
+                                      <td>
+                                          {% if detalle_pedido.producto.tiene_receta == False %}
+                                          {{ detalle_pedido.cantidad }} unidad(es)<br>
+                                          {% endif %}
+                                      </td>
+                                  </tr>
+                              {% endfor %}
+                          </tbody>
+                      </table>
+                  {% else %}
+                      <p>No se han añadido productos al pedido.</p>
+                  {% endif %}
+              </td>
                 <td>{{ arrow.get(pedido.fecha_creacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if pedido.fecha_creacion else None }}</td>
                 <td>${{ pedido.total_pedido }}</td>
                 <td>{{ pedido.pedido_estado.nombre }}</td>

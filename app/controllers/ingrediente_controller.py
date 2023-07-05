@@ -137,8 +137,27 @@ def create_ingrediente_blueprint():
     
     @ingrediente_blueprint.route('/ingrediente/ingresar_stock/<int:id>', methods=['GET', 'POST'])
     def ingresar_stock(id):
-        
-        return render_template('ingrediente/ingresar_stock.html', ingrediente=ingrediente)
-    
+        # Obtener el ingrediente a editar de la base de datos
+        ingrediente = db_session.query(Ingrediente).filter_by(id=id).one()
+        unidadmedida = db_session.query(UnidadMedida).filter(UnidadMedida.activo == True).all()
+
+        if request.method == 'POST':
+            # Obtener los datos del formulario
+            cantidad = request.form['cantidad']
+
+            # Actualizar los datos del ingrediente con los nuevos datos del formulario
+            if cantidad:
+                ingrediente.cantidad = ingrediente.cantidad + int(cantidad)
+
+            # Registrar última modificación
+            ingrediente.ultima_modificacion = datetime.now()
+
+            # Guardar los cambios en la base de datos
+            db_session.commit()
+            return redirect(url_for('reporte.inventario'))
+
+        else:
+            return render_template('ingrediente/ingresar_stock.html', ingrediente=ingrediente, unidadmedida=unidadmedida)
+
     # Devolver el blueprint
     return ingrediente_blueprint

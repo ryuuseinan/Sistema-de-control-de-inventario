@@ -1,23 +1,27 @@
 {% extends "base.html" %}
 
 {% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <section class="section">
     <div class="container">
         <div class="columns">
             <div class="column">
+                
                 {% include 'messages.html' %}
                 <div class="columns">
                     <div class="column">
                         <h1 class="title">Ingredientes críticos cercanos</h1>
-                        {% if ingrediente %}
-                        <table class="table is-striped is-hoverable">
+                        {% if ingredientes_cerca_alerta %}
+                        <canvas id="grafico_ingredientes"></canvas>
+                        <!--<table class="table is-striped is-hoverable">
                             <thead>
                               <tr>
                                 <th>Nombre</th>
                                 <th>Stock</th>
                                 <th>Alerta de stock</th>
                                 <th>Fecha modificación</th>
-                                <th>Editar</th>
+                                <th>Ingresar stock</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -28,35 +32,42 @@
                                     <td>{{ ingrediente.alerta_stock }} {{ ingrediente.unidadmedida.nombre }}</td>
                                     <td>{{ arrow.get(ingrediente.ultima_modificacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if ingrediente.ultima_modificacion != ingrediente.fecha_creacion else 'Nunca modificado' }}</td>
                                     <td>
-                                      <a href="{{ url_for('ingrediente.editar', id=ingrediente.id) }}" class="button is-warning is-small">
-                                        <span class="icon is-small"><i class="fa fa-pencil-alt" aria-hidden="true"></i></i></span>
-                                      </a>
+                                        <a href="{{ url_for('ingrediente.ingresar_stock', id=ingrediente.id) }}" class="button is-warning is-small">
+                                            <span class="icon is-small"><i class="fas fa-plus"></i><i class="fas fa-pepper-hot"></i></span>
+                                        </a>
                                     </td>
                                   </tr>
                               {% endfor %}
                             </tbody>
-                          </table>
+                          </table>-->
                         {% else %}
                           <p>No se encontraron ingrediente críticos cercanos.</p>
                         {% endif %}
-                        <br>
+                    
+                    </div>
+                    <div class="column">
                         <h1 class="title">Productos críticos cercanos</h1>
-                        {% if producto %}
-                        <table class="table is-striped is-hoverable">
+                        {% if productos_cerca_alerta %}
+                        <canvas id="grafico_productos"></canvas>
+                        <!--<table class="table is-striped is-hoverable">
                             <thead>
                               <tr>
                                 <th>Nombre</th>
                                 <th>Stock</th>
                                 <th>Alerta de stock</th>
                                 <th>Fecha modificación</th>
-                                <th>Editar</th>
+                                <th>Ingresar stock</th>
                               </tr>
                             </thead>
                             <tbody>
                               {% for producto in productos_cerca_alerta  %}
                                   <tr>
                                     <td>{{ producto.nombre }}</td>
-                                    <td>{{ producto.stock }}</td>
+                                    {% if producto.tiene_receta == True %}
+                                        <td>{{ producto.stock_disponible }} unidad(es) preparable(s)</td>
+                                    {% else %}
+                                        <td>{{ producto.stock_disponible }} unidad(es)</td>
+                                    {% endif %}
                                     <td>{{ producto.alerta_stock }}</td>
                                     <td>{{ arrow.get(producto.ultima_modificacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if producto.ultima_modificacion != producto.fecha_creacion else 'Nunca modificado' }}</td>
                                     <td>
@@ -67,83 +78,10 @@
                                   </tr>
                               {% endfor %}
                             </tbody>
-                          </table>
+                          </table>-->
                         {% else %}
                           <p>No se encontraron producto críticos cercanos.</p>
                         {% endif %}
-                    </div>
-                    <div class="column">
-                        <h2 class="subtitle">Resumen del Inventario</h2>
-                        <div class="card">
-                            <div class="card-content">
-                                <div class="content">
-                                    <p><strong>Total de Ingredientes:</strong> {{ total_ingredientes }}</p>
-                                    <p><strong>Ingredientes Críticos:</strong> {{ ingrediente_alerta_stock }}</p>
-                                    {% if ingredientes_criticos %}
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th>Nombre</th>
-                                                <th>Stock</th>
-                                                <th>Última modificación</th>
-                                                <th>Ingresar stock</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for ingrediente in ingredientes_criticos %}
-                                            <tr>
-                                                <td>{{ ingrediente.nombre }}</td>
-                                                <td>El stock es de {{ ingrediente.cantidad }} {{ ingrediente.unidadmedida.nombre }}, lo cual es inferior al valor de alerta de stock establecido en {{ ingrediente.alerta_stock }} {{ ingrediente.unidadmedida.nombre }}</td>
-                                                <td>{{ ingrediente.ultima_modificacion }}</td>
-                                                <td>
-                                                    <a href="{{ url_for('ingrediente.ingresar_stock', id=ingrediente.id) }}" class="button is-warning is-small">
-                                                        <span class="icon is-small"><i class="fas fa-plus"></i><i class="fas fa-pepper-hot"></i></span>
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                {% else %}
-                                    <p>No hay ingredientes críticos.</p>
-                                {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card">
-                            <div class="card-content">
-                                <div class="content">
-                                    <p><strong>Total de productos:</strong> {{ total_productos }}</p>
-                                    <p><strong>Productos Críticos:</strong> {{ producto_alerta_stock }}</p>
-                                    {% if productos_criticos %}
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th>Nombre</th>
-                                                <th>Stock</th>
-                                                <th>Última modificación</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for productos_criticos in productos_criticos %}
-                                            <tr>
-                                                <td>{{ productos_criticos.nombre }}</td>
-                                                {% if productos_criticos.tiene_receta == True %}
-                                                    <td>El stock es de {{ productos_criticos.stock_disponible }} unidad(es) preparable(s), lo cual es inferior al valor de alerta de stock establecido en {{ productos_criticos.alerta_stock }} unidad(es)</td>
-                                                {% else %}
-                                                    <td>El stock es de {{ productos_criticos.stock_disponible }} unidad(es), lo cual es inferior al valor de alerta de stock establecido en {{ productos_criticos.alerta_stock }} unidad(es)</td>
-                                                {% endif %}
-                                                <td>{{ productos_criticos.ultima_modificacion }}</td>
-                                            </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                {% else %}
-                                    <p>No hay productos críticos.</p>
-                                {% endif %}
-                                </div>
-                            </div>
-                        </div>
                         <!--
                         <h2 class="subtitle">Indicadores de Inventario</h2>
                         <div class="columns">
@@ -182,8 +120,209 @@
                         </div>-->
                     </div>
                 </div>
+                <h2 class="subtitle">Resumen del Inventario</h2>
+                <div class="columns">
+                    <div class="column">
+                        <div class="card">
+                            <div class="card-content">
+                                <div class="content">
+                                    <p><strong>Total de Ingredientes:</strong> {{ total_ingredientes }}</p>
+                                    <p><strong>Ingredientes Críticos:</strong> {{ ingrediente_alerta_stock }}</p>
+                                    {% if ingredientes_criticos %}
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Nombre</th>
+                                                <th>Stock</th>
+                                                <th>Última modificación</th>
+                                                <th>Ingresar stock</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for ingrediente in ingredientes_criticos %}
+                                            <tr>
+                                                <td>{{ ingrediente.nombre }}</td>
+                                                <td>El stock es de {{ ingrediente.cantidad }} {{ ingrediente.unidadmedida.nombre }}, lo cual es inferior al valor de alerta de stock establecido en {{ ingrediente.alerta_stock }} {{ ingrediente.unidadmedida.nombre }}</td>
+                                                <td>{{ ingrediente.ultima_modificacion }}</td>
+                                                <td>
+                                                    <a href="{{ url_for('ingrediente.ingresar_stock', id=ingrediente.id) }}" class="button is-warning is-small">
+                                                        <span class="icon is-small"><i class="fas fa-plus"></i><i class="fas fa-pepper-hot"></i></span>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                {% else %}
+                                    <p>No hay ingredientes críticos.</p>
+                                {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <div class="column">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="content">
+                            <p><strong>Total de productos:</strong> {{ total_productos }}</p>
+                            <p><strong>Productos Críticos:</strong> {{ producto_alerta_stock }}</p>
+                            {% if productos_criticos %}
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Stock</th>
+                                        <th>Última modificación</th>
+                                        <th>Ingresar stock</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for productos_criticos in productos_criticos %}
+                                    <tr>
+                                        <td>{{ productos_criticos.nombre }} ({{ productos_criticos.categoria.nombre }})</td>
+                                            {% if productos_criticos.tiene_receta == True %}
+                                                <td>El stock es de {{ productos_criticos.stock_disponible }} unidad(es) preparable(s), lo cual es inferior al valor de alerta de stock establecido en {{ productos_criticos.alerta_stock }} unidad(es)</td>
+                                            {% else %}
+                                                <td>El stock es de {{ productos_criticos.stock_disponible }} unidad(es), lo cual es inferior al valor de alerta de stock establecido en {{ productos_criticos.alerta_stock }} unidad(es)</td>
+                                            {% endif %}
+                                        <td>{{ productos_criticos.ultima_modificacion }}</td>
+                                        <td>
+                                            {% if productos_criticos.tiene_receta == True %}
+                                                <a href="{{ url_for('producto.ingresar_stock', id=productos_criticos.id) }}" class="button is-warning is-small">
+                                                    <span class="icon is-small"><i class="fas fa-plus"></i><i class="fas fa-pepper-hot"></i></span>
+                                                </a>
+                                            {% else %}
+                                                <a href="{{ url_for('producto.ingresar_stock', id=productos_criticos.id) }}" class="button is-warning is-small">
+                                                    <span class="icon is-small"><i class="fas fa-plus"></i><i class="fas fa-pepper-hot"></i></span>
+                                                </a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p>No hay productos críticos.</p>
+                        {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div></div>
             </div>
         </div>
     </div>
 </section>
+
+<script>
+    // Obtén los datos del gráfico desde Flask
+    var ingredientes = [{% for ingrediente in ingredientes_cerca_alerta %}"{{ ingrediente.nombre }} ({{ ingrediente.unidadmedida.nombre }})",{% endfor %}];
+    var cantidades = [{% for ingrediente in ingredientes_cerca_alerta %}{{ ingrediente.cantidad }},{% endfor %}];
+    var alertas = [{% for ingrediente in ingredientes_cerca_alerta %}{{ ingrediente.alerta_stock }},{% endfor %}];
+
+    // Crear gráfico
+    var ctx = document.getElementById("grafico_ingredientes").getContext("2d");
+    var myChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: ingredientes,
+            datasets: [{
+                label: "Stock Actual",
+                data: cantidades,
+                backgroundColor: "rgba(75, 192, 192, 0.2)",
+                borderColor: "rgba(75, 192, 192, 1)",
+                borderWidth: 1
+            }, {
+                label: "Alerta de Stock",
+                data: alertas,
+                backgroundColor: "rgba(255, 99, 132, 0)", // Color de fondo para el segundo conjunto de datos
+                borderColor: "rgba(255, 99, 132, 1)", // Color del borde para el segundo conjunto de datos
+                borderWidth: 2
+            }]
+        },
+        options: {
+            scales: {
+                x: {
+                    stacked: true // Apilar las barras en el eje X
+                },
+                y: {
+                    stacked: false // Apilar las barras en el eje Y
+                }
+            },
+            plugins: {
+                annotation: {
+                    annotations: [{
+                        type: "line",
+                        mode: "horizontal",
+                        scaleID: "y",
+                        value: alertas[0],
+                        borderColor: "red",
+                        borderWidth: 2,
+                        label: {
+                            enabled: true,
+                            content: "Alerta de Stock"
+                        }
+                    }]
+                }
+            }
+        }
+    });
+</script>
+<script>
+    // Obtén los datos del gráfico desde Flask
+    var productos = [{% for producto in productos_cerca_alerta %}"{{ producto.nombre }} ({{ producto.categoria.nombre }})",{% endfor %}];
+    var cantidades = [{% for producto in productos_cerca_alerta %}{{ producto.stock_disponible }},{% endfor %}];
+    var alertas = [{% for producto in productos_cerca_alerta %}{{ producto.alerta_stock }},{% endfor %}];
+
+    // Crear gráfico
+    var ctx = document.getElementById("grafico_productos").getContext("2d");
+    var myChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: productos,
+            datasets: [{
+                label: "Cantidad",
+                data: cantidades,
+                backgroundColor: "rgba(75, 192, 192, 0.2)",
+                borderColor: "rgba(75, 192, 192, 1)",
+                borderWidth: 1
+            }, {
+                label: "Alerta de Stock",
+                data: alertas,
+                backgroundColor: "rgba(255, 99, 132, 0)", // Color de fondo para el segundo conjunto de datos
+                borderColor: "rgba(255, 99, 132, 1)", // Color del borde para el segundo conjunto de datos
+                borderWidth: 2
+            }]
+        },
+        options: {
+            plugins: {
+                datalabels: {
+                    anchor: "center",
+                    align: "center",
+                    font: {
+                        weight: "bold"
+                    },
+                    formatter: function(value, context) {
+                        if (context.dataset.label === "Cantidad") {
+                            return value;
+                        } else if (context.dataset.label === "Alerta de Stock") {
+                            return context.dataset.data[context.dataIndex];
+                        } else {
+                            return "";
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    stacked: true // Apilar las barras en el eje X
+                },
+                y: {
+                    stacked: false // Apilar las barras en el eje Y
+                }
+            }
+        }
+    });
+</script>
+
+
 {% endblock %}
