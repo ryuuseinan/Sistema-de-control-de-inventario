@@ -47,28 +47,29 @@ def create_pedido_blueprint():
         for pedido in pedidos:
             pedido.total_pedido = calcular_total_pedido(pedido)
 
-
         return render_template('pedido/listar.html', pedidos=pedidos, estado_pedido=estado_pedido, pedido_detalle_ingredientes=pedido_detalle_ingredientes)
 
     @pedido_blueprint.route('/finalizados')
     def finalizados():
         pedidos = db_session.query(Pedido).filter(Pedido.estado_id == 2).all()
         estado_pedido = db_session.query(PedidoEstado).all()
+        pedido_detalle_ingredientes = db_session.query(PedidoDetalleIngrediente).join(PedidoDetalle).join(Pedido).filter(Pedido.estado_id == 2).all()
 
         for pedido in pedidos:
             pedido.total_pedido = calcular_total_pedido(pedido)
 
-        return render_template('pedido/finalizados.html', pedidos=pedidos, estado_pedido=estado_pedido)
+        return render_template('pedido/finalizados.html', pedidos=pedidos, estado_pedido=estado_pedido, pedido_detalle_ingredientes=pedido_detalle_ingredientes)
 
     @pedido_blueprint.route('/anulados')
     def anulados():
         pedidos = db_session.query(Pedido).filter(Pedido.estado_id == 3).all()
         estado_pedido = db_session.query(PedidoEstado).all()
+        pedido_detalle_ingredientes = db_session.query(PedidoDetalleIngrediente).join(PedidoDetalle).join(Pedido).filter(Pedido.estado_id == 3).all()
 
         for pedido in pedidos:
             pedido.total_pedido = calcular_total_pedido(pedido)
 
-        return render_template('pedido/anulados.html', pedidos=pedidos, estado_pedido=estado_pedido)
+        return render_template('pedido/anulados.html', pedidos=pedidos, estado_pedido=estado_pedido, pedido_detalle_ingredientes=pedido_detalle_ingredientes)
 
     @pedido_blueprint.route('/nuevo', methods=['GET', 'POST'])
     def nuevo():
@@ -82,6 +83,7 @@ def create_pedido_blueprint():
         pedido = db_session.query(Pedido).filter_by(id=id).one()
         producto_busqueda = request.form.get('producto_busqueda')
         pedido_detalle_ingredientes = []
+        detalle_ingredientes = []
         
         if request.method == 'POST' and producto_busqueda:
             productos = db_session.query(Producto).join(Categoria).filter(
@@ -321,30 +323,12 @@ def create_pedido_blueprint():
                     receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
                     receta_detalles = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id).all()
 
-                    pedido_detalle_ingredientes = db_session.query(PedidoDetalleIngrediente).filter(
-                    PedidoDetalleIngrediente.pedido_detalle_id.in_([detalle.id for detalle in pedido.detalles])).all()
-                    
-                    for detalle_ingrediente in pedido_detalle_ingredientes:
-                        ingrediente = detalle_ingrediente.ingrediente
-                        cantidad_necesaria = detalle_ingrediente.cantidad
-
-                        # Restar la cantidad de ingredientes en base al detalle de ingrediente
-                        ingrediente.cantidad += cantidad_necesaria
-
                     for detalle_receta in receta_detalles:
                         ingrediente = detalle_receta.ingrediente
                         cantidad_necesaria = detalle_receta.cantidad * detalle.cantidad
 
                         # Descontar la cantidad de ingredientes en base a la receta
                         ingrediente.cantidad -= cantidad_necesaria
-
-                        # Actualizar los ingredientes extras agregados al producto
-                        pedido_detalle_ingrediente = db_session.query(PedidoDetalleIngrediente).filter_by(
-                            pedido_detalle_id=detalle.id, ingrediente_id=ingrediente.id).first()
-
-                        if pedido_detalle_ingrediente:
-                            ingrediente.cantidad -= pedido_detalle_ingrediente.cantidad
-                            db_session.delete(pedido_detalle_ingrediente)
 
             db_session.commit()
             flash('El pedido se ha restaurado correctamente.', 'success')
@@ -367,15 +351,6 @@ def create_pedido_blueprint():
                 if producto.tiene_receta:
                     receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
                     receta_detalles = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id).all()
-                    pedido_detalle_ingredientes = db_session.query(PedidoDetalleIngrediente).filter(
-                    PedidoDetalleIngrediente.pedido_detalle_id.in_([detalle.id for detalle in pedido.detalles])).all()
-
-                    for detalle_ingrediente in pedido_detalle_ingredientes:
-                        ingrediente = detalle_ingrediente.ingrediente
-                        cantidad_necesaria = detalle_ingrediente.cantidad
-
-                        # Restar la cantidad de ingredientes en base al detalle de ingrediente
-                        ingrediente.cantidad += cantidad_necesaria
 
                     for detalle_receta in receta_detalles:
                         ingrediente = detalle_receta.ingrediente
@@ -383,14 +358,6 @@ def create_pedido_blueprint():
 
                         # Incrementar la cantidad de ingredientes en base a la receta
                         ingrediente.cantidad += cantidad_necesaria
-
-                        # Agregar los ingredientes extras al producto
-                        pedido_detalle_ingrediente = PedidoDetalleIngrediente(
-                            pedido_detalle_id=detalle.id,
-                            ingrediente_id=ingrediente.id,
-                            cantidad=detalle.cantidad
-                        )
-                        db_session.add(pedido_detalle_ingrediente)
 
         db_session.commit()
         flash('El pedido se ha anulado correctamente.', 'success')
@@ -406,6 +373,6 @@ def create_pedido_blueprint():
             return redirect(url_for('pedido.listar'))
         else:
             return render_template('pedido/finalizar.html', pedido=pedido)
-    
+        
     # Devolver el blueprint
     return pedido_blueprint

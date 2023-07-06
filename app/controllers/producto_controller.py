@@ -4,6 +4,7 @@ from datetime import datetime
 from werkzeug.utils import secure_filename
 import os
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import asc
 
 producto_controller = Blueprint('producto_controller', __name__)
 def create_producto_blueprint():
@@ -15,13 +16,13 @@ def create_producto_blueprint():
     #@login_required
     def listar():
         # Obtenemos todas los productos de la base de datos
-        productos = db_session.query(Producto).filter(Producto.activo == True).all()
+        productos = db_session.query(Producto).filter(Producto.activo == True).order_by(asc(Producto.nombre)).all()
         return render_template('producto/listar.html', productos=productos)
 
     @producto_blueprint.route('/productos/papelera')
     def papelera():
         # Obtenemos todas los productos de la base de datos
-        productos = db_session.query(Producto).filter(Categoria.activo == False).all()
+        productos = db_session.query(Producto).filter(Producto.activo == False).order_by(asc(Producto.nombre)).all()
         return render_template('producto/papelera.html', productos=productos)
 
     #@roles_required('Administrdor')

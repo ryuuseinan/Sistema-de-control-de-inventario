@@ -3,6 +3,7 @@ from models.database import Usuario, Persona, Rol, db_session
 import bcrypt, arrow
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime
+from sqlalchemy import asc
 
 persona_controller = Blueprint('persona_controller', __name__)
 def create_persona_blueprint():
@@ -13,7 +14,7 @@ def create_persona_blueprint():
     @persona_blueprint.route('/personas')
     def listar():
         usuario = db_session.query(Usuario).filter(Usuario.activo == True).all()
-        personas = db_session.query(Persona).filter(Persona.activo == True).all()
+        personas = db_session.query(Persona).filter(Persona.activo == True).order_by(asc(Persona.rut)).all()
         for usuario in personas:
             fecha_creacion = arrow.get(usuario.fecha_creacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if usuario.fecha_creacion else None
             ultima_modificacion = arrow.get(usuario.ultima_modificacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if usuario.ultima_modificacion else None

@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from models.database import Producto, Receta, RecetaDetalle, Ingrediente, db_session
 import arrow
 from datetime import datetime
-from sqlalchemy.orm import joinedload
+from sqlalchemy import asc
 
 receta_controller = Blueprint('receta_controller', __name__)
 def create_receta_blueprint():
@@ -69,7 +69,7 @@ def create_receta_blueprint():
             flash('Ingrediente agregado al producto exitosamente', 'success')
             return redirect(url_for('receta.configurar', id=producto.id))
 
-        ingrediente = db_session.query(Ingrediente).filter(Ingrediente.activo == True).all()
+        ingrediente = db_session.query(Ingrediente).filter(Ingrediente.activo == True).order_by(asc(Ingrediente.nombre)).all()
 
         return render_template('receta/configurar.html', producto=producto, receta=receta, ingrediente=ingrediente, receta_detalles=receta_detalles)
 

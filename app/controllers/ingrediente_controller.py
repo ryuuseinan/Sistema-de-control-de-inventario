@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from models.database import Ingrediente, UnidadMedida, db_session
 from datetime import datetime
+from sqlalchemy import asc
 
 ingrediente_controller = Blueprint('ingrediente_controller', __name__)
 def create_ingrediente_blueprint():
@@ -11,13 +12,13 @@ def create_ingrediente_blueprint():
     @ingrediente_blueprint.route('/ingredientes')
     def listar():
         # Obtenemos todas los ingredientes de la base de datos
-        ingredientes = db_session.query(Ingrediente).filter(Ingrediente.activo == True).all()
+        ingredientes = db_session.query(Ingrediente).filter(Ingrediente.activo == True).order_by(asc(Ingrediente.nombre)).all()
         return render_template('ingrediente/listar.html', ingredientes=ingredientes)
 
     @ingrediente_blueprint.route('/ingrediente_papelera')
     def papelera():
         # Obtenemos todas los ingredientes de la base de datos
-        ingredientes = db_session.query(Ingrediente).filter(Ingrediente.activo == False).all()
+        ingredientes = db_session.query(Ingrediente).filter(Ingrediente.activo == False).order_by(asc(Ingrediente.nombre)).all()
         return render_template('ingrediente/papelera.html', ingredientes=ingredientes)
 
     @ingrediente_blueprint.route('/ingrediente_nuevo', methods=['GET', 'POST'])

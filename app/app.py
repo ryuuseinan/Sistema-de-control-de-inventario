@@ -1,6 +1,5 @@
-from flask import Flask, render_template, redirect, url_for, make_response
-
-from models.database import db, db_session, Usuario, Rol
+from flask import Flask, render_template
+from models.database import db
 from db_init import init_db
 import arrow
 from config import *
@@ -23,17 +22,6 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{mysql['usuario_db']}:{mysql['contrasena_db']}@{mysql['host_db']}:{mysql['puerto_db']}/{mysql['nombre_base_datos_db']}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.secret_key = secret_key_cfg
-
-# Decorador para desactivar la caché en una ruta específica
-def no_cache(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        response = make_response(f(*args, **kwargs))
-        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-        response.headers['Pragma'] = 'no-cache'
-        response.headers['Expires'] = '0'
-        return response
-    return decorated
 
 # Importar y registrar los controladores
 categoria_blueprint = create_categoria_blueprint()

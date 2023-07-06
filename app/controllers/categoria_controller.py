@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from models.database import Categoria, db_session
 from datetime import datetime
+from sqlalchemy import asc
 
 categoria_controller = Blueprint('categoria_controller', __name__)
 def create_categoria_blueprint():
@@ -11,7 +12,7 @@ def create_categoria_blueprint():
     @categoria_blueprint.route('/categorias')
     def listar():
         # Obtenemos todas las categorías de la base de datos
-        categorias = db_session.query(Categoria).filter(Categoria.activo == True).all()
+        categorias = db_session.query(Categoria).filter(Categoria.activo == True).order_by(asc(Categoria.nombre)).all()
         return render_template('categoria/listar.html', categorias=categorias)
 
     @categoria_blueprint.route('/categoria/nueva', methods=['GET', 'POST'])
@@ -55,7 +56,7 @@ def create_categoria_blueprint():
     @categoria_blueprint.route('/categorias/papelera')
     def papelera():
         # Obtenemos todas los categorias de la base de datos
-        categorias = db_session.query(Categoria).filter(Categoria.activo == False).all()
+        categorias = db_session.query(Categoria).filter(Categoria.activo == False).order_by(asc(Categoria.nombre)).all()
         return render_template('categoria/papelera.html', categorias=categorias)
 
     @categoria_blueprint.route('/categoria/restaurar/<int:id>', methods=['GET', 'POST'])
