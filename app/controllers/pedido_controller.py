@@ -13,6 +13,14 @@ def create_pedido_blueprint():
         total_pedido = 0
         for pedido_detalle in pedido.detalles:
             total_pedido += pedido_detalle.cantidad * pedido_detalle.producto.precio
+
+        # Sumar el precio de los ingredientes adicionales
+        pedido_detalle_ingredientes = db_session.query(PedidoDetalleIngrediente).join(PedidoDetalle).join(Pedido).filter(
+            PedidoDetalle.pedido_id == pedido.id).all()
+        
+        for detalle_ingrediente in pedido_detalle_ingredientes:
+            total_pedido += detalle_ingrediente.ingrediente.precio
+
         return total_pedido
 
     def actualizar_stock(producto, cantidad):
@@ -31,16 +39,16 @@ def create_pedido_blueprint():
     # Definir las rutas y las funciones controladoras
     @pedido_blueprint.route('/pedidos')
     def listar():
-        try:
-            pedidos = db_session.query(Pedido).filter(Pedido.estado_id == 1).all()
-            estado_pedido = db_session.query(PedidoEstado).all()
 
-            for pedido in pedidos:
-                pedido.total_pedido = calcular_total_pedido(pedido)
-        except:
-            db_session.rollback()
+        pedidos = db_session.query(Pedido).filter(Pedido.estado_id == 1).all()
+        estado_pedido = db_session.query(PedidoEstado).all()
+        pedido_detalle_ingredientes = db_session.query(PedidoDetalleIngrediente).join(PedidoDetalle).join(Pedido).filter(Pedido.estado_id == 1).all()
 
-        return render_template('pedido/listar.html', pedidos=pedidos, estado_pedido=estado_pedido)
+        for pedido in pedidos:
+            pedido.total_pedido = calcular_total_pedido(pedido)
+
+
+        return render_template('pedido/listar.html', pedidos=pedidos, estado_pedido=estado_pedido, pedido_detalle_ingredientes=pedido_detalle_ingredientes)
 
     @pedido_blueprint.route('/finalizados')
     def finalizados():
@@ -73,7 +81,8 @@ def create_pedido_blueprint():
     def editar(id):
         pedido = db_session.query(Pedido).filter_by(id=id).one()
         producto_busqueda = request.form.get('producto_busqueda')
-
+        pedido_detalle_ingredientes = []
+        
         if request.method == 'POST' and producto_busqueda:
             productos = db_session.query(Producto).join(Categoria).filter(
                 or_(Producto.nombre.ilike(f'%{producto_busqueda}%'),
@@ -102,16 +111,22 @@ def create_pedido_blueprint():
                         [ingrediente.cantidad // detalle.cantidad for ingrediente, detalle in
                          zip(ingredientes, receta_detalles)])
                 )
+                pedido_detalle = db_session.query(PedidoDetalle).filter_by(pedido_id=pedido.id, producto_id=producto.id).first()
+                if pedido_detalle:
+                    # Obtener los detalles de los ingredientes para cada pedido_detalle
+                    detalle_ingredientes = db_session.query(PedidoDetalleIngrediente).filter_by(pedido_detalle_id=pedido_detalle.id).all()
+                    pedido_detalle_ingredientes.extend(detalle_ingredientes)  # Agregar a la lista existente
+
             else:
                 producto.receta = None
                 producto.receta_detalles = []
                 producto.ingredientes = []
                 producto.stock_disponible = producto.stock
-
+        
         pedido.total_pedido = calcular_total_pedido(pedido)
 
-        return render_template('pedido/editar.html', productos=productos, producto_busqueda=producto_busqueda, pedido=pedido)
-
+        return render_template('pedido/editar.html', productos=productos, producto_busqueda=producto_busqueda, pedido=pedido, pedido_detalle_ingredientes=pedido_detalle_ingredientes, detalle_ingredientes=detalle_ingredientes)
+    
     @pedido_blueprint.route('/actualizar_pedido/<int:id>', methods=['GET', 'POST'])
     def actualizar_pedido(id):
         pedido = db_session.query(Pedido).filter_by(id=id).one()
@@ -306,6 +321,16 @@ def create_pedido_blueprint():
                     receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
                     receta_detalles = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id).all()
 
+                    pedido_detalle_ingredientes = db_session.query(PedidoDetalleIngrediente).filter(
+                    PedidoDetalleIngrediente.pedido_detalle_id.in_([detalle.id for detalle in pedido.detalles])).all()
+                    
+                    for detalle_ingrediente in pedido_detalle_ingredientes:
+                        ingrediente = detalle_ingrediente.ingrediente
+                        cantidad_necesaria = detalle_ingrediente.cantidad
+
+                        # Restar la cantidad de ingredientes en base al detalle de ingrediente
+                        ingrediente.cantidad += cantidad_necesaria
+
                     for detalle_receta in receta_detalles:
                         ingrediente = detalle_receta.ingrediente
                         cantidad_necesaria = detalle_receta.cantidad * detalle.cantidad
@@ -342,6 +367,15 @@ def create_pedido_blueprint():
                 if producto.tiene_receta:
                     receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
                     receta_detalles = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id).all()
+                    pedido_detalle_ingredientes = db_session.query(PedidoDetalleIngrediente).filter(
+                    PedidoDetalleIngrediente.pedido_detalle_id.in_([detalle.id for detalle in pedido.detalles])).all()
+
+                    for detalle_ingrediente in pedido_detalle_ingredientes:
+                        ingrediente = detalle_ingrediente.ingrediente
+                        cantidad_necesaria = detalle_ingrediente.cantidad
+
+                        # Restar la cantidad de ingredientes en base al detalle de ingrediente
+                        ingrediente.cantidad += cantidad_necesaria
 
                     for detalle_receta in receta_detalles:
                         ingrediente = detalle_receta.ingrediente

@@ -16,8 +16,8 @@ host_cfg = '127.0.0.1'
 mysql = {
     'nombre_base_datos_db': 'test',
     'host_db': 'localhost',
-    'usuario_db': 'hinami',
-    'contrasena_db': 'hinami',
+    'usuario_db': 'root',
+    'contrasena_db': '',
     'puerto_db': 3306
 }
 

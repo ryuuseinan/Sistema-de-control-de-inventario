@@ -110,9 +110,9 @@
                       <tr>
                         <td>{{ loop.index }}. {{ detalle_ingrediente.ingrediente.nombre }}</td>
                         <td>{{ detalle_ingrediente.cantidad }} {{ detalle_ingrediente.ingrediente.unidadmedida.nombre }}</td>
-                        <td><a href="{{ url_for('pedido.eliminar_extra', id=detalle_ingrediente.id) }}">Eliminar</a> <br></td>
-                      {% endfor %}
+                        <td><a href="{{ url_for('pedido.eliminar_extra', id=detalle_ingrediente.id) }}">Eliminar</a></td>
                       </tr>
+                      {% endfor %}
                   </tbody>
                 </table>
               </td>
