@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 28, 2023 at 08:28 AM
+-- Generation Time: Jul 06, 2023 at 12:41 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -73,19 +73,19 @@ CREATE TABLE `ingrediente` (
 --
 
 INSERT INTO `ingrediente` (`id`, `nombre`, `cantidad`, `activo`, `fecha_creacion`, `ultima_modificacion`, `unidadmedida_id`, `precio`, `alerta_stock`, `extra_mediana`, `extra_familiar`) VALUES
-(1, 'Salsa de tomate', 599834, 1, '2023-06-06 14:41:38', '2023-06-28 02:18:30', 1, 1000, 1000, 100, 100),
-(2, 'Bolas de masa', 1010, 1, '2023-06-09 12:12:25', '2023-06-28 02:06:28', 3, 1000, 1000, 100, 100),
-(3, 'Queso Cheddar', 82350, 1, '2023-06-09 12:13:19', '2023-06-09 12:13:19', 1, 1000, 1000, 100, 100),
-(4, 'Queso Mozzarella', 6000, 1, '2023-06-09 12:13:29', '2023-06-09 12:13:39', 1, 1000, 1000, 100, 100),
-(5, 'Orégano', 66250, 1, '2023-06-09 12:13:59', '2023-06-09 12:13:59', 1, 1000, 1000, 100, 100),
-(6, 'Tomate picado', 57000, 1, '2023-06-09 12:15:52', '2023-06-09 12:15:52', 1, 1000, 1000, 100, 100),
-(7, 'Jamón', 895500, 1, '2023-06-09 12:16:19', '2023-06-09 12:16:36', 1, 1000, 1000, 100, 100),
-(8, 'Camarón', 3000, 1, '2023-06-20 18:54:24', '2023-06-20 18:54:24', 3, 1000, 1000, 100, 100),
-(9, 'Aceituna', 800, 1, '2023-06-20 18:54:47', '2023-06-20 18:54:47', 3, 1000, 1000, 100, 100),
+(1, 'Salsa de tomate', 600945, 1, '2023-06-06 14:41:38', '2023-06-28 02:18:30', 1, 1000, 1000, 100, 100),
+(2, 'Bolas de masa', 100, 1, '2023-06-09 12:12:25', '2023-07-05 12:06:06', 3, 1000, 100, 100, 100),
+(3, 'Queso Cheddar', 81850, 1, '2023-06-09 12:13:19', '2023-06-09 12:13:19', 1, 1000, 1000, 100, 100),
+(4, 'Queso Mozzarella', 17900, 1, '2023-06-09 12:13:29', '2023-06-09 12:13:39', 1, 1000, 1000, 100, 100),
+(5, 'Orégano', 66000, 1, '2023-06-09 12:13:59', '2023-06-09 12:13:59', 1, 1000, 1000, 100, 100),
+(6, 'Tomate picado', 56800, 1, '2023-06-09 12:15:52', '2023-06-09 12:15:52', 1, 1000, 1000, 100, 100),
+(7, 'Jamón', 895200, 1, '2023-06-09 12:16:19', '2023-06-09 12:16:36', 1, 1000, 1000, 100, 100),
+(8, 'Camarón', 2900, 1, '2023-06-20 18:54:24', '2023-06-20 18:54:24', 3, 1000, 1000, 100, 100),
+(9, 'Aceituna', 136, 1, '2023-06-20 18:54:47', '2023-07-04 19:07:11', 3, 1000, 100, 10, 15),
 (10, 'Piña', 350000, 1, '2023-06-20 18:55:15', '2023-06-20 18:55:31', 1, 1000, 1000, 100, 100),
 (11, 'Tocino', 50000, 1, '2023-06-20 18:55:43', '2023-06-20 18:55:43', 1, 1000, 1000, 100, 100),
 (12, 'Choclo', 70000, 1, '2023-06-20 18:56:33', '2023-06-20 18:56:33', 1, 1000, 1000, 100, 100),
-(13, 'Cebolla morada', 600000, 1, '2023-06-20 18:56:54', '2023-06-20 18:56:54', 1, 1000, 1000, 100, 100),
+(13, 'Cebolla morada', 599900, 1, '2023-06-20 18:56:54', '2023-06-20 18:56:54', 1, 1000, 1000, 100, 100),
 (14, 'Salsa de tomate', 0, 0, '2023-06-20 18:57:08', '2023-06-20 18:57:08', 1, 1000, 1000, 100, 100),
 (15, 's', 0, 0, '2023-06-28 01:50:15', '2023-06-28 01:50:15', 1, 1000, 1000, 100, 100);
 
@@ -115,7 +115,8 @@ INSERT INTO `pedido` (`id`, `persona_id`, `estado_id`, `fecha_creacion`, `ultima
 (5, 1, 1, '2023-06-20 00:31:08', '2023-06-20 00:31:08'),
 (6, 1, 1, '2023-06-20 00:31:08', '2023-06-20 00:31:08'),
 (7, 1, 1, '2023-06-20 18:41:16', '2023-06-20 18:41:16'),
-(8, 3, 1, '2023-06-26 23:04:01', '2023-06-26 23:04:01');
+(8, 3, 1, '2023-06-26 23:04:01', '2023-06-26 23:04:01'),
+(9, 2, 1, '2023-07-04 23:17:20', '2023-07-04 23:17:20');
 
 -- --------------------------------------------------------
 
@@ -148,13 +149,13 @@ INSERT INTO `pedido_detalle` (`id`, `pedido_id`, `producto_id`, `cantidad`, `fec
 (32, 3, 10, 2, '2023-06-19 21:28:52', '2023-06-19 21:28:52'),
 (36, 4, 10, 5, '2023-06-19 22:22:51', '2023-06-19 22:22:51'),
 (37, 3, 1, 1, '2023-06-19 22:39:14', '2023-06-19 22:39:14'),
-(62, 5, 9, 1, '2023-06-20 12:01:25', '2023-06-20 12:01:25'),
 (64, 7, 9, 1, '2023-06-20 18:41:16', '2023-06-20 18:41:16'),
 (72, 7, 10, 1, '2023-06-20 18:41:16', '2023-06-20 18:41:16'),
 (91, 5, 10, 1, '2023-06-21 14:46:03', '2023-06-21 14:46:03'),
-(93, 5, 1, 1, '2023-06-21 14:46:03', '2023-06-21 14:46:03'),
-(95, 8, 9, 2, '2023-06-26 23:04:01', '2023-06-26 23:04:01'),
-(96, 8, 1, 1, '2023-06-26 23:04:01', '2023-06-26 23:04:01');
+(95, 8, 9, 3, '2023-06-26 23:04:01', '2023-06-26 23:04:01'),
+(106, 9, 1, 1, '2023-07-04 23:17:20', '2023-07-04 23:17:20'),
+(111, 8, 1, 1, '2023-07-05 12:44:45', '2023-07-05 12:44:45'),
+(112, 5, 1, 1, '2023-07-05 12:44:45', '2023-07-05 12:44:45');
 
 -- --------------------------------------------------------
 
@@ -174,20 +175,9 @@ CREATE TABLE `pedido_detalle_ingrediente` (
 --
 
 INSERT INTO `pedido_detalle_ingrediente` (`id`, `pedido_detalle_id`, `ingrediente_id`, `cantidad`) VALUES
-(1, 91, 1, 777),
-(2, 91, 1, 777),
-(3, 91, 1, 777),
-(4, 91, 1, 777),
-(5, 91, 1, 777),
-(6, 91, 1, 45),
-(7, 91, 2, 1),
-(8, 91, 4, 6000),
-(9, 91, 4, 6000),
-(10, 91, 2, 1),
-(11, 91, 1, 1),
-(12, 96, 1, 23),
-(13, 96, 1, 2),
-(14, 96, 1, 555);
+(9, 91, 3, 100),
+(10, 112, 13, 100),
+(12, 72, 1, 100);
 
 -- --------------------------------------------------------
 
@@ -235,7 +225,7 @@ CREATE TABLE `persona` (
 INSERT INTO `persona` (`id`, `usuario_id`, `rut`, `nombre`, `apellido_paterno`, `apellido_materno`, `celular`, `fecha_creacion`, `ultima_modificacion`, `activo`) VALUES
 (1, 1, '20704339-7', 'Luis', 'Gálvez', 'González', '935257778', '2023-06-06 14:04:04', '2023-06-21 14:52:24', 1),
 (2, 2, '6753719‑k', 'Juditza', 'Álvarez', 'Ramírez', '9', '2023-06-21 15:02:17', '2023-06-21 15:02:17', 1),
-(3, 3, '67537319‑k', 'Mario', 'Lopez', 'González', '345657', '2023-06-26 23:04:01', '2023-06-26 23:04:01', 1);
+(3, 3, '67537319‑k', 'Mario', 'Lopez', 'González', '345657', '2023-06-26 23:04:01', '2023-07-04 01:26:49', 1);
 
 -- --------------------------------------------------------
 
@@ -255,17 +245,18 @@ CREATE TABLE `producto` (
   `categoria_id` int(11) DEFAULT NULL,
   `fecha_creacion` datetime NOT NULL,
   `ultima_modificacion` datetime NOT NULL,
-  `activo` tinyint(1) NOT NULL
+  `activo` tinyint(1) NOT NULL,
+  `alerta_stock` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data for table `producto`
 --
 
-INSERT INTO `producto` (`id`, `imagen`, `codigo_barra`, `nombre`, `descripcion`, `precio`, `stock`, `tiene_receta`, `categoria_id`, `fecha_creacion`, `ultima_modificacion`, `activo`) VALUES
-(1, '/productos/pizzeria-valencia-blasco-ibanez-la-fratelli-pizza-tropical.jpg', '53', 'La Fratelli', 'Salsa de tomate, albahaca, champiñones, queso Taleggio, pimiento, cebolla, espinacas, bacon y orégano.', 7500, NULL, 1, 1, '2023-06-07 19:56:38', '2023-06-21 14:23:05', 1),
-(9, '/productos/8975035.jpg', '34', 'Coca-Cola Sin Azucar 350ml', 'Bebida en lata, 350ml', 1400, 400, 0, 3, '2023-06-09 12:42:08', '2023-06-27 23:51:29', 1),
-(10, '/productos/pizzeria-valencia-blasco-ibanez-la-fratelli-pizza-caprichosa.jpg', '35', 'Caprichosa', '', 7500, NULL, 1, 1, '2023-06-19 21:31:42', '2023-06-19 21:28:52', 1);
+INSERT INTO `producto` (`id`, `imagen`, `codigo_barra`, `nombre`, `descripcion`, `precio`, `stock`, `tiene_receta`, `categoria_id`, `fecha_creacion`, `ultima_modificacion`, `activo`, `alerta_stock`) VALUES
+(1, '/productos/pizzeria-valencia-blasco-ibanez-la-fratelli-pizza-tropical.jpg', '53', 'La Fratelli', 'Salsa de tomate, albahaca, champiñones, queso Taleggio, pimiento, cebolla, espinacas, bacon y orégano.', 7500, NULL, 1, 1, '2023-06-07 19:56:38', '2023-07-04 19:46:14', 1, 100),
+(9, '/productos/DeqpCw5SazLzEFbZq-Bebida-Coca-Cola-sin-azucar-350-ml.jpeg', '34', 'Coca-Cola Sin Azucar 350ml', 'Bebida en lata, 350ml', 1400, 102, 0, 3, '2023-06-09 12:42:08', '2023-07-04 21:05:07', 1, 100),
+(10, '/productos/pizzeria-valencia-blasco-ibanez-la-fratelli-pizza-caprichosa.jpg', '35', 'Caprichosa', '', 7500, NULL, 1, 1, '2023-06-19 21:31:42', '2023-07-04 19:46:39', 1, 90);
 
 -- --------------------------------------------------------
 
@@ -315,8 +306,7 @@ INSERT INTO `receta_detalle` (`id`, `cantidad`, `receta_id`, `ingrediente_id`, `
 (8, 300, 1, 7, '2023-06-09 12:11:26', '2023-06-09 12:11:26', 0),
 (12, 1, 10, 2, '2023-06-19 21:28:52', '2023-06-19 21:28:52', 0),
 (13, 350, 10, 3, '2023-06-19 21:28:52', '2023-06-19 21:28:52', 0),
-(16, 1, 1, 2, '2023-06-26 23:04:01', '2023-06-26 23:04:01', 0),
-(17, 100, 1, 9, '2023-06-26 23:04:01', '2023-06-26 23:04:01', 0);
+(19, 1, 1, 2, '2023-07-04 20:44:18', '2023-07-04 20:44:18', 0);
 
 -- --------------------------------------------------------
 
@@ -364,7 +354,8 @@ CREATE TABLE `unidadmedida` (
 INSERT INTO `unidadmedida` (`id`, `nombre`, `activo`, `fecha_creacion`, `ultima_modificacion`) VALUES
 (1, 'gr', 1, '2023-06-16 17:15:12', '2023-06-16 17:15:12'),
 (2, 'ml', 1, '2023-06-16 17:15:12', '2023-06-16 17:15:12'),
-(3, 'Unidad(es)', 1, '2023-06-16 17:15:12', '2023-06-16 17:15:12');
+(3, 'Unidad/es', 1, '2023-06-16 17:15:12', '2023-07-04 17:20:02'),
+(4, 'Unidad(es)', 1, '2023-07-04 18:21:14', '2023-07-04 18:21:14');
 
 -- --------------------------------------------------------
 
@@ -390,7 +381,7 @@ CREATE TABLE `usuario` (
 INSERT INTO `usuario` (`id`, `nombre_usuario`, `correo`, `contrasena`, `rol_id`, `fecha_creacion`, `ultima_modificacion`, `activo`) VALUES
 (1, 'galvezluis', 'galvezluis72@gmail.com', '$2b$12$NJ/4JWBugLVU0pJjIfMcne9NqDk/.zLpotKLUAqXUes4FG7GZ/..O', 1, '2023-06-06 14:04:05', '2023-06-21 14:52:24', 1),
 (2, 'admin', 'admin@fratelli.cl', '$2b$12$4iPqNtgn6dwMZEJnbgIVkuNRmivp/gFnGSs6/JuPqi7bOkdIvBw1S', 2, '2023-06-21 15:02:17', '2023-06-21 15:02:17', 1),
-(3, 'marito', 'marito@pizzeria.cl', '$2b$12$O54gYmqoqaqTkHJXiowTaucqFLhvijIbIaFRY9ArmwDJNoOP1WF7S', 1, '2023-06-26 23:04:01', '2023-06-26 23:04:01', 1);
+(3, 'marito', 'marito@pizzeria.cl', '$2b$12$O54gYmqoqaqTkHJXiowTaucqFLhvijIbIaFRY9ArmwDJNoOP1WF7S', 5, '2023-06-26 23:04:01', '2023-07-04 01:26:49', 1);
 
 -- --------------------------------------------------------
 
@@ -537,19 +528,19 @@ ALTER TABLE `ingrediente`
 -- AUTO_INCREMENT for table `pedido`
 --
 ALTER TABLE `pedido`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `pedido_detalle`
 --
 ALTER TABLE `pedido_detalle`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=97;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=113;
 
 --
 -- AUTO_INCREMENT for table `pedido_detalle_ingrediente`
 --
 ALTER TABLE `pedido_detalle_ingrediente`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `pedido_estado`
@@ -579,7 +570,7 @@ ALTER TABLE `receta`
 -- AUTO_INCREMENT for table `receta_detalle`
 --
 ALTER TABLE `receta_detalle`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `rol`
@@ -591,7 +582,7 @@ ALTER TABLE `rol`
 -- AUTO_INCREMENT for table `unidadmedida`
 --
 ALTER TABLE `unidadmedida`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `usuario`
