@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
-from models.database import Pedido, PedidoEstado, Producto, Categoria, Receta, RecetaDetalle, PedidoDetalle, PedidoDetalleIngrediente, Ingrediente, db_session
+from models.database import Pedido, PedidoEstado, Producto, Categoria, Receta, RecetaDetalle, PedidoDetalle, PedidoDetalleIngrediente, Ingrediente, Venta, db_session
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime
@@ -26,7 +26,6 @@ def create_pedido_blueprint():
     # Definir las rutas y las funciones controladoras
     @pedido_blueprint.route('/pedidos')
     def listar():
-
         pedidos = db_session.query(Pedido).filter(Pedido.estado_id == 1).all()
         estado_pedido = db_session.query(PedidoEstado).all()
         pedido_detalle_ingredientes = db_session.query(PedidoDetalleIngrediente).join(PedidoDetalle).join(Pedido).filter(Pedido.estado_id == 1).all()
@@ -300,6 +299,11 @@ def create_pedido_blueprint():
         pedido = db_session.query(Pedido).filter_by(id=id).one()
 
         if pedido.estado_id == 2:  # Verificar si el pedido está finalizado
+            venta_existente = db_session.query(Venta).filter_by(id=id).first()
+            
+            if venta_existente:
+                venta_existente.activo = False
+
             pedido.estado_id = 1  # Actualizar el estado del pedido a "En proceso"
             db_session.commit()
             flash('El pedido se ha marcado como "en progreso" correctamente.', 'success')
@@ -387,19 +391,37 @@ def create_pedido_blueprint():
         else:
             flash('El pedido no se encuentra anulado.', 'error')
 
-        flash('El pedido se ha anulado correctamente.', 'success')
-
         return redirect(url_for('pedido.listar'))
 
     @pedido_blueprint.route('/pedido/finalizar/<int:id>', methods=['GET', 'POST'])
     def finalizar(id):
         pedido = db_session.query(Pedido).filter_by(id=id).one()
-        if request.method == 'POST':
+        estado_pedido = db_session.query(PedidoEstado).all()
+        pedido_detalle_ingredientes = db_session.query(PedidoDetalleIngrediente).join(PedidoDetalle).join(Pedido).filter(Pedido.estado_id == 2).all()
+        pedido.total_pedido = calcular_total_pedido(pedido)
+
+        if pedido.estado_id == 1:
             pedido.estado_id = 2
+            print(pedido.total_pedido)
+
+            venta_existente = db_session.query(Venta).filter_by(id=id).first()
+
+            if venta_existente:
+                venta_existente.total = pedido.total_pedido
+                venta_existente.activo = True
+
+            else:
+                nueva_venta = Venta(id=id,
+                                    pedido_id=id, 
+                                    total=pedido.total_pedido)
+                db_session.add(nueva_venta)
+                
             db_session.commit()
-            return redirect(url_for('pedido.listar'))
+            flash('El pedido ha sido finalizado correctamente.', 'success')   
         else:
-            return render_template('pedido/finalizar.html', pedido=pedido)
+            flash('El pedido ya se encuentra finalizado.', 'error')
+            
+        return redirect(url_for('pedido.listar'))
         
     # Devolver el blueprint
     return pedido_blueprint

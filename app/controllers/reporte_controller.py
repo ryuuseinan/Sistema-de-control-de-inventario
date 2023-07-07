@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
-from models.database import Pedido, PedidoEstado, Producto, Categoria, Receta, RecetaDetalle, PedidoDetalle, PedidoDetalleIngrediente, Ingrediente, db_session
+from models.database import Pedido, PedidoEstado, Producto, Categoria, Receta, RecetaDetalle, PedidoDetalle, PedidoDetalleIngrediente, Venta, Ingrediente, db_session
 from sqlalchemy import or_, func, and_
 
 
@@ -9,7 +9,7 @@ def create_reporte_blueprint():
     reporte_blueprint = Blueprint('reporte', __name__)
 
     # Definir las rutas y las funciones controladoras
-    @reporte_blueprint.route('/reporte')
+    @reporte_blueprint.route('/reporte/inventario')
     def inventario():
         productos = db_session.query(Producto).filter(Producto.activo == True).all()
         for producto in productos:
@@ -68,6 +68,22 @@ def create_reporte_blueprint():
                                productos_cerca_alerta=productos_cerca_alerta,
                                productos_criticos=productos_criticos,
                                productos=productos)
+    
+    @reporte_blueprint.route('/reporte/ventas')
+    def ventas():
+        ventas = db_session.query(Venta).filter(Venta.activo == True).all()
+        ventas_por_dia = {}
+
+        for venta in ventas:
+            fecha_creacion = venta.pedido.fecha_creacion.date()
+            total = venta.total
+
+            if fecha_creacion in ventas_por_dia:
+                ventas_por_dia[fecha_creacion] += total
+            else:
+                ventas_por_dia[fecha_creacion] = total
+
+        return render_template('reporte/ventas.html', ventas_por_dia=ventas_por_dia)
 
     # Devolver el blueprint
     return reporte_blueprint

@@ -151,6 +151,7 @@ class Pedido(Base):
     persona = relationship('Persona')
     pedido_estado = relationship('PedidoEstado')
     detalles = relationship('PedidoDetalle', backref='pedido_detalles')
+    venta = relationship('Venta', back_populates='pedido')
 
 class PedidoEstado(Base):
     __tablename__ = 'pedido_estado'
@@ -165,20 +166,18 @@ class PedidoDetalle(Base):
     cantidad = Column(Integer, nullable=False)
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
     ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
-    # Crea la relación con pedido y producto
-    #pedido = relationship('Pedido')
+
     producto = relationship('Producto')
 
 class Venta(Base):
     __tablename__ = 'venta'
     id = Column(Integer, primary_key=True)
     pedido_id = Column(Integer, ForeignKey('pedido.id'))
-    precio = Column(Integer)
+    total = Column(Integer)
     activo = Column(Boolean, default=True, nullable=False)
-    fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
-    ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
-    # Crea la relación con pedido y producto
-    pedido = relationship('Pedido')
+
+    pedido = relationship('Pedido', back_populates='venta')
+    
 
 class PedidoDetalleIngrediente(Base):
     __tablename__ = 'pedido_detalle_ingrediente'

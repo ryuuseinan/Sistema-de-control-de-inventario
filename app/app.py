@@ -11,7 +11,6 @@ from controllers.sesion_controller import create_sesion_blueprint
 from controllers.persona_controller import create_persona_blueprint
 from controllers.usuario_controller import create_usuario_blueprint
 from controllers.receta_controller import create_receta_blueprint
-from controllers.ventas_controller import create_ventas_blueprint
 from controllers.unidadmedida_controller import create_unidadmedida_blueprint
 from controllers.rol_controller import create_rol_blueprint
 from controllers.pedido_controller import create_pedido_blueprint
@@ -44,9 +43,6 @@ app.register_blueprint(usuario_blueprint)
 
 receta_blueprint = create_receta_blueprint()
 app.register_blueprint(receta_blueprint)
-
-ventas_blueprint = create_ventas_blueprint()
-app.register_blueprint(ventas_blueprint)
 
 unidadmedida_blueprint = create_unidadmedida_blueprint()
 app.register_blueprint(unidadmedida_blueprint)
