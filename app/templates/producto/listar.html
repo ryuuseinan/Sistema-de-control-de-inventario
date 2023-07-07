@@ -48,7 +48,7 @@
                 <td>
                 {% if not producto.tiene_receta %}
                   {% if producto.stock %}
-                    {{ producto.stock }} unidades<br>
+                    {{ producto.stock }} unidad(es)<br>
                     <a href="{{ url_for('producto.ingresar_stock', id=producto.id) }}">
                       Ingresar stock
                     </a>
@@ -64,7 +64,7 @@
                   </a>
                 {% endif %}
                 </td>
-                <td>{{ producto.alerta_stock }}</td>
+                <td>{{ producto.alerta_stock }} unidad(es)</td>
                 <td>
                   <a href="{{ url_for('producto.editar', id=producto.id) }}" class="button is-info is-light">
                     <span class="icon is-small"><i class="fa fa-pencil-alt" aria-hidden="true"></i></i></span>

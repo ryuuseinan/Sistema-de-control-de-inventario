@@ -117,8 +117,6 @@ def create_reporte_blueprint():
         print(meses_ventas)
         
         return render_template('reporte/ventas.html', meses_ventas=meses_ventas, ventas_por_mes=ventas_por_mes, mes_nombre=mes_nombre, fecha_actual=fecha_actual, get_dias_sin_ventas=get_dias_sin_ventas, monthrange=monthrange, date=date)
-   
-
 
     def mes_nombre(mes):
         traducciones = {
