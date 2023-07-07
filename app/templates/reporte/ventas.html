@@ -4,93 +4,58 @@
 
 {% block content %}
 <section class="section">
-<div class="container">
-    <div class="columns">
-    <div class="column">
-        {% if ventas_por_dia %}
+    <div class="container">
         <div class="columns">
             <div class="column">
-                <h1 class="title">Lista de ventas</h1>
+                {% for mes_ventas in meses_ventas[:6] %}
+                    <div class="columns">
+                        <div class="column">
+                            <h1 class="title">Ventas de {{ mes_ventas.nombre }}</h1>
+                            <canvas id="chart-{{ mes_ventas.mes }}" width="400" height="200"></canvas>
+                        </div>
+                        <div class="column">
+                            {% set mes_ventas_index = loop.index + 6 %}
+                            {% if mes_ventas_index <= meses_ventas|length %}
+                                {% set mes_ventas_right = meses_ventas[mes_ventas_index - 1] %}
+                                <h1 class="title">Ventas de {{ mes_ventas_right.nombre }}</h1>
+                                <canvas id="chart-{{ mes_ventas_right.mes }}" width="400" height="200"></canvas>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <script>
+                        var ventas_por_dia{{ mes_ventas.mes }} = {{ mes_ventas.ventas_por_dia | tojson }};
+                        var ctx{{ mes_ventas.mes }} = document.getElementById("chart-{{ mes_ventas.mes }}").getContext("2d");
+                        var myChart{{ mes_ventas.mes }} = new Chart(ctx{{ mes_ventas.mes }}, {
+                            type: "bar",
+                            data: {
+                                labels: Object.keys(ventas_por_dia{{ mes_ventas.mes }}).map(function(dia) { return parseInt(dia); }),
+                                datasets: [{
+                                    label: "Total",
+                                    data: Object.values(ventas_por_dia{{ mes_ventas.mes }}),
+                                    backgroundColor: "rgba(75, 192, 192, 0.2)",
+                                    borderColor: "rgba(75, 192, 192, 1)",
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            callback: function(value, index, values) {
+                                                return "$" + value;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    </script>
+                {% endfor %}
             </div>
         </div>
-        <table class="table is-striped is-hoverable">
-        <thead>
-            <tr>
-                <th>Fecha</th>
-                <th>Precio</th>
-            </tr>
-        </thead>
-            <tbody>
-                {% for fecha, total in ventas_por_dia.items() %}
-                <tr>
-                    <td>{{ fecha.strftime('%d-%m-%Y') }}</td>
-                    <td>${{ total }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-        <h1 class="title is-1">Lista de ventas</h1>
-        <div class="box">
-        <div class="notification is-warning">
-            <h2 class="subtitle is-2">No hay ventas</h2>
-            <p>No hay ventas registradas.</p>
-        </div>
-        </div>
-        {% endif %}
     </div>
-    </div>
-</div>
-
 </section>
-<script>
-    // Obtén los datos del gráfico desde Flask
-    var ventas = [
-        {% for venta in ventas %}
-            { fecha: "{{ arrow.get(venta.pedido.fecha_creacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') }}", total: {{ venta.total }} },
-        {% endfor %}
-    ];
-
-    // Crear arrays separados para las fechas y los totales
-    var fechas = ventas.map(function(item) { return item.fecha; });
-    var totales = ventas.map(function(item) { return item.total; });
-
-    // Crear gráfico
-    var ctx = document.getElementById("grafico_ventas").getContext("2d");
-    var myChart = new Chart(ctx, {
-        type: "line",
-        data: {
-            labels: fechas,
-            datasets: [{
-                label: "Total de ventas",
-                data: totales,
-                backgroundColor: "rgba(75, 192, 192, 0.2)",
-                borderColor: "rgba(75, 192, 192, 1)",
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                x: {
-                    type: "time",
-                    time: {
-                        unit: "day",
-                        displayFormats: {
-                            day: "DD-MM-YYYY"
-                        }
-                    },
-                    ticks: {
-                        autoSkip: true,
-                        maxTicksLimit: 10
-                    }
-                },
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-</script>
-
 
 {% endblock %}

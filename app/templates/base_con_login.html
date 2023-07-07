@@ -2,12 +2,21 @@
 <html>
 <head>
     {% include 'head.html' %}
-	{% include 'header.html' %}
 </head>
-<body id="body_lista_opciones">
+{% if session.logged_in %}
+<div id="body_lista_opciones">
 	<div id="columnas" class="columns">
 		<div id="lista_de_opciones" class="column is-one-fifth">
 			<aside class="menu">
+				<nav id="nav-superior" class="navbar navbar-pink" role="navigation" aria-label="main navigation">
+					<div class="navbar-menu">
+						<div class="navbar-brand">
+							<a class="navbar-item" href="{{ url_for('index') }}">
+								<h2 style="color: #ccc;">{{ appName() }}</h2>
+							</a>
+						</div>
+					</div>
+				</nav>
 			<ul class="menu-list">
 				<li>
 				<a href="{{ url_for('index') }}">
@@ -16,17 +25,30 @@
 				</a>
 				</li>
 				<li>
-				<a href="{{ url_for('ventas.listar') }}">
-					<span class="icon is-small"><i class="fas fa-dollar-sign"></i></span>
-					<span>Ver ventas</span>
-				</a>
-				</li>
-				<li>
 					<a href="{{ url_for('pedido.listar') }}">
 						<span class="icon is-small"><i class="fas fa-shopping-cart"></i></span>
 						<span>Pedidos</span>
 					</a>
 					</li>
+				<li>
+			</ul>
+			<p id=admin class="menu-label">Reportes</p>
+			<ul class="menu-list">
+				<li>
+				<a href="{{ url_for('reporte.inventario') }}">
+					<span class="icon is-small"><i class="fas fa-chart-bar"></i></span>
+					<span>Inventario</span>
+				</a>
+				</li>
+				<li>
+				<a href="{{ url_for('reporte.ventas') }}">
+					<span class="icon is-small"><i class="fas fa-dollar-sign"></i></span>
+					<span>Ver ventas</span>
+				</a>
+				</li>
+			</ul>
+			<p id=admin class="menu-label">Configuración</p>
+			<ul class="menu-list">
 				<li>
 				<a href="{{ url_for('producto.listar') }}">
 					<span class="icon is-small"><i class="fas fa-utensils"></i></span>
@@ -61,11 +83,29 @@
 					</a>
 				</li>
 			</ul>
+			<div class="side-menu-footer">
+				<center>
+					<p class="navbar-item">
+						<i class="fas fa-user"></i>
+						{{ session['user_nombre'] }} 
+						{{ session['user_apellido'] }}
+					</p>
+					<a class="navbar-item" href="{{ url_for('sesion.logout') }}">
+						<span class="icon is-small"><i class="fas fa-sign-out-alt"></i></span>
+						<span>Cerrar sesión</span>
+					</a>
+				</center>
+			</div>
 			</aside>
 		</div>
-		<div class="column">
-			{% block content %}{% endblock %}
-		</div>
+		<body>
+			<div class="column">
+				{% block content %}{% endblock %}
+			</div>
+		</body>
 	</div>
-</body>
+</div>
+{% else %}
+	<script>window.location.href = "{{ url_for('login') }}";</script>
+{% endif %}
 </html>

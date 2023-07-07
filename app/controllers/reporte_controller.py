@@ -1,7 +1,10 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from models.database import Pedido, PedidoEstado, Producto, Categoria, Receta, RecetaDetalle, PedidoDetalle, PedidoDetalleIngrediente, Venta, Ingrediente, db_session
 from sqlalchemy import or_, func, and_
-
+from datetime import date
+import calendar
+import matplotlib.pyplot as plt
+import io
 
 reporte_controller = Blueprint('reporte_controller', __name__)
 def create_reporte_blueprint():
@@ -72,18 +75,75 @@ def create_reporte_blueprint():
     @reporte_blueprint.route('/reporte/ventas')
     def ventas():
         ventas = db_session.query(Venta).filter(Venta.activo == True).all()
-        ventas_por_dia = {}
+
+        ventas_por_mes = {}
 
         for venta in ventas:
             fecha_creacion = venta.pedido.fecha_creacion.date()
             total = venta.total
+            mes = fecha_creacion.month
 
-            if fecha_creacion in ventas_por_dia:
-                ventas_por_dia[fecha_creacion] += total
+            if mes in ventas_por_mes:
+                ventas_por_mes[mes].append((fecha_creacion, total))
             else:
-                ventas_por_dia[fecha_creacion] = total
+                ventas_por_mes[mes] = [(fecha_creacion, total)]
 
-        return render_template('reporte/ventas.html', ventas_por_dia=ventas_por_dia)
+        fecha_actual = date.today()
+        monthrange = calendar.monthrange
+
+        meses_ventas = []
+
+        for mes, ventas_dia in ventas_por_mes.items():
+            dias_mes = range(1, monthrange(fecha_actual.year, mes)[1] + 1)
+            ventas_por_dia = {dia: 0 for dia in dias_mes}
+
+            for venta in ventas_dia:
+                fecha = venta[0]
+                total = venta[1]
+                dia = fecha.day
+                ventas_por_dia[dia] += total
+
+            dias_con_ventas = get_dias_con_ventas(dias_mes, ventas_por_mes)
+            dias_sin_ventas = get_dias_sin_ventas(dias_mes, ventas_por_mes, dias_con_ventas)
+
+            meses_ventas.append({
+                'mes': mes,
+                'nombre': mes_nombre(mes),
+                'ventas_por_dia': ventas_por_dia,
+                'dias_con_ventas': dias_con_ventas,
+                'dias_sin_ventas': dias_sin_ventas
+            })
+
+        print(meses_ventas)
+        
+        return render_template('reporte/ventas.html', meses_ventas=meses_ventas, ventas_por_mes=ventas_por_mes, mes_nombre=mes_nombre, fecha_actual=fecha_actual, get_dias_sin_ventas=get_dias_sin_ventas, monthrange=monthrange, date=date)
+   
+
+
+    def mes_nombre(mes):
+        traducciones = {
+            1: "Enero",
+            2: "Febrero",
+            3: "Marzo",
+            4: "Abril",
+            5: "Mayo",
+            6: "Junio",
+            7: "Julio",
+            8: "Agosto",
+            9: "Septiembre",
+            10: "Octubre",
+            11: "Noviembre",
+            12: "Diciembre"
+        }
+        return traducciones.get(mes, "")
+
+    def get_dias_con_ventas(dias_mes, ventas_por_mes):
+        dias_con_ventas = set(venta[0].day for ventas_dia in ventas_por_mes.values() for venta in ventas_dia)
+        return dias_con_ventas
+
+    def get_dias_sin_ventas(dias_mes, ventas_por_mes, dias_con_ventas):
+        dias_sin_ventas = [dia for dia in dias_mes if dia not in dias_con_ventas]
+        return dias_sin_ventas
 
     # Devolver el blueprint
     return reporte_blueprint
