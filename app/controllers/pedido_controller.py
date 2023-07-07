@@ -23,19 +23,6 @@ def create_pedido_blueprint():
 
         return total_pedido
 
-    def actualizar_stock(producto, cantidad):
-        receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
-        receta_detalles = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id).all()
-        if producto.tiene_receta:
-            receta = producto.receta
-            receta_detalles = producto.receta_detalles
-            for detalle in receta_detalles:
-                ingrediente = detalle.ingrediente
-                cantidad_necesaria = detalle.cantidad * cantidad
-                ingrediente.cantidad -= cantidad_necesaria
-        else:
-            producto.stock -= cantidad
-
     # Definir las rutas y las funciones controladoras
     @pedido_blueprint.route('/pedidos')
     def listar():
@@ -308,6 +295,19 @@ def create_pedido_blueprint():
 
         return redirect(url_for('pedido.editar_extra', id=pedido_detalle_ingrediente.pedido_detalle_id))
 
+    @pedido_blueprint.route('/restaurar_finalizado/<int:id>', methods=['GET', 'POST'])
+    def restaurar_finalizado(id):
+        pedido = db_session.query(Pedido).filter_by(id=id).one()
+
+        if pedido.estado_id == 2:  # Verificar si el pedido está finalizado
+            pedido.estado_id = 1  # Actualizar el estado del pedido a "En proceso"
+            db_session.commit()
+            flash('El pedido se ha marcado como "en progreso" correctamente.', 'success')
+        else:
+            flash('El pedido no se encuentra finalizado.', 'error')
+
+        return redirect(url_for('pedido.finalizados'))
+
     @pedido_blueprint.route('/restaurar/<int:id>', methods=['GET', 'POST'])
     def restaurar(id):
         pedido = db_session.query(Pedido).filter_by(id=id).one()
@@ -329,6 +329,18 @@ def create_pedido_blueprint():
 
                         # Descontar la cantidad de ingredientes en base a la receta
                         ingrediente.cantidad -= cantidad_necesaria
+
+                        # Sumar los ingredientes de pedido_detalle_ingrediente
+
+            pedido_detalle_ingredientes = db_session.query(PedidoDetalleIngrediente).join(PedidoDetalle).join(Pedido).filter(
+                PedidoDetalle.pedido_id == pedido.id).all()
+
+            for detalle_ingrediente in pedido_detalle_ingredientes:
+                ingrediente = detalle_ingrediente.ingrediente
+                cantidad = detalle_ingrediente.cantidad
+
+                # Sumar la cantidad de ingredientes
+                ingrediente.cantidad -= cantidad
 
             db_session.commit()
             flash('El pedido se ha restaurado correctamente.', 'success')
@@ -359,7 +371,22 @@ def create_pedido_blueprint():
                         # Incrementar la cantidad de ingredientes en base a la receta
                         ingrediente.cantidad += cantidad_necesaria
 
-        db_session.commit()
+            # Sumar los ingredientes de pedido_detalle_ingrediente
+            pedido_detalle_ingredientes = db_session.query(PedidoDetalleIngrediente).join(PedidoDetalle).join(Pedido).filter(
+                PedidoDetalle.pedido_id == pedido.id).all()
+
+            for detalle_ingrediente in pedido_detalle_ingredientes:
+                ingrediente = detalle_ingrediente.ingrediente
+                cantidad = detalle_ingrediente.cantidad
+
+                # Sumar la cantidad de ingredientes
+                ingrediente.cantidad += cantidad
+
+            db_session.commit()
+            flash('El pedido se ha anulado correctamente.', 'success')
+        else:
+            flash('El pedido no se encuentra anulado.', 'error')
+
         flash('El pedido se ha anulado correctamente.', 'success')
 
         return redirect(url_for('pedido.listar'))

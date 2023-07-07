@@ -75,6 +75,7 @@
             <tbody>
                 {% for receta_detalle in receta_detalles %}
                   <tr>
+                    <td>{{ receta_detalle.ingrediente.id }}</td>
                     <td>{{ receta_detalle.ingrediente.nombre }}</td>
                     <td>{{ receta_detalle.cantidad }} {{ receta_detalle.ingrediente.unidadmedida.nombre }}</td>
                     <td>
