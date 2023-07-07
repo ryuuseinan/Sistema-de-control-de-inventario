@@ -20,6 +20,14 @@
                                 <h1 class="title">Ventas de {{ mes_ventas_right.nombre }}</h1>
                                 <canvas id="chart-{{ mes_ventas_right.mes }}" width="400" height="200"></canvas>
                             {% endif %}
+                            <br><br><br><br>
+                            <div class="card">
+                                <div class="card-content">
+                                    <div class="content">
+                                        <p><strong>Venta total mensual:</strong> ${{ mes_ventas.ventas_por_dia.values()|sum }}</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <script>
@@ -57,5 +65,4 @@
         </div>
     </div>
 </section>
-
 {% endblock %}
