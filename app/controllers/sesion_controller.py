@@ -24,18 +24,25 @@ def create_sesion_blueprint():
             contrasena = request.form['contrasena']
 
             # Verificar si el nombre_usuario y la contraseña coinciden con un usuario en la base de datos
-            usuario = db_session.query(Usuario).filter_by(nombre_usuario=nombre_usuario).first()
+            usuario = db_session.query(Usuario).filter(Usuario.nombre_usuario == nombre_usuario, Usuario.activo == True).first()
 
             if usuario and bcrypt.checkpw(contrasena.encode(), usuario.contrasena.encode()):
                 # Establecer la sesión del usuario como iniciada
                 persona = db_session.query(Persona).filter_by(usuario_id=usuario.id).first()
                 session['logged_in'] = True
-                session['user_id'] = usuario.id
-                session['user_nombre'] = persona.nombre
-                session['user_apellido'] = persona.apellido_paterno  # Guardar el nombre de usuario en la sesión
+                session['id'] = usuario.id
+                session['rol'] = usuario.rol.id
+                session['rol_nombre'] = usuario.rol.nombre
+                session['nombre'] = persona.nombre
+                session['apellido'] = persona.apellido_paterno  # Guardar el nombre de usuario en la sesión
 
                 flash('Sesión iniciada correctamente', 'success')
                 return redirect(url_for('index'))
+            
+            elif usuario is None:
+                flash('Su usuario actualmente se encuentra inhabilitado, contacte con el administrador si considera que se trata de un error', 'error')
+                return redirect(url_for('sesion.login'))
+
             else:
                 flash('Credenciales inválidas', 'error')
                 return redirect(url_for('sesion.login'))

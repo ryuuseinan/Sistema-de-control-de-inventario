@@ -10,7 +10,7 @@ secret_key_cfg = os.urandom(24)
 debug_cfg = True
 
 # hosting
-host_cfg = '127.0.0.1'
+host_cfg = '192.168.0.109'
 
 # mysql credenciales
 mysql = {

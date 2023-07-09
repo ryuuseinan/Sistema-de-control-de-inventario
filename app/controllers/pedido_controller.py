@@ -1,8 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from models.database import Pedido, PedidoEstado, Producto, Categoria, Receta, RecetaDetalle, PedidoDetalle, PedidoDetalleIngrediente, Ingrediente, Venta, db_session
 from sqlalchemy import or_
-from sqlalchemy.exc import IntegrityError
-from datetime import datetime
 
 pedido_controller = Blueprint('pedido_controller', __name__)
 def create_pedido_blueprint():
@@ -26,12 +24,17 @@ def create_pedido_blueprint():
     # Definir las rutas y las funciones controladoras
     @pedido_blueprint.route('/pedidos')
     def listar():
-        pedidos = db_session.query(Pedido).filter(Pedido.estado_id == 1).all()
-        estado_pedido = db_session.query(PedidoEstado).all()
-        pedido_detalle_ingredientes = db_session.query(PedidoDetalleIngrediente).join(PedidoDetalle).join(Pedido).filter(Pedido.estado_id == 1).all()
+        try:
+            pedidos = db_session.query(Pedido).filter(Pedido.estado_id == 1).all()
+            estado_pedido = db_session.query(PedidoEstado).all()
+            pedido_detalle_ingredientes = db_session.query(PedidoDetalleIngrediente).join(PedidoDetalle).join(Pedido).filter(Pedido.estado_id == 1).all()
 
-        for pedido in pedidos:
-            pedido.total_pedido = calcular_total_pedido(pedido)
+            for pedido in pedidos:
+                pedido.total_pedido = calcular_total_pedido(pedido)
+        
+        except:
+            flash("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
+            db_session.rollback()
 
         return render_template('pedido/listar.html', pedidos=pedidos, estado_pedido=estado_pedido, pedido_detalle_ingredientes=pedido_detalle_ingredientes)
 
@@ -59,7 +62,7 @@ def create_pedido_blueprint():
 
     @pedido_blueprint.route('/nuevo', methods=['GET', 'POST'])
     def nuevo():
-        pedido = Pedido(persona_id=session['user_id'])
+        pedido = Pedido(persona_id=session['id'])
         db_session.add(pedido)
         db_session.commit()
         return redirect(url_for('pedido.editar', id=pedido.id))
@@ -220,12 +223,25 @@ def create_pedido_blueprint():
         ingrediente = db_session.query(Ingrediente).filter(Ingrediente.activo == True).all()
         pedido_detalle_ingrediente = db_session.query(PedidoDetalleIngrediente).filter_by(pedido_detalle_id=id).all()
         total_pedido = pedido_detalle.producto.precio
+        ingrediente_busqueda = request.form.get('ingrediente_busqueda')
+        
+        if request.method == 'POST' and ingrediente_busqueda:
+            ingredientes = db_session.query(Ingrediente).filter(Ingrediente.nombre.ilike(f'%{ingrediente_busqueda}%'), Ingrediente.activo == True).all()
+            if not ingredientes:
+                flash("No se encontraron ingredientes con ese criterio de búsqueda", "error")
+                ingredientes = db_session.query(Ingrediente).filter(Ingrediente.activo == True).all()
+
+        elif request.method == 'POST' and not ingrediente_busqueda:
+            flash("Por favor, ingrese el nombre de un ingrediente", "error")
+            ingredientes = db_session.query(Ingrediente).filter(Ingrediente.activo == True).all()
+        else:
+            ingredientes = db_session.query(Ingrediente).filter(Ingrediente.activo == True).all()
 
         for detalle_ingrediente in pedido_detalle_ingrediente:
             total_pedido += detalle_ingrediente.ingrediente.precio
             print(total_pedido)
 
-        return render_template('pedido/editar_extra.html', pedido_detalle=pedido_detalle, ingrediente=ingrediente, pedido_detalle_ingrediente=pedido_detalle_ingrediente, total_pedido=total_pedido)
+        return render_template('pedido/editar_extra.html', pedido_detalle=pedido_detalle, ingrediente=ingrediente, pedido_detalle_ingrediente=pedido_detalle_ingrediente, total_pedido=total_pedido, ingrediente_busqueda=ingrediente_busqueda)
 
     @pedido_blueprint.route('/pedido/agregar_extra/<int:id>', methods=['GET', 'POST'])
     def agregar_extra(id):
@@ -399,7 +415,8 @@ def create_pedido_blueprint():
         estado_pedido = db_session.query(PedidoEstado).all()
         pedido_detalle_ingredientes = db_session.query(PedidoDetalleIngrediente).join(PedidoDetalle).join(Pedido).filter(Pedido.estado_id == 2).all()
         pedido.total_pedido = calcular_total_pedido(pedido)
-
+        pagina = request.form.get('pagina')
+        print(pagina)
         if pedido.estado_id == 1:
             pedido.estado_id = 2
             print(pedido.total_pedido)
@@ -420,8 +437,24 @@ def create_pedido_blueprint():
             flash('El pedido ha sido finalizado correctamente.', 'success')   
         else:
             flash('El pedido ya se encuentra finalizado.', 'error')
-            
-        return redirect(url_for('pedido.listar'))
         
+        if pagina:
+            return redirect(url_for('pedido.notificaciones'))
+        else:
+            return redirect(url_for('pedido.listar'))
+    
+    @pedido_blueprint.route('/notificaciones')
+    def notificaciones():
+        try:
+            pedidos = db_session.query(Pedido).filter(Pedido.estado_id == 1).all()
+            estado_pedido = db_session.query(PedidoEstado).all()
+            pedido_detalle_ingredientes = db_session.query(PedidoDetalleIngrediente).join(PedidoDetalle).join(Pedido).filter(Pedido.estado_id == 1).all()
+        
+        except:
+            flash("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
+            db_session.rollback()
+
+        return render_template('notificaciones.html', pedidos=pedidos, estado_pedido=estado_pedido, pedido_detalle_ingredientes=pedido_detalle_ingredientes)
+
     # Devolver el blueprint
     return pedido_blueprint

@@ -3,6 +3,7 @@ from models.database import db
 from db_init import init_db
 import arrow
 from config import *
+from flask_socketio import SocketIO
 
 from controllers.categoria_controller import create_categoria_blueprint
 from controllers.producto_controller import create_producto_blueprint
@@ -18,9 +19,24 @@ from controllers.reporte_controller import create_reporte_blueprint
 
 # Configurar la aplicación
 app = Flask(__name__)
+app.debug=debug_cfg
 app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{mysql['usuario_db']}:{mysql['contrasena_db']}@{mysql['host_db']}:{mysql['puerto_db']}/{mysql['nombre_base_datos_db']}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.secret_key = secret_key_cfg
+
+# Forzar eliminación de caché
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+app.add_template_global(arrow, 'arrow')
+
+# Configurar la base de datos
+db.init_app(app)
+
+# Configurar socket para chat
+socketio = SocketIO(app)
+
+# Inicializar la aplicación y la base de datos
+with app.app_context():
+    init_db()
 
 # Importar y registrar los controladores
 categoria_blueprint = create_categoria_blueprint()
@@ -56,17 +72,6 @@ app.register_blueprint(pedido_blueprint)
 reporte_blueprint = create_reporte_blueprint()
 app.register_blueprint(reporte_blueprint)
 
-# Forzar eliminación de caché
-app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
-app.add_template_global(arrow, 'arrow')
-
-# Configurar la base de datos
-db.init_app(app)
-
-# Inicializar la aplicación y la base de datos
-with app.app_context():
-    init_db()
-
 # Creamos la ruta para la página principal
 @app.route('/')
 def index():
@@ -82,5 +87,10 @@ def page_not_found(error):
     # Renderiza el template de error 404
     return render_template("404.html"), 404
 
+@app.route('/chat')
+def chat():
+    # Lógica del chat
+    return render_template('chat.html')
+
 if __name__ == '__main__':
-    app.run(debug=debug_cfg, port=5000, host=host_cfg)
+    socketio.run(app, port=5000, host=host_cfg)

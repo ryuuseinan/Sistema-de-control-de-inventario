@@ -1,0 +1,89 @@
+{% extends "head.html" %}
+
+{% block title %}Chats{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="columns">
+      <div class="column">
+        <div class="column">
+          <h1 class="title">Notificaciones</h1>
+          {% for pedido in pedidos %}
+          <div class="box">
+            <h2 class="title">ID del pedido: {{ pedido.id }}</h2>
+            <table class="table is-striped is-hoverable">
+              <thead>
+                <tr>
+                  <th>Detalle del pedido</th>
+                  <th>Estado</th>
+                  <th>Finalizar</th>
+                  <th>Anular</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    {% if pedido.detalles %}
+                    <table class="table is-striped is-hoverable">
+                      <tbody>
+                        {% for detalle_pedido in pedido.detalles %}
+                        <tr>
+                          <td><img src="{{ url_for('static', filename='img/') }}{{ detalle_pedido.producto.imagen }}" alt=" " style="max-height: 30px;"></td>
+                          <td>{{ loop.index }}. {{ detalle_pedido.producto.nombre }} ({{ detalle_pedido.producto.categoria.nombre }})</td>
+                          <td>
+                            {% if detalle_pedido.producto.tiene_receta == False %}
+                            {{ detalle_pedido.cantidad }} unidad(es)<br>
+                            {% endif %}
+                            {% if detalle_pedido.producto.tiene_receta == True %}
+                            {% set detalle_ingredientes_producto = pedido_detalle_ingredientes | selectattr('pedido_detalle_id', 'equalto', detalle_pedido.id) %}
+                            {% if detalle_ingredientes_producto %}
+                            <table class="table is-striped is-hoverable">
+                              <thead>
+                                <tr>
+                                  <th>Ingredientes extras</th>
+                                  <th>Cantidad</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {% for detalle_ingredientes in detalle_ingredientes_producto %}
+                                <tr>
+                                  <td>{{ loop.index }}. {{ detalle_ingredientes.ingrediente.nombre }}</td>
+                                  <td>{{ detalle_ingredientes.cantidad }} {{ detalle_ingredientes.ingrediente.unidadmedida.nombre }}</td>
+                                </tr>
+                                {% endfor %}
+                              </tbody>
+                            </table>
+                            {% endif %}
+                            {% endif %}
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                    {% else %}
+                    <p>No se han añadido productos al pedido.</p>
+                    {% endif %}
+                  </td>
+                  <td>{{ pedido.pedido_estado.nombre }}</td>
+                  <td>
+                    <a href="{{ url_for('pedido.finalizar', id=pedido.id, pagina='notificaciones') }}" class="button is-info is-success is-light">
+                      <span class="icon is-small"><i class="fas fa-check" aria-hidden="true"></i></span>
+                    </a>
+                  </td>
+                  <td>
+                    <a href="{{ url_for('pedido.anular', id=pedido.id, pagina='notificaciones') }}" class="button is-danger is-light">
+                      <span class="icon is-small"><i class="fas fa-times" aria-hidden="true"></i></span>
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

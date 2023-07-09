@@ -31,7 +31,10 @@
               <th>Fecha</th>
               <th>Total</th>
               <th>Estado</th>
-              <th>Editar/Finalizar/Anular</th>
+              <th>Notificar</th>
+              <th>Editar</th>
+              <th>Finalizar</th>
+              <th>Anular</th>
             </tr>
           </thead>
           <tbody>
@@ -55,6 +58,12 @@
                                               {% set detalle_ingredientes_producto = pedido_detalle_ingredientes | selectattr('pedido_detalle_id', 'equalto', detalle_pedido.id) %}
                                               {% if detalle_ingredientes_producto %}
                                                   <table class="table is-striped is-hoverable">
+                                                      <thead>
+                                                        <tr>
+                                                          <th>Ingredientes extras</th>
+                                                          <th>Cantidad</th>
+                                                        </tr>
+                                                      </thead>
                                                       <tbody>
                                                           {% for detalle_ingredientes in detalle_ingredientes_producto %}
                                                               <tr>
@@ -79,12 +88,23 @@
                 <td>${{ pedido.total_pedido }}</td>
                 <td>{{ pedido.pedido_estado.nombre }}</td>
                 <td>
+                  <form action="" method="POST">
+                    <button type="submit" class="button is-info is-light">
+                      <span class="icon is-small"><i class="fa fa-paper-plane" aria-hidden="true"></i></span>
+                    </button>
+                  </form>
+                </td>
+                <td>
                   <a href="{{ url_for('pedido.editar', id=pedido.id) }}" class="button is-info is-light">
                     <span class="icon is-small"><i class="fa fa-pencil-alt" aria-hidden="true"></i></i></span>
                   </a>
+                </td>
+                <td>
                   <a href="{{ url_for('pedido.finalizar', id=pedido.id) }}" class="button is-info is-success is-light">
                     <span class="icon is-small"><i class="fas fa-check" aria-hidden="true"></i></i></span>
                   </a>
+                </td>
+                <td>
                   <a href="{{ url_for('pedido.anular', id=pedido.id) }}" class="button is-danger is-light">
                     <span class="icon is-small"><i class="fas fa-times" aria-hidden="true"></i></span>
                   </a>

@@ -3,11 +3,11 @@ from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from config import *
+
 # Crear objeto de base de datos SQLAlchemy
 db = SQLAlchemy()
 
-# Crea la URL de conexión a la base de datos MySQL
-url = f"mysql://{mysql['usuario_db']}:{mysql['contrasena_db']}@{mysql['host_db']}:{mysql['puerto_db']}/{mysql['nombre_base_datos_db']}"
+url = f"mysql+pymysql://{mysql['usuario_db']}:{mysql['contrasena_db']}@{mysql['host_db']}:{mysql['puerto_db']}/{mysql['nombre_base_datos_db']}"
 
 # Crea una instancia de la clase create_engine
 engine = create_engine(url)
@@ -177,7 +177,6 @@ class Venta(Base):
     activo = Column(Boolean, default=True, nullable=False)
 
     pedido = relationship('Pedido', back_populates='venta')
-    
 
 class PedidoDetalleIngrediente(Base):
     __tablename__ = 'pedido_detalle_ingrediente'

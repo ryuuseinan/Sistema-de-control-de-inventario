@@ -3,7 +3,6 @@
 <head>
     {% include 'head.html' %}
 </head>
-{% if session.logged_in %}
 <div id="body_lista_opciones">
 	<div id="columnas" class="columns">
 		<div id="lista_de_opciones" class="column is-one-fifth">
@@ -29,66 +28,73 @@
 						<span class="icon is-small"><i class="fas fa-shopping-cart"></i></span>
 						<span>Pedidos</span>
 					</a>
+				</li>
+				<li>
+					<a href="{{ url_for('pedido.notificaciones') }}">
+						<span class="icon is-small"><i class="fas fa-shopping-cart"></i></span>
+						<span>Notificaciones</span>
+					</a>
+				</li>
+				<li>
+			</ul>
+				<p id=admin class="menu-label">Reportes</p>
+				<ul class="menu-list">
+					<li>
+					<a href="{{ url_for('reporte.inventario') }}">
+						<span class="icon is-small"><i class="fas fa-chart-bar"></i></span>
+						<span>Inventario</span>
+					</a>
 					</li>
-				<li>
-			</ul>
-			<p id=admin class="menu-label">Reportes</p>
-			<ul class="menu-list">
-				<li>
-				<a href="{{ url_for('reporte.inventario') }}">
-					<span class="icon is-small"><i class="fas fa-chart-bar"></i></span>
-					<span>Inventario</span>
-				</a>
-				</li>
-				<li>
-				<a href="{{ url_for('reporte.ventas') }}">
-					<span class="icon is-small"><i class="fas fa-dollar-sign"></i></span>
-					<span>Ver ventas</span>
-				</a>
-				</li>
-			</ul>
-			<p id=admin class="menu-label">Configuración</p>
-			<ul class="menu-list">
-				<li>
-				<a href="{{ url_for('producto.listar') }}">
-					<span class="icon is-small"><i class="fas fa-utensils"></i></span>
-					<span>Productos</span>
-				</a>
-				</li>
-				<li>
-				<a href="{{ url_for('categoria.listar') }}">
-					<span class="icon is-small"><i class="fas fa-list"></i></span>
-					<span>Categorías</span>
-				</a>
-				</li>
-				<li>
-					<a href="{{ url_for('ingrediente.listar') }}">
-						<span class="icon is-small"><i class="fas fa-pepper-hot"></i></span>
-						<span>Ingredientes</span>
+					<li>
+					<a href="{{ url_for('reporte.ventas') }}">
+						<span class="icon is-small"><i class="fas fa-dollar-sign"></i></span>
+						<span>Ver ventas</span>
 					</a>
-				</li>
-			</ul>
-			<p id=admin class="menu-label">Administración</p>
-			<ul class="menu-list">
-				<li>
-				<a href="{{ url_for('usuario.listar') }}">
-					<span class="icon is-small"><i class="fas fa-users"></i></span>
-					<span>Usuarios</span>
-				</a>
-				</li>
-				<li>
-					<a href="{{ url_for('persona.listar') }}">
-						<span class="icon is-small"><i class="fas fa-user-circle"></i></span>
-						<span>Personas</span>
+					</li>
+				</ul>
+				<p id=admin class="menu-label">Configuración</p>
+				<ul class="menu-list">
+					<li>
+					<a href="{{ url_for('producto.listar') }}">
+						<span class="icon is-small"><i class="fas fa-utensils"></i></span>
+						<span>Productos</span>
 					</a>
-				</li>
-			</ul>
+					</li>
+					<li>
+					<a href="{{ url_for('categoria.listar') }}">
+						<span class="icon is-small"><i class="fas fa-list"></i></span>
+						<span>Categorías</span>
+					</a>
+					</li>
+					<li>
+						<a href="{{ url_for('ingrediente.listar') }}">
+							<span class="icon is-small"><i class="fas fa-pepper-hot"></i></span>
+							<span>Ingredientes</span>
+						</a>
+					</li>
+				</ul>
+				<p id=admin class="menu-label">Administración</p>
+				<ul class="menu-list">
+					<li>
+					<a href="{{ url_for('usuario.listar') }}">
+						<span class="icon is-small"><i class="fas fa-users"></i></span>
+						<span>Usuarios</span>
+					</a>
+					</li>
+					<li>
+						<a href="{{ url_for('persona.listar') }}">
+							<span class="icon is-small"><i class="fas fa-user-circle"></i></span>
+							<span>Personas</span>
+						</a>
+					</li>
+				</ul>
 			<div class="side-menu-footer">
 				<center>
-					<p class="navbar-item">
+					<p>
 						<i class="fas fa-user"></i>
-						{{ session['user_nombre'] }} 
-						{{ session['user_apellido'] }}
+						{{ session['nombre'] }} 
+						{{ session['apellido'] }}
+						({{ session['rol_nombre'] }})
 					</p>
 					<a class="navbar-item" href="{{ url_for('sesion.logout') }}">
 						<span class="icon is-small"><i class="fas fa-sign-out-alt"></i></span>
@@ -105,7 +111,7 @@
 		</body>
 	</div>
 </div>
-{% else %}
-	<script>window.location.href = "{{ url_for('sesion.login') }}";</script>
+{% if session.rol == 5 %}
+	<script>window.location.href = "{{ url_for('notificaciones') }}";</script>
 {% endif %}
 </html>
