@@ -3,7 +3,10 @@ from models.database import db
 from db_init import init_db
 import arrow
 from config import *
-from flask_socketio import SocketIO
+import socket
+import io
+import qrcode
+import base64
 
 from controllers.categoria_controller import create_categoria_blueprint
 from controllers.producto_controller import create_producto_blueprint
@@ -19,10 +22,11 @@ from controllers.reporte_controller import create_reporte_blueprint
 
 # Configurar la aplicación
 app = Flask(__name__)
-app.debug=debug_cfg
+app.debug = debug_cfg
 app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{mysql['usuario_db']}:{mysql['contrasena_db']}@{mysql['host_db']}:{mysql['puerto_db']}/{mysql['nombre_base_datos_db']}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.secret_key = secret_key_cfg
+app.jinja_env.filters['b64encode'] = base64.b64encode
 
 # Forzar eliminación de caché
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
@@ -30,9 +34,6 @@ app.add_template_global(arrow, 'arrow')
 
 # Configurar la base de datos
 db.init_app(app)
-
-# Configurar socket para chat
-socketio = SocketIO(app)
 
 # Inicializar la aplicación y la base de datos
 with app.app_context():
@@ -82,15 +83,40 @@ def index():
 def appName() -> str:
     return app_name_cfg
 
+@app.context_processor
+def inject_host_cfg():
+    def generate_qr_code(data):
+        # Generar el código QR
+        qr = qrcode.QRCode(version=1, box_size=10, border=1)
+        qr.add_data(data)
+        qr.make(fit=True)
+        qr_img = qr.make_image(fill="black", back_color="white")
+
+        # Convertir la imagen del código QR en una cadena base64
+        qr_img_buffer = io.BytesIO()
+        qr_img.save(qr_img_buffer, format='PNG')
+        qr_img_buffer.seek(0)
+        qr_img_base64 = base64.b64encode(qr_img_buffer.getvalue()).decode()
+
+        return qr_img_base64
+
+    host_cfg = get_local_ip()
+    address = f"{host_cfg}:{port_cfg}"
+    return dict(host_cfg=host_cfg, port_cfg=port_cfg, address=address, generate_qr_code=generate_qr_code)
+
 @app.errorhandler(404)
 def page_not_found(error):
     # Renderiza el template de error 404
     return render_template("404.html"), 404
 
-@app.route('/chat')
-def chat():
-    # Lógica del chat
-    return render_template('chat.html')
+def get_local_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(('8.8.8.8', 80))
+    local_ip = s.getsockname()[0]
+    s.close()
+    return local_ip
+
+host_cfg = get_local_ip()
 
 if __name__ == '__main__':
-    socketio.run(app, port=5000, host=host_cfg)
+    app.run(port=port_cfg, host=host_cfg)

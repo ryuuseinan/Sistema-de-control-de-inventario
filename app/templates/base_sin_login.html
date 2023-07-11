@@ -3,7 +3,6 @@
 <head>
     {% include 'head.html' %}
 </head>
-{% if session.logged_in %}
 <div id="body_lista_opciones">
 	<div id="columnas" class="columns">
 		<div id="lista_de_opciones" class="column is-one-fifth">
@@ -105,7 +104,4 @@
 		</body>
 	</div>
 </div>
-{% else %}
-	<script>window.location.href = "{{ url_for('login') }}";</script>
-{% endif %}
 </html>

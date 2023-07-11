@@ -42,6 +42,8 @@ def create_producto_blueprint():
             alerta_stock = request.form['alerta_stock'] 
             tiene_receta = True if request.form['tiene_receta'] == "True" else False
 
+
+        
             # Crear una nueva instancia de Producto con los datos del formulario
             try:
                 # Crear una nueva instancia de Producto con los datos del formulario
