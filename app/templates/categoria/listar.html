@@ -31,8 +31,8 @@
             {% for categoria in categorias %}
                 <tr>
                   <td>{{ categoria.nombre }}</td>
-                  <td>{{ arrow.get(categoria.fecha_creacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if categoria.fecha_creacion else None }}</td>
-                  <td>{{ arrow.get(categoria.ultima_modificacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if categoria.ultima_modificacion != categoria.fecha_creacion else 'Nunca modificado' }}</td>
+                  <td>{{ arrow.get(categoria.fecha_creacion).format('DD-MM-YYYY HH:mm') if categoria.fecha_creacion else None }}</td>
+                  <td>{{ arrow.get(categoria.ultima_modificacion).format('DD-MM-YYYY HH:mm') if categoria.ultima_modificacion != categoria.fecha_creacion else 'Nunca modificado' }}</td>
                   <td>
                     <a href="{{ url_for('categoria.editar', id=categoria.id) }}" class="button is-warning is-small">
                       <span class="icon is-small"><i class="fa fa-pencil-alt" aria-hidden="true"></i></i></span>

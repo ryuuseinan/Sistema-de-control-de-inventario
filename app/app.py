@@ -109,6 +109,10 @@ def page_not_found(error):
     # Renderiza el template de error 404
     return render_template("404.html"), 404
 
+@app.errorhandler(500)
+def handle_internal_server_error(error):
+    return render_template('error.html', error_message='Error interno del servidor', error=error), 500
+
 def get_local_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect(('8.8.8.8', 80))

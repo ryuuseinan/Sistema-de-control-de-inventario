@@ -37,8 +37,8 @@
                                 <td>{{ usuario.nombre_usuario }}</td>
                                 <td>{{ usuario.correo }}</td>
                                 <td>{{ usuario.rol.nombre }}</td>
-                                <td>{{ arrow.get(usuario.fecha_creacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if usuario.fecha_creacion else None }}</td>
-                                <td>{{ arrow.get(usuario.ultima_modificacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if usuario.ultima_modificacion != usuario.fecha_creacion else 'Nunca modificado' }}</td>
+                                <td>{{ arrow.get(usuario.fecha_creacion).format('DD-MM-YYYY HH:mm') if usuario.fecha_creacion else None }}</td>
+                                <td>{{ arrow.get(usuario.ultima_modificacion).format('DD-MM-YYYY HH:mm') if usuario.ultima_modificacion != usuario.fecha_creacion else 'Nunca modificado' }}</td>
                                 <td>{{ 'Sí' if usuario.activo else 'No' }}</td>
                                 <td>
                                     <a href="{{ url_for('usuario.editar', id=usuario.id) }}" class="button is-info is-light">

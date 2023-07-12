@@ -95,28 +95,14 @@
   </div>
 </section>
 <script>
-  function showNotification() {
-      if ("Notification" in window) {
-          if (Notification.permission === "granted") {
-              var notification = new Notification("Pedido actualizado", {
-                  body: "Se ha añadido/actualizado un pedido. Por favor, refresque la página.",
-              });
-          } else if (Notification.permission !== "denied") {
-              Notification.requestPermission().then(function (permission) {
-                  if (permission === "granted") {
-                      var notification = new Notification("Pedido actualizado", {
-                          body: "Se ha añadido/actualizado un pedido. Por favor, refresque la página.",
-                      });
-                  }
-              });
-          }
-      }
+  // Función para recargar la página cada 10 segundos
+  function reloadPage() {
+    setTimeout(function () {
+      location.reload();
+    }, 10000);
   }
-
-  // Llama a la función para mostrar la notificación cuando se carga la página
   document.addEventListener('DOMContentLoaded', function () {
-      showNotification();
+    reloadPage();
   });
 </script>
-
 {% endblock %}

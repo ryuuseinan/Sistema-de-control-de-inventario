@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from models.database import Pedido, PedidoEstado, Producto, Categoria, Receta, RecetaDetalle, PedidoDetalle, PedidoDetalleIngrediente, Ingrediente, Venta, db_session
 from sqlalchemy import or_
+from sqlalchemy.exc import SQLAlchemyError
 
 pedido_controller = Blueprint('pedido_controller', __name__)
 def create_pedido_blueprint():
@@ -530,10 +531,16 @@ def create_pedido_blueprint():
             estado_pedido = db_session.query(PedidoEstado).all()
             pedido_detalle_ingredientes = db_session.query(PedidoDetalleIngrediente).join(PedidoDetalle).join(Pedido).filter(Pedido.estado_id == 1).all()
             
-        except:
-            flash("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
+            # Confirmar la transacción
+            db_session.commit()
+            
+        except SQLAlchemyError as e:
+            # Revertir la transacción en caso de error
             db_session.rollback()
+            print(f"Error al obtener los pedidos: {e}")
+            # Manejar el error de alguna manera, como mostrar un mensaje de error al usuario
+            return render_template('error.html', error_message="Error al obtener los pedidos")
 
         return render_template('notificaciones.html', pedidos=pedidos, estado_pedido=estado_pedido, pedido_detalle_ingredientes=pedido_detalle_ingredientes)
-
+    
     return pedido_blueprint
