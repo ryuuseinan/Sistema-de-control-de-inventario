@@ -74,14 +74,20 @@ def create_pedido_blueprint():
     @pedido_blueprint.route('/nuevo', methods=['GET', 'POST'])
     def nuevo():
         try:
+            if 'id' not in session:
+                flash("ERROR: Debes haber iniciado sesión para esta función.")
+                return redirect(url_for('sesion.login'))
+
             pedido = Pedido(persona_id=session['id'])
             db_session.add(pedido)
             db_session.commit()
+            
+            return redirect(url_for('pedido.editar', id=pedido.id))
+        
         except:
-            flash("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
             db_session.rollback()
-
-        return redirect(url_for('pedido.editar', id=pedido.id))
+            flash("ERROR: Ocurrió un error al procesar la solicitud.")
+            return redirect(url_for('sesion.login'))
 
     @pedido_blueprint.route('/pedido/editar/<int:id>', methods=['GET', 'POST'])
     def editar(id):

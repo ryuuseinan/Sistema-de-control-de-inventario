@@ -3,6 +3,9 @@
 {% block title %}Chats{% endblock %}
 
 {% block content %}
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
 <section class="section">
   <div class="container">
     <div class="columns">
@@ -12,14 +15,15 @@
           {% include 'messages.html' %}
           {% for pedido in pedidos %}
           <div class="box">
-            <h2 class="title">ID del pedido: {{ pedido.id }}</h2>
+            <h2 class="title">
+              ID del pedido: {{ pedido.id }} <br>
+              <i class="fas fa-clock"></i>
+              {{ arrow.get(pedido.fecha_creacion).format('HH:mm:ss') if pedido.fecha_creacion else None }}
+            </h2>
             <table class="table is-striped is-hoverable">
               <thead>
                 <tr>
                   <th>Detalle del pedido</th>
-                  <th>Estado</th>
-                  <th>Finalizar</th>
-                  <th>Anular</th>
                 </tr>
               </thead>
               <tbody>
@@ -30,7 +34,7 @@
                       <tbody>
                         {% for detalle_pedido in pedido.detalles %}
                         <tr>
-                          <td><img src="{{ url_for('static', filename='img/') }}{{ detalle_pedido.producto.imagen }}" alt=" " style="max-height: 30px;"></td>
+                          <td><img src="{{ url_for('static', filename='img/') }}{{ detalle_pedido.producto.imagen }}" alt=" " style="max-height: 60px;"></td>
                           <td>{{ loop.index }}. {{ detalle_pedido.producto.nombre }} ({{ detalle_pedido.producto.categoria.nombre }})</td>
                           <td>
                             {% if detalle_pedido.producto.tiene_receta == False %}
@@ -66,27 +70,21 @@
                     <p>No se han añadido productos al pedido.</p>
                     {% endif %}
                   </td>
-                  <td>{{ pedido.pedido_estado.nombre }}</td>
-                  <td>
-                    <form action="{{ url_for('pedido.finalizar', id=pedido.id) }}" method="POST">
-                      <input type="hidden" name="pagina" value="notificaciones">
-                      <button type="submit" class="button is-info is-success is-light">
-                        <span class="icon is-small"><i class="fas fa-check" aria-hidden="true"></i></span>
-                      </button>
-                    </form>
-                  </td>
-                  <td>
-                    <form action="{{ url_for('pedido.anular', id=pedido.id) }}" method="POST">
-                      <input type="hidden" name="pagina" value="notificaciones">
-                      <button type="submit" class="button is-danger is-light">
-                        <span class="icon is-small"><i class="fas fa-times" aria-hidden="true"></i></span>
-                      </button>
-                    </form>
-                  </td>
-                  
                 </tr>
               </tbody>
             </table>
+            <form action="{{ url_for('pedido.finalizar', id=pedido.id) }}" method="POST">
+              <input type="hidden" name="pagina" value="notificaciones">
+              <button type="submit" class="button is-fullwidth is-info is-success is-light">
+                <span class="icon is-small"><i class="fas fa-check" aria-hidden="true"></i></span>
+              </button>
+            </form>
+            <form action="{{ url_for('pedido.anular', id=pedido.id) }}" method="POST">
+              <input type="hidden" name="pagina" value="notificaciones">
+              <button type="submit" class="button is-fullwidth is-danger is-light">
+                <span class="icon is-small"><i class="fas fa-times" aria-hidden="true"></i></span>
+              </button>
+            </form>
           </div>
           {% endfor %}
         </div>

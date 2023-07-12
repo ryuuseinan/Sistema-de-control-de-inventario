@@ -3,57 +3,124 @@
 {% block title %}Inicio de sesión{% endblock %}
 
 {% block content %}
-<section class="hero is-primary">
-  <div class="hero-body">
-    <div class="container">
-      <h1 class="title has-text-centered">Inicio de sesión</h1>
+<div class="is-hidden-touch">
+  <section class="hero is-primary">
+    <div class="hero-body">
+      <div class="container">
+        <h1 class="title has-text-centered">Inicio de sesión</h1>
+      </div>
     </div>
-  </div>
-</section>
-<section class="section">
-  <div id="login" class="container">
-    <div class="columns is-flex is-flex-direction-column box" style="width: 25%;">
+  </section>
+  <section class="section">
+    <div id="login" class="container">
+      <div class="columns is-flex is-flex-direction-column box" style="width: 25%;">
+      <form action="{{ url_for('sesion.login') }}" method="POST">
+        <div class="field">
+          <div class="control">
+            <div class="column">
+              <label class="label">Nombre de usuario</label>
+              <p class="control has-icons-left has-icons-right">
+                <input class="input is-fullwidth" type="text" name="nombre_usuario" placeholder="pizzeria_fratelli" minlength=3 maxlength="30" required>
+                <span class="icon is-small is-left">
+                  <i class="fas fa-user"></i>
+                </span>
+                <span class="icon is-small is-right">
+                  <i class="fas fa-check"></i>
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <div class="column">
+            <label class="label">Contraseña</label>
+            <div class="control">
+              <p class="control has-icons-left has-icons-right">
+              <input class="input is-fullwidth" type="password" name="contrasena" placeholder="*******" required>
+              <span class="icon is-small is-left">
+                <i class="fas fa-lock"></i>
+              </p>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <div class="control">
+            <div class="column">
+              <button class="button is-primary is-fullwidth" type="submit">Iniciar sesión</button>
+            </div>
+          </div>
+        </div>
+        </form>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="section is-hidden-desktop" style="padding: 0;">
+<head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+  <style>
+    .login-container {
+      max-width: 300px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .login-title {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .login-button {
+      margin-top: 20px;
+      width: 100%;
+    }
+  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+  <section class="hero is-primary">
+    <div class="hero-body">
+      <div class="container">
+        <h1 class="title has-text-centered">Inicio de sesión</h1>
+      </div>
+    </div>
+  </section>
+  <div class="login-container">
+    <h1 class="login-title"></h1>
     <form action="{{ url_for('sesion.login') }}" method="POST">
       <div class="field">
-        <div class="control">
-          <div class="column">
-            <label class="label">Nombre de usuario</label>
-            <p class="control has-icons-left has-icons-right">
-              <input class="input is-fullwidth" type="text" name="nombre_usuario" placeholder="pizzeria_fratelli" minlength=3 maxlength="30" required>
-              <span class="icon is-small is-left">
-                <i class="fas fa-user"></i>
-              </span>
-              <span class="icon is-small is-right">
-                <i class="fas fa-check"></i>
-              </span>
-            </p>
-          </div>
-        </div>
+        <label class="label">Nombre de usuario</label>
+        <p class="control has-icons-left has-icons-right">
+          <input class="input is-fullwidth" type="text" name="nombre_usuario" placeholder="pizzeria_fratelli" minlength=3 maxlength="30" required>
+          <span class="icon is-small is-left">
+            <i class="fas fa-user"></i>
+          </span>
+          <span class="icon is-small is-right">
+            <i class="fas fa-check"></i>
+          </span>
+        </p>
       </div>
       <div class="field">
-        <div class="column">
-          <label class="label">Contraseña</label>
-          <div class="control">
-            <p class="control has-icons-left has-icons-right">
-            <input class="input is-fullwidth" type="password" name="contrasena" placeholder="*******" required>
-            <span class="icon is-small is-left">
-              <i class="fas fa-lock"></i>
-            </p>
-            </span>
-          </div>
+        <label class="label">Contraseña</label>
+        <div class="control">
+          <p class="control has-icons-left has-icons-right">
+          <input class="input is-fullwidth" type="password" name="contrasena" placeholder="*******" required>
+          <span class="icon is-small is-left">
+            <i class="fas fa-lock"></i>
+          </p>
+          </span>
         </div>
       </div>
       <div class="field">
         <div class="control">
-          <div class="column">
-            <button class="button is-primary is-fullwidth" type="submit">Iniciar sesión</button>
-          </div>
+          <button class="button is-primary login-button" type="submit">Iniciar sesión</button>
         </div>
       </div>
-      </form>
-    </div>
+    </form>
   </div>
-</section>
+</div>
+
 <div class="container">
   {% include 'messages.html' %}
 </div>

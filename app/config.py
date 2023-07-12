@@ -7,7 +7,7 @@ app_name_cfg = 'Pizzería Fratelli'
 secret_key_cfg = os.urandom(24)
 
 # Habilitar modo depurador
-debug_cfg = False
+debug_cfg = True
 
 # hosting
 #host_cfg = '127.0.0.1'
