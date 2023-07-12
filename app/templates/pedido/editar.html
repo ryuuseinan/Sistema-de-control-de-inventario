@@ -9,8 +9,8 @@
             <div class="column">
                 <div class="column">
                     <div class="buttons is-pulled-right">
-                        <a href="{{ url_for('pedido.listar') }}" class="button is-link is-light">Volver</a>
-                    </div>
+                        <a href="{{ url_for('pedido.listar') }}" class="button is-link is-light" onclick="redirectToNotifications()">Volver</a>
+                    </div>                                       
                     {% if pedido %}
                     <div class="columns">
                       <div class="column">
@@ -205,4 +205,28 @@
         </div>
     </div>
 </section>
+<script>
+    function sendNotification() {
+        if ("Notification" in window) {
+            if (Notification.permission === "granted") {
+                var notification = new Notification("Actualizar página", {
+                    body: "Se ha añadido/actualizado un pedido. Por favor, refresque la página 'notificaciones.html'.",
+                });
+            } else if (Notification.permission !== "denied") {
+                Notification.requestPermission().then(function (permission) {
+                    if (permission === "granted") {
+                        var notification = new Notification("Actualizar página", {
+                            body: "Se ha añadido/actualizado un pedido. Por favor, refresque la página 'notificaciones.html'.",
+                        });
+                    }
+                });
+            }
+        }
+    }
+    // Llama a la función para mostrar la notificación cuando se carga la página
+    document.addEventListener('DOMContentLoaded', function () {
+        sendNotification();
+    });
+</script>
+
 {% endblock %}

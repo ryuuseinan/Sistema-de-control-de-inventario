@@ -115,13 +115,14 @@
 	</div>
 </div>
 {% if session.rol == 5 %}
-	<script>window.location.href = "{{ url_for('notificaciones') }}";</script>
+	<script>window.location.href = "{{ url_for('pedido.notificaciones') }}";</script>
 {% endif %}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var qrIcon = document.getElementById('qr-icon');
         var qrPopup = document.getElementById('qr-popup');
         var qrCloseBtn = document.getElementById('qr-close-btn');
+        var qrPopupContent = document.getElementById('qr-popup-content');
 
         qrIcon.addEventListener('click', function (event) {
             event.preventDefault();
@@ -129,6 +130,11 @@
         });
 
         qrCloseBtn.addEventListener('click', function () {
+            qrPopup.style.display = 'none';
+        });
+
+        qrPopupContent.addEventListener('click', function (event) {
+            event.stopPropagation();
             qrPopup.style.display = 'none';
         });
     });
@@ -159,21 +165,11 @@
         border: 2px solid #fff;
         border-radius: 5px;
     }
-
-    #qr-close-btn {
-        position: absolute;
-        top: 30%;
-        right: 32%;
-        color: #fff;
-        font-size: 40px;
-        cursor: pointer;
-		transform: translate(500%, -240%);
-    }
 </style>
 <div id="qr-popup">
     <div id="qr-popup-content">
         <img src="data:image/png;base64,{{ generate_qr_code(address) }}" alt="Código QR">
-        <span id="qr-close-btn">&times;</span>
+        <span id="qr-close-btn"></span>
     </div>
 </div>
 </html>

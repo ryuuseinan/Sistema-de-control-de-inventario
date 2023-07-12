@@ -9,6 +9,7 @@
       <div class="column">
         <div class="column">
           <h1 class="title">Notificaciones</h1>
+          {% include 'messages.html' %}
           {% for pedido in pedidos %}
           <div class="box">
             <h2 class="title">ID del pedido: {{ pedido.id }}</h2>
@@ -67,15 +68,22 @@
                   </td>
                   <td>{{ pedido.pedido_estado.nombre }}</td>
                   <td>
-                    <a href="{{ url_for('pedido.finalizar', id=pedido.id, pagina='notificaciones') }}" class="button is-info is-success is-light">
-                      <span class="icon is-small"><i class="fas fa-check" aria-hidden="true"></i></span>
-                    </a>
+                    <form action="{{ url_for('pedido.finalizar', id=pedido.id) }}" method="POST">
+                      <input type="hidden" name="pagina" value="notificaciones">
+                      <button type="submit" class="button is-info is-success is-light">
+                        <span class="icon is-small"><i class="fas fa-check" aria-hidden="true"></i></span>
+                      </button>
+                    </form>
                   </td>
                   <td>
-                    <a href="{{ url_for('pedido.anular', id=pedido.id, pagina='notificaciones') }}" class="button is-danger is-light">
-                      <span class="icon is-small"><i class="fas fa-times" aria-hidden="true"></i></span>
-                    </a>
+                    <form action="{{ url_for('pedido.anular', id=pedido.id) }}" method="POST">
+                      <input type="hidden" name="pagina" value="notificaciones">
+                      <button type="submit" class="button is-danger is-light">
+                        <span class="icon is-small"><i class="fas fa-times" aria-hidden="true"></i></span>
+                      </button>
+                    </form>
                   </td>
+                  
                 </tr>
               </tbody>
             </table>
@@ -86,4 +94,29 @@
     </div>
   </div>
 </section>
+<script>
+  function showNotification() {
+      if ("Notification" in window) {
+          if (Notification.permission === "granted") {
+              var notification = new Notification("Pedido actualizado", {
+                  body: "Se ha añadido/actualizado un pedido. Por favor, refresque la página.",
+              });
+          } else if (Notification.permission !== "denied") {
+              Notification.requestPermission().then(function (permission) {
+                  if (permission === "granted") {
+                      var notification = new Notification("Pedido actualizado", {
+                          body: "Se ha añadido/actualizado un pedido. Por favor, refresque la página.",
+                      });
+                  }
+              });
+          }
+      }
+  }
+
+  // Llama a la función para mostrar la notificación cuando se carga la página
+  document.addEventListener('DOMContentLoaded', function () {
+      showNotification();
+  });
+</script>
+
 {% endblock %}
