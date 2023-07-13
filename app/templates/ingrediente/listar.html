@@ -41,7 +41,13 @@
                   <td>{{ ingrediente.nombre }}</td>
                   <td>{{ ingrediente.cantidad }} {{ ingrediente.unidadmedida.nombre }}</td>
                   <td>{{ ingrediente.alerta_stock }} {{ ingrediente.unidadmedida.nombre }}</td>
-                  <td>${{ ingrediente.precio }}</td>
+                  <td>
+                  {% if ingrediente.precio >= 1%}
+                    ${{ ingrediente.precio }}
+                  {% else %}
+                    No es añadible
+                  {% endif %}
+                  </td>
                   <td>{{ ingrediente.extra_mediana }} {{ ingrediente.unidadmedida.nombre }}</td>
                   <td>{{ ingrediente.extra_familiar }} {{ ingrediente.unidadmedida.nombre }}</td>
                   <td>{{ arrow.get(ingrediente.fecha_creacion).format('DD-MM-YYYY HH:mm') if ingrediente.fecha_creacion else None }}</td>

@@ -7,6 +7,8 @@ import socket
 import io
 import qrcode
 import base64
+import webbrowser
+import threading
 
 from controllers.categoria_controller import create_categoria_blueprint
 from controllers.producto_controller import create_producto_blueprint
@@ -122,5 +124,9 @@ def get_local_ip():
 
 host_cfg = get_local_ip()
 
+def open_browser():
+    webbrowser.open(f"http://{host_cfg}:{port_cfg}/")
+
 if __name__ == '__main__':
+    open_browser()
     app.run(port=port_cfg, host=host_cfg)

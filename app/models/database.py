@@ -145,6 +145,7 @@ class Pedido(Base):
     id = Column(Integer, primary_key=True)
     persona_id = Column(Integer, ForeignKey('persona.id'))
     estado_id = Column(Integer, ForeignKey('pedido_estado.id'), default=1, nullable=False)
+    metodopago_id = Column(Integer, ForeignKey('metodopago.id'))
     delivery = Column(Boolean, default=False, nullable=False)
     nombre_cliente = Column(String(50), default='No definido', nullable=False)
     notificacion = Column(Boolean, default=False, nullable=False)
@@ -155,6 +156,14 @@ class Pedido(Base):
     pedido_estado = relationship('PedidoEstado')
     detalles = relationship('PedidoDetalle', backref='pedido_detalles')
     venta = relationship('Venta', back_populates='pedido')
+
+class MetodoPago(Base):
+    __tablename__ = 'metodopago'
+    id = Column(Integer, primary_key=True)
+    nombre = Column(String(50), unique=True, nullable=False)
+    activo = Column(Boolean, default=True, nullable=False)
+    # Crea la relación con persona
+    pedido = relationship('Pedido')
 
 class PedidoEstado(Base):
     __tablename__ = 'pedido_estado'
@@ -191,6 +200,32 @@ class PedidoDetalleIngrediente(Base):
     ingrediente = relationship('Ingrediente')
 
 Base.metadata.create_all(engine)
+
+metodo_pago_0 = db_session.query(MetodoPago).filter_by(nombre='Efectivo').first()
+metodo_pago_1 = db_session.query(MetodoPago).filter_by(nombre='Transferencia').first()
+metodo_pago_2 = db_session.query(MetodoPago).filter_by(nombre='Tarjeta de crédito').first()
+metodo_pago_3 = db_session.query(MetodoPago).filter_by(nombre='Tarjeta de débito').first()
+metodo_pago_4 = db_session.query(MetodoPago).filter_by(nombre='Cheque').first()
+
+if not metodo_pago_0:
+    metodo_pago_0 = MetodoPago(nombre='Efectivo', activo=True)
+    db_session.add(metodo_pago_0)
+
+if not metodo_pago_1:
+    metodo_pago_1 = MetodoPago(nombre='Transferencia', activo=True)
+    db_session.add(metodo_pago_1)
+
+if not metodo_pago_2:
+    metodo_pago_2 = MetodoPago(nombre='Tarjeta de crédito', activo=True)
+    db_session.add(metodo_pago_2)
+
+if not metodo_pago_3:
+    metodo_pago_3 = MetodoPago(nombre='Tarjeta de débito', activo=True)
+    db_session.add(metodo_pago_3)
+
+if not metodo_pago_4:
+    metodo_pago_4 = MetodoPago(nombre='Cheque', activo=False)
+    db_session.add(metodo_pago_4)
 
 unidad_medida_gr = db_session.query(UnidadMedida).filter_by(nombre='gr').first()
 unidad_medida_ml = db_session.query(UnidadMedida).filter_by(nombre='ml').first()

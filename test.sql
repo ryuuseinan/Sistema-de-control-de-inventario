@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 07, 2023 at 05:44 PM
+-- Generation Time: Jul 13, 2023 at 06:58 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -74,12 +74,12 @@ CREATE TABLE `ingrediente` (
 
 INSERT INTO `ingrediente` (`id`, `nombre`, `cantidad`, `activo`, `fecha_creacion`, `ultima_modificacion`, `unidadmedida_id`, `precio`, `alerta_stock`, `extra_mediana`, `extra_familiar`) VALUES
 (1, 'Salsa de tomate', 601095, 1, '2023-06-06 14:41:38', '2023-06-28 02:18:30', 1, 1000, 1000, 100, 150),
-(2, 'Bolas de masa', 268, 1, '2023-06-09 12:12:25', '2023-07-05 12:06:06', 3, 1000, 100, 100, 150),
+(2, 'Bolas de masa', 266, 1, '2023-06-09 12:12:25', '2023-07-13 10:11:08', 3, 0, 100, 100, 150),
 (3, 'Queso Cheddar', 81649, 1, '2023-06-09 12:13:19', '2023-06-09 12:13:19', 1, 1000, 1000, 100, 150),
 (4, 'Queso Mozzarella', 17900, 1, '2023-06-09 12:13:29', '2023-06-09 12:13:39', 1, 1000, 1000, 100, 150),
-(5, 'Orégano', 67759, 1, '2023-06-09 12:13:59', '2023-06-09 12:13:59', 1, 1000, 1000, 100, 150),
-(6, 'Tomate picado', 58193, 1, '2023-06-09 12:15:52', '2023-06-09 12:15:52', 1, 1000, 1000, 100, 150),
-(7, 'Jamón', 897295, 1, '2023-06-09 12:16:19', '2023-06-09 12:16:36', 1, 1000, 1000, 100, 150),
+(5, 'Orégano', 67259, 1, '2023-06-09 12:13:59', '2023-06-09 12:13:59', 1, 1000, 1000, 100, 150),
+(6, 'Tomate picado', 57793, 1, '2023-06-09 12:15:52', '2023-06-09 12:15:52', 1, 1000, 1000, 100, 150),
+(7, 'Jamón', 896695, 1, '2023-06-09 12:16:19', '2023-06-09 12:16:36', 1, 1000, 1000, 100, 150),
 (8, 'Camarón', 2800, 1, '2023-06-20 18:54:24', '2023-06-20 18:54:24', 3, 1000, 1000, 100, 150),
 (9, 'Aceituna', 136, 1, '2023-06-20 18:54:47', '2023-07-04 19:07:11', 3, 1000, 100, 10, 15),
 (10, 'Piña', 349900, 1, '2023-06-20 18:55:15', '2023-06-20 18:55:31', 1, 1000, 1000, 100, 150),
@@ -92,6 +92,29 @@ INSERT INTO `ingrediente` (`id`, `nombre`, `cantidad`, `activo`, `fecha_creacion
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `metodopago`
+--
+
+CREATE TABLE `metodopago` (
+  `id` int(11) NOT NULL,
+  `nombre` varchar(50) NOT NULL,
+  `activo` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `metodopago`
+--
+
+INSERT INTO `metodopago` (`id`, `nombre`, `activo`) VALUES
+(1, 'Efectivo', 1),
+(2, 'Transferencia', 1),
+(3, 'Tarjeta de crédito', 1),
+(4, 'Tarjeta de débito', 1),
+(5, 'Cheque', 0);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `pedido`
 --
 
@@ -100,27 +123,36 @@ CREATE TABLE `pedido` (
   `persona_id` int(11) DEFAULT NULL,
   `estado_id` int(11) NOT NULL,
   `fecha_creacion` datetime NOT NULL,
-  `ultima_modificacion` datetime NOT NULL
+  `ultima_modificacion` datetime NOT NULL,
+  `delivery` tinyint(1) DEFAULT 0,
+  `nombre_cliente` varchar(50) NOT NULL DEFAULT 'No definido',
+  `notificacion` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data for table `pedido`
 --
 
-INSERT INTO `pedido` (`id`, `persona_id`, `estado_id`, `fecha_creacion`, `ultima_modificacion`) VALUES
-(1, 1, 2, '2023-06-13 21:45:51', '2023-06-13 21:45:51'),
-(2, 1, 2, '2023-06-14 15:03:43', '2023-06-14 15:03:43'),
-(3, 1, 2, '2023-06-14 19:11:26', '2023-06-14 19:11:26'),
-(4, 1, 3, '2023-06-16 15:49:23', '2023-06-16 15:49:23'),
-(5, 1, 3, '2023-06-20 00:31:08', '2023-06-20 00:31:08'),
-(6, 1, 2, '2023-06-20 00:31:08', '2023-06-20 00:31:08'),
-(7, 1, 2, '2023-06-20 18:41:16', '2023-06-20 18:41:16'),
-(8, 3, 2, '2023-06-26 23:04:01', '2023-06-26 23:04:01'),
-(9, 2, 2, '2023-07-04 23:17:20', '2023-07-04 23:17:20'),
-(10, 2, 2, '2023-07-06 13:33:05', '2023-07-06 13:33:05'),
-(11, 2, 2, '2023-07-06 13:33:05', '2023-07-06 13:33:05'),
-(12, 2, 3, '2023-07-06 19:55:12', '2023-07-06 19:55:12'),
-(13, 2, 2, '2023-07-01 20:34:20', '2023-07-01 20:34:20');
+INSERT INTO `pedido` (`id`, `persona_id`, `estado_id`, `fecha_creacion`, `ultima_modificacion`, `delivery`, `nombre_cliente`, `notificacion`) VALUES
+(1, 1, 2, '2023-06-13 21:45:51', '2023-06-13 21:45:51', 1, 'No definido', 0),
+(2, 1, 2, '2023-06-14 15:03:43', '2023-06-14 15:03:43', 0, 'No definido', 0),
+(3, 1, 2, '2023-06-14 19:11:26', '2023-06-14 19:11:26', 0, 'No definido', 0),
+(4, 1, 3, '2023-06-16 15:49:23', '2023-06-16 15:49:23', 0, 'No definido', 0),
+(5, 1, 3, '2023-06-20 00:31:08', '2023-06-20 00:31:08', 0, 'No definido', 0),
+(6, 1, 2, '2023-06-20 00:31:08', '2023-06-20 00:31:08', 0, 'No definido', 0),
+(7, 1, 2, '2023-06-20 18:41:16', '2023-06-20 18:41:16', 0, 'No definido', 0),
+(8, 3, 2, '2023-06-26 23:04:01', '2023-06-26 23:04:01', 0, 'No definido', 0),
+(9, 2, 2, '2023-07-04 23:17:20', '2023-07-04 23:17:20', 0, 'No definido', 0),
+(10, 2, 2, '2023-07-06 13:33:05', '2023-07-06 13:33:05', 0, 'No definido', 0),
+(11, 2, 2, '2023-07-06 13:33:05', '2023-07-06 13:33:05', 0, 'No definido', 0),
+(12, 2, 3, '2023-07-06 19:55:12', '2023-07-06 19:55:12', 0, 'No definido', 0),
+(13, 2, 2, '2023-07-01 20:34:20', '2023-07-01 20:34:20', 0, 'No definido', 0),
+(14, 2, 2, '2023-07-10 14:38:43', '2023-07-10 14:38:43', 0, 'No definido', 0),
+(15, 2, 3, '2023-07-10 23:48:39', '2023-07-10 23:48:39', 1, 'No definido', 0),
+(16, 2, 3, '2023-07-12 13:04:38', '2023-07-12 13:04:38', 0, 'No definido', 0),
+(17, 2, 3, '2023-07-12 13:13:17', '2023-07-12 13:13:17', 0, 'No definido', 0),
+(18, 2, 3, '2023-07-12 19:17:48', '2023-07-12 19:17:48', 0, 'No definido', 0),
+(19, 2, 1, '2023-07-12 20:14:21', '2023-07-12 20:14:21', 0, 'Luis', 1);
 
 -- --------------------------------------------------------
 
@@ -163,7 +195,12 @@ INSERT INTO `pedido_detalle` (`id`, `pedido_id`, `producto_id`, `cantidad`, `fec
 (113, 11, 1, 1, '2023-07-06 13:40:11', '2023-07-06 13:40:11'),
 (115, 13, 9, 2, '2023-07-06 20:34:20', '2023-07-06 20:34:20'),
 (117, 6, 9, 1, '2023-07-07 01:38:58', '2023-07-07 01:38:58'),
-(118, 10, 10, 1, '2023-07-07 01:38:58', '2023-07-07 01:38:58');
+(118, 10, 10, 1, '2023-07-07 01:38:58', '2023-07-07 01:38:58'),
+(119, 14, 1, 1, '2023-07-10 14:38:43', '2023-07-10 14:38:43'),
+(120, 14, 9, 1, '2023-07-10 14:38:43', '2023-07-10 14:38:43'),
+(121, 15, 1, 1, '2023-07-10 23:48:39', '2023-07-10 23:48:39'),
+(122, 15, 9, 2, '2023-07-10 23:48:39', '2023-07-10 23:48:39'),
+(123, 19, 1, 1, '2023-07-12 20:48:00', '2023-07-12 20:48:00');
 
 -- --------------------------------------------------------
 
@@ -201,7 +238,8 @@ INSERT INTO `pedido_detalle_ingrediente` (`id`, `pedido_detalle_id`, `ingredient
 (308, 91, 1, 150),
 (309, 72, 8, 100),
 (310, 72, 10, 100),
-(311, 118, 3, 100);
+(311, 118, 3, 100),
+(312, 121, 3, 100);
 
 -- --------------------------------------------------------
 
@@ -279,7 +317,7 @@ CREATE TABLE `producto` (
 
 INSERT INTO `producto` (`id`, `imagen`, `codigo_barra`, `nombre`, `descripcion`, `precio`, `stock`, `tiene_receta`, `categoria_id`, `fecha_creacion`, `ultima_modificacion`, `activo`, `alerta_stock`) VALUES
 (1, '/productos/pizzeria-valencia-blasco-ibanez-la-fratelli-pizza-tropical.jpg', '53', 'La Fratelli', 'Salsa de tomate, albahaca, champiñones, queso Taleggio, pimiento, cebolla, espinacas, bacon y orégano.', 7500, NULL, 1, 1, '2023-06-07 19:56:38', '2023-07-04 19:46:14', 1, 100),
-(9, '/productos/google-images.png', '34', 'Coca-Cola Sin Azucar 350ml', 'Bebida en lata, 350ml', 1400, 200, 0, 3, '2023-06-09 12:42:08', '2023-07-06 20:40:38', 1, 100),
+(9, '/productos/DeqpCw5SazLzEFbZq-Bebida-Coca-Cola-sin-azucar-350-ml_1.jpeg', '34', 'Coca-Cola Sin Azucar 350ml', 'Bebida en lata, 350ml', 1400, 197, 0, 3, '2023-06-09 12:42:08', '2023-07-07 13:35:29', 1, 100),
 (10, '/productos/pizzeria-valencia-blasco-ibanez-la-fratelli-pizza-caprichosa.jpg', '35', 'Caprichosa', '', 7500, NULL, 1, 1, '2023-06-19 21:31:42', '2023-07-04 19:46:39', 1, 90);
 
 -- --------------------------------------------------------
@@ -433,7 +471,8 @@ INSERT INTO `venta` (`id`, `pedido_id`, `total`, `activo`) VALUES
 (9, 9, 11500, 1),
 (10, 10, 8500, 1),
 (11, 11, 12500, 1),
-(13, 13, 2800, 1);
+(13, 13, 2800, 1),
+(14, 14, 8900, 1);
 
 --
 -- Indexes for dumped tables
@@ -452,6 +491,13 @@ ALTER TABLE `categoria`
 ALTER TABLE `ingrediente`
   ADD PRIMARY KEY (`id`),
   ADD KEY `unidadmedida_id` (`unidadmedida_id`);
+
+--
+-- Indexes for table `metodopago`
+--
+ALTER TABLE `metodopago`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `nombre` (`nombre`);
 
 --
 -- Indexes for table `pedido`
@@ -562,22 +608,28 @@ ALTER TABLE `ingrediente`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
+-- AUTO_INCREMENT for table `metodopago`
+--
+ALTER TABLE `metodopago`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
 -- AUTO_INCREMENT for table `pedido`
 --
 ALTER TABLE `pedido`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `pedido_detalle`
 --
 ALTER TABLE `pedido_detalle`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=119;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=124;
 
 --
 -- AUTO_INCREMENT for table `pedido_detalle_ingrediente`
 --
 ALTER TABLE `pedido_detalle_ingrediente`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=312;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=313;
 
 --
 -- AUTO_INCREMENT for table `pedido_estado`
@@ -595,7 +647,7 @@ ALTER TABLE `persona`
 -- AUTO_INCREMENT for table `producto`
 --
 ALTER TABLE `producto`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `receta`
@@ -631,7 +683,7 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT for table `venta`
 --
 ALTER TABLE `venta`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- Constraints for dumped tables
