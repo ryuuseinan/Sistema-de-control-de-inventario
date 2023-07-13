@@ -9,7 +9,7 @@
             <div class="column">
                 <div class="column">
                     <div class="buttons is-pulled-right">
-                        <a href="{{ url_for('pedido.listar') }}" class="button is-link is-light" onclick="redirectToNotifications()">Volver</a>
+                        <a href="{{ url_for('pedido.notificar', id=pedido.id) }}" class="button is-link is-light">Salir y enviar pedido a cocina</a>
                     </div>                                       
                     {% if pedido %}
                     <div class="columns">
@@ -21,8 +21,10 @@
                       <thead>
                         <tr>
                           <th>ID</th>
-                          <th>Vendedor</th>
+                          <th>Atendido por</th>
+                          <th>Nombre del cliente</th>
                           <th>Detalle del pedido</th>
+                          <th>Tipo de pedido</th>
                           <th>Fecha</th>
                           <th>Total</th>
                           <th>Estado</th>
@@ -32,6 +34,7 @@
                           <tr>
                             <td>{{ pedido.id }}</td>
                             <td>{{ pedido.persona.nombre }} {{ pedido.persona.apellido_paterno }} {{ pedido.persona.apellido_materno}}</td>
+                            <td>{{ pedido.nombre_cliente }}</td>
                             <td>
                                 {% if pedido.detalles %}
                                 <table class="table is-striped is-hoverable">
@@ -77,6 +80,13 @@
                                 {% else %}
                                     <p>No se han añadido productos al pedido.</p>
                                 {% endif %}
+                            </td>
+                            <td>
+                              {% if not pedido.delivery %}
+                                Retiro en local
+                              {% else %}
+                                Delivery
+                              {% endif %}
                             </td>
                             <td>{{ arrow.get(pedido.fecha_creacion).format('DD-MM-YYYY HH:mm') if pedido.fecha_creacion else None }}</td>
                             <td>${{ pedido.total_pedido }}</td>

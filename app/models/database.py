@@ -145,6 +145,9 @@ class Pedido(Base):
     id = Column(Integer, primary_key=True)
     persona_id = Column(Integer, ForeignKey('persona.id'))
     estado_id = Column(Integer, ForeignKey('pedido_estado.id'), default=1, nullable=False)
+    delivery = Column(Boolean, default=False, nullable=False)
+    nombre_cliente = Column(String(50), default='No definido', nullable=False)
+    notificacion = Column(Boolean, default=False, nullable=False)
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
     ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
     # Crea la relación con persona

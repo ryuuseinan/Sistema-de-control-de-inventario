@@ -27,11 +27,12 @@
             <tr>
               <th>ID</th>
               <th>Atendido por</th>
+              <th>Nombre del cliente</th>
               <th>Detalle del pedido</th>
+              <th>Tipo de pedido</th>
               <th>Fecha</th>
               <th>Total</th>
               <th>Estado</th>
-              <th>Notificar</th>
               <th>Editar</th>
               <th>Finalizar</th>
               <th>Anular</th>
@@ -42,6 +43,7 @@
               <tr>
                 <td>{{ pedido.id }}</td>
                 <td>{{ pedido.persona.nombre }} {{ pedido.persona.apellido_paterno }} {{ pedido.persona.apellido_materno}}</td>
+                <td>{{ pedido.nombre_cliente }}</td>
                 <td>
                   {% if pedido.detalles %}
                       <table class="table is-striped is-hoverable">
@@ -83,17 +85,17 @@
                   {% else %}
                       <p>No se han añadido productos al pedido.</p>
                   {% endif %}
-              </td>
+                </td>
+                <td>
+                  {% if not pedido.delivery %}
+                    Retiro en local
+                  {% else %}
+                    Delivery
+                  {% endif %}
+                </td>
                 <td>{{ arrow.get(pedido.fecha_creacion).format('DD-MM-YYYY HH:mm') if pedido.fecha_creacion else None }}</td>
                 <td>${{ pedido.total_pedido }}</td>
                 <td>{{ pedido.pedido_estado.nombre }}</td>
-                <td>
-                  <form action="" method="POST">
-                    <button type="submit" class="button is-info is-light">
-                      <span class="icon is-small"><i class="fa fa-paper-plane" aria-hidden="true"></i></span>
-                    </button>
-                  </form>
-                </td>
                 <td>
                   <a href="{{ url_for('pedido.editar', id=pedido.id) }}" class="button is-info is-light">
                     <span class="icon is-small"><i class="fa fa-pencil-alt" aria-hidden="true"></i></i></span>
@@ -113,7 +115,6 @@
             {% endfor %}
           </tbody>
         </table>
-        
         {% else %}
         <h1 class="title is-1">Lista de pedidos</h1>
         <div class="box">

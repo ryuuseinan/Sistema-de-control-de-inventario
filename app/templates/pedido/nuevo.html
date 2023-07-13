@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <h1 class="title">Agregar pedido</h1>
+    {% include 'messages.html' %}
+    <form method="post" enctype="multipart/form-data">
+      <div class="field">
+        <label class="label">Nombre del comprador</label>
+        <div class="control">
+          <input class="input" type="text" name="nombre_cliente" minlength="1" maxlength="50" required>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Tipo de pedido</label>
+        <div class="control">
+          <label class="radio">
+            <input type="radio" name="delivery" value="True" >
+            Delívery
+          </label>
+          <label class="radio">
+            <input type="radio" name="delivery" value="False" checked>
+            Retiro en local
+          </label>
+        </div>
+      </div>
+      <div class="field is-grouped">
+        <div class="control">
+          <button type="submit" class="button is-link">Guardar</button>
+        </div>
+        <div class="control">
+          <a href="{{ url_for('pedido.listar') }}" class="button is-link is-light">Cancelar</a>
+        </div>
+      </div>
+    </form>
+  </div>
+{% endblock %}

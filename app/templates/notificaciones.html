@@ -16,7 +16,15 @@
           {% for pedido in pedidos %}
           <div class="box">
             <h2 class="title">
-              ID del pedido: {{ pedido.id }} <br>
+              ID del pedido: {{ pedido.id }}<br>
+              Tipo de pedido: 
+              {% if not pedido.delivery %}
+                Retiro en local
+              {% else %}
+                Delivery
+              {% endif %}
+              <br>
+              Nombre del cliente: {{ pedido.nombre_cliente }}<br>
               <i class="fas fa-clock"></i>
               {{ arrow.get(pedido.fecha_creacion).format('HH:mm:ss') if pedido.fecha_creacion else None }}
             </h2>

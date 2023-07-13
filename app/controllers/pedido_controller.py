@@ -77,12 +77,15 @@ def create_pedido_blueprint():
             if 'id' not in session:
                 flash("ERROR: Debes haber iniciado sesión para esta función.")
                 return redirect(url_for('sesion.login'))
-
-            pedido = Pedido(persona_id=session['id'])
-            db_session.add(pedido)
-            db_session.commit()
             
-            return redirect(url_for('pedido.editar', id=pedido.id))
+            if request.method == 'POST':
+                nombre_cliente = request.form['nombre_cliente']
+                delivery = True if request.form['delivery'] == "True" else False
+                pedido = Pedido(persona_id=session['id'], nombre_cliente=nombre_cliente, delivery=delivery)
+                db_session.add(pedido)
+                db_session.commit()
+                return redirect(url_for('pedido.editar', id=pedido.id))
+            return render_template('pedido/nuevo.html')
         
         except:
             db_session.rollback()
@@ -533,7 +536,7 @@ def create_pedido_blueprint():
     @pedido_blueprint.route('/notificaciones')
     def notificaciones():
         try:
-            pedidos = db_session.query(Pedido).filter(Pedido.estado_id == 1).all()
+            pedidos = db_session.query(Pedido).filter(Pedido.notificacion == True).all()
             estado_pedido = db_session.query(PedidoEstado).all()
             pedido_detalle_ingredientes = db_session.query(PedidoDetalleIngrediente).join(PedidoDetalle).join(Pedido).filter(Pedido.estado_id == 1).all()
             
@@ -549,4 +552,19 @@ def create_pedido_blueprint():
 
         return render_template('notificaciones.html', pedidos=pedidos, estado_pedido=estado_pedido, pedido_detalle_ingredientes=pedido_detalle_ingredientes)
     
+    @pedido_blueprint.route('/notificar/<int:id>', methods=['GET', 'POST'])
+    def notificar(id):
+        try:
+            pedido = db_session.query(Pedido).filter_by(id=id).one()
+            pedido.notificacion = True
+            db_session.commit()
+            return redirect(url_for('pedido.listar'))
+        
+        except SQLAlchemyError as e:
+            # Revertir la transacción en caso de error
+            db_session.rollback()
+            print(f"Error al notificar a cocina sobre el pedido: {e}")
+            # Manejar el error de alguna manera, como mostrar un mensaje de error al usuario
+            return render_template('error.html', error_message="Error al notificar a cocina sobre el pedido")
+
     return pedido_blueprint
