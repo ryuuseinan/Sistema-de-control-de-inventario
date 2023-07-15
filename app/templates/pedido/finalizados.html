@@ -15,12 +15,12 @@
             <a href="{{ url_for('pedido.nuevo') }}" class="button is-link">Ingresar pedido</a>
           </div>
         </div>
-        {% if pedidos %}
         <div class="columns">
           <div class="column">
             <h1 class="title">Lista de pedidos finalizados</h1>
           </div>
         </div>
+        {% if pedidos %}
         {% include 'messages.html' %}
         <table class="table is-striped is-hoverable">
           <thead>
@@ -86,9 +86,7 @@
             {% endfor %}
           </tbody>
         </table>
-        
         {% else %}
-        <h1 class="title is-1">Lista de pedidos finalizados</h1>
         <div class="box">
           <div class="notification is-warning">
             <h2 class="subtitle is-2">No hay pedidos finalizados</h2>

@@ -3,15 +3,73 @@
 {% block title %}Vender{% endblock %}
 
 {% block content %}
+<style>
+    .input{
+        width: 100%;
+    }
+    .radio{
+        padding-top: 5%;
+    }
+</style>
 <section class="section">
     <div class="container">
         <div class="columns">
             <div class="column">
                 <div class="column">
+                    {% if pedido %}
                     <div class="buttons is-pulled-right">
                         <a href="{{ url_for('pedido.notificar', id=pedido.id) }}" class="button is-link is-light">Salir y enviar pedido a cocina</a>
-                    </div>                                       
-                    {% if pedido %}
+                    </div>
+                    <div class="columns">
+                        <h1 class="title">Datos del pedido N°: {{ pedido.id }}</h1>
+                    </div>
+                    <form method="post" action="{{ url_for('pedido.actualizar_datos', id=pedido.id) }}">
+                        <div class="columns">
+                            <div class="column is-narrow">
+                                <div class="field">
+                                    <label class="label">Nombre del cliente</label>
+                                    <div class="control">
+                                        <input class="input" type="text" name="nombre_cliente" minlength="1" maxlength="50" required value="{{ pedido.nombre_cliente }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="column is-narrow">
+                                <div class="field">
+                                    <label class="label">Tipo de pedido</label>
+                                    <div class="control">
+                                        <label class="radio">
+                                            <input type="radio" name="delivery" value="True" {% if pedido.delivery %}checked{% endif %}>
+                                            Delívery
+                                        </label>
+                                        <label class="radio">
+                                            <input type="radio" name="delivery" value="False" {% if not pedido.delivery %}checked{% endif %}>
+                                            Retiro en local
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="column is-narrow">
+                                <div class="field">
+                                    <label class="label">Método de pago</label>
+                                    <div class="control">
+                                        <div class="select">
+                                            <select name="metodopago_id">
+                                                {% for metodopago in metodopago %}
+                                                    <option value="{{ metodopago.id }}" {% if pedido.metodopago.id == metodopago.id %}selected{% endif %}>{{ metodopago.nombre }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="column is-narrow">
+                                <label class="label"><br></label>
+                                <div class="control">
+                                    <button type="submit" class="button is-link is-light">Guardar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>                    
                     <div class="columns">
                       <div class="column">
                         <h1 class="title">Detalle del pedido</h1>
@@ -20,19 +78,18 @@
                     <table class="table is-striped is-hoverable">
                       <thead>
                         <tr>
-                          <th>ID</th>
                           <th>Atendido por</th>
                           <th>Nombre del cliente</th>
                           <th>Detalle del pedido</th>
                           <th>Tipo de pedido</th>
+                          <th>Método de pago</th>
                           <th>Fecha</th>
                           <th>Total</th>
-                          <th>Estado</th>
                         </tr>
                       </thead>
                       <tbody>
                           <tr>
-                            <td>{{ pedido.id }}</td>
+
                             <td>{{ pedido.persona.nombre }} {{ pedido.persona.apellido_paterno }} {{ pedido.persona.apellido_materno}}</td>
                             <td>{{ pedido.nombre_cliente }}</td>
                             <td>
@@ -48,9 +105,14 @@
                                                         {{ detalle_pedido.cantidad }} unidad(es)<br>
                                                     {% endif %}
                                                     {% if detalle_pedido.producto.tiene_receta == True %}
-                                                        {% set detalle_ingredientes_producto = pedido_detalle_ingredientes | selectattr('pedido_detalle_id', 'equalto', detalle_pedido.id) %}
-                                                        {% if detalle_ingredientes_producto %}
+                                                         {% if detalle_ingredientes_producto %}
                                                             <table class="table is-striped is-hoverable">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Ingrediente extra</th>
+                                                                        <th>Cantidad</th>
+                                                                    </tr>
+                                                                </thead>
                                                                 <tbody>
                                                                     {% for detalle_ingredientes in detalle_ingredientes_producto %}
                                                                         <tr>
@@ -60,6 +122,8 @@
                                                                     {% endfor %}
                                                                 </tbody>
                                                             </table>
+                                                        {% else %}
+                                                            <p>Sin ingredientes extras</p>
                                                         {% endif %}
                                                     {% endif %}
                                                 </td>
@@ -88,15 +152,15 @@
                                 Delivery
                               {% endif %}
                             </td>
+                            <td>{{ pedido.metodopago.nombre }}</td>
                             <td>{{ arrow.get(pedido.fecha_creacion).format('DD-MM-YYYY HH:mm') if pedido.fecha_creacion else None }}</td>
                             <td>${{ pedido.total_pedido }}</td>
-                            <td>{{ pedido.pedido_estado.nombre }}</td>
                           </tr>
                       </tbody>
                     </table>
                 {% endif %}
+                {% include 'messages.html' %}
                 <h1 class="title">Ingresar productos al pedido</h1>
-                    {% include 'messages.html' %}
                     <p><b>Buscar producto por nombre o por código de barras:</b></p>
                     <form id="searchp" method="POST">
                         <div class="field is-grouped">

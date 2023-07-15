@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
-from models.database import Pedido, PedidoEstado, Producto, Categoria, Receta, RecetaDetalle, PedidoDetalle, PedidoDetalleIngrediente, Venta, Ingrediente, db_session
+from models.database import Pedido, PedidoEstado, Producto, Categoria, MetodoPago, Receta, RecetaDetalle, PedidoDetalle, PedidoDetalleIngrediente, Venta, Ingrediente, db_session
 from sqlalchemy import or_, func, and_
 from datetime import date
 import calendar
@@ -120,8 +120,33 @@ def create_reporte_blueprint():
                 })
 
             print(meses_ventas)
-            
-            return render_template('reporte/ventas.html', meses_ventas=meses_ventas, ventas_por_mes=ventas_por_mes, mes_nombre=mes_nombre, fecha_actual=fecha_actual, get_dias_sin_ventas=get_dias_sin_ventas, monthrange=monthrange, date=date)
+
+            # Obtener los métodos de pago activos
+            metodos_pago = db_session.query(MetodoPago).filter(MetodoPago.activo == True).all()
+
+            # Crear un diccionario para almacenar los resultados
+            resultados = {}
+
+            # Obtener los pedidos agrupados por mes y método de pago
+            ventas_por_mes_metodo_pago = db_session.query(
+                func.extract('month', Pedido.fecha_creacion).label('mes'),
+                Pedido.metodopago_id,
+                func.count().label('cantidad')
+            ).join(Pedido.metodopago).group_by('mes', Pedido.metodopago_id).all()
+
+            # Procesar los resultados y agruparlos por mes
+            for venta in ventas_por_mes_metodo_pago:
+                mes = venta.mes
+                metodo_pago_id = venta.metodopago_id
+                cantidad = venta.cantidad
+
+                # Verificar si el mes ya existe en el diccionario
+                if mes in resultados:
+                    resultados[mes][metodo_pago_id] = cantidad
+                else:
+                    resultados[mes] = {metodo_pago_id: cantidad}
+
+            return render_template('reporte/ventas.html', ventas=ventas, meses_ventas=meses_ventas, ventas_por_mes=ventas_por_mes, metodos_pago=metodos_pago, resultados=resultados, mes_nombre=mes_nombre, fecha_actual=fecha_actual, get_dias_sin_ventas=get_dias_sin_ventas, monthrange=monthrange, date=date)
         except Exception as e:
             # Manejo de excepciones
             return render_template('error.html', error=str(e))

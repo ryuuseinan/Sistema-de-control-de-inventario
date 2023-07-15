@@ -1,0 +1,44 @@
+<style>
+    .navbar-burger{
+        margin-left: 0;
+    }
+</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<nav class="navbar is-fixed-top is-dark" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <div class="navbar-item navbar-center">
+            <h2 class="has-text-white"><a href="{{ url_for('index') }}">{{ appName() }}</a></h2>
+        </div>
+        <a style="position: absolute; right: 0;" class="navbar-item" href="{{ url_for('sesion.logout') }}">
+        <span class="icon is-small"><i class="fas fa-sign-out-alt"></i></span>
+        <span>Cerrar sesión</span>
+        </a>
+    </div>
+</nav>
+
+<br>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Obtener todos los elementos "navbar-burger"
+    const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+
+    // Comprobar si hay algún navbar-burger
+    if ($navbarBurgers.length > 0) {
+
+      // Añadir un evento de clic a cada navbar-burger
+      $navbarBurgers.forEach($el => {
+        $el.addEventListener('click', () => {
+
+          // Obtener el objetivo del atributo "data-target"
+          const target = $el.dataset.target;
+          const $target = document.getElementById(target);
+
+          // Alternar la clase "is-active" tanto en el navbar-burger como en el objetivo del menú
+          $el.classList.toggle('is-active');
+          $target.classList.toggle('is-active');
+
+        });
+      });
+    }
+  });
+</script>

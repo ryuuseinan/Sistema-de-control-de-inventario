@@ -154,6 +154,7 @@ class Pedido(Base):
     # Crea la relación con persona
     persona = relationship('Persona')
     pedido_estado = relationship('PedidoEstado')
+    metodopago = relationship('MetodoPago')
     detalles = relationship('PedidoDetalle', backref='pedido_detalles')
     venta = relationship('Venta', back_populates='pedido')
 
@@ -162,8 +163,6 @@ class MetodoPago(Base):
     id = Column(Integer, primary_key=True)
     nombre = Column(String(50), unique=True, nullable=False)
     activo = Column(Boolean, default=True, nullable=False)
-    # Crea la relación con persona
-    pedido = relationship('Pedido')
 
 class PedidoEstado(Base):
     __tablename__ = 'pedido_estado'

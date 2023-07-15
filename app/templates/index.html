@@ -15,8 +15,20 @@
                     {% endfor %}
                 {% endif %}
                 {% endwith %}
-                <h1 class="title">Bienvenido a la Pizzería Fratelli</h1>
-                <p>En esta plataforma podrás gestionar el inventario y ventas en la pizzería. Selecciona una de las opciones del costado para comenzar</p>
+                <div class="is-hidden-touch">
+                    <h1 class="title">Bienvenido a la Pizzería Fratelli</h1>
+                    <p>En esta plataforma podrás gestionar el inventario y ventas en la pizzería. Selecciona una de las opciones del costado para comenzar</p>
+                </div>
+                <div class="section is-hidden-desktop" style="padding: 0;">
+                    <h1 class="title">Bienvenido a la Pizzería Fratelli</h1>
+                    <p>En esta plataforma podrás gestionar el inventario y ventas en la pizzería. Selecciona una de las opciones para comenzar.</p>
+                    <center>
+                    <a href="{{ url_for('pedido.notificaciones') }}" class="button is-link">
+                        <span class="icon is-small"><i class="fas fa-bell"></i></span>
+                        <span>Notificaciones</span>
+                    </a>
+                    </center>
+                </div>
             </div>
         </div>
     </div>

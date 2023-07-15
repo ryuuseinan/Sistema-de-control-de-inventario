@@ -16,13 +16,9 @@
           </div>
         </div>
         {% if pedidos %}
-        <div class="columns">
-          <div class="column">
-            <h1 class="title">Lista de pedidos en proceso</h1>
-          </div>
-        </div>
+        <h1 class="title"><br>Lista de pedidos en proceso</h1>
         {% include 'messages.html' %}
-        <table class="table is-striped is-hoverable">
+        <table class="table is-striped is-hoverable is-fullwidth">
           <thead>
             <tr>
               <th>ID</th>
@@ -57,26 +53,27 @@
                                               {{ detalle_pedido.cantidad }} unidad(es)<br>
                                           {% endif %}
                                           {% if detalle_pedido.producto.tiene_receta == True %}
-                                              {% set detalle_ingredientes_producto = pedido_detalle_ingredientes | selectattr('pedido_detalle_id', 'equalto', detalle_pedido.id) %}
-                                              {% if detalle_ingredientes_producto %}
-                                                  <table class="table is-striped is-hoverable">
-                                                      <thead>
-                                                        <tr>
-                                                          <th>Ingredientes extras</th>
+                                            {% if detalle_ingredientes_producto %}
+                                              <table class="table is-striped is-hoverable">
+                                                  <thead>
+                                                      <tr>
+                                                          <th>Ingrediente extra</th>
                                                           <th>Cantidad</th>
-                                                        </tr>
-                                                      </thead>
-                                                      <tbody>
-                                                          {% for detalle_ingredientes in detalle_ingredientes_producto %}
-                                                              <tr>
-                                                                  <td>{{ loop.index }}. {{ detalle_ingredientes.ingrediente.nombre }}</td>
-                                                                  <td>{{ detalle_ingredientes.cantidad }} {{ detalle_ingredientes.ingrediente.unidadmedida.nombre }}</td>
-                                                              </tr>
-                                                          {% endfor %}
-                                                      </tbody>
-                                                  </table>
-                                              {% endif %}
-                                          {% endif %}
+                                                      </tr>
+                                                  </thead>
+                                                  <tbody>
+                                                      {% for detalle_ingredientes in detalle_ingredientes_producto %}
+                                                          <tr>
+                                                              <td>{{ loop.index }}. {{ detalle_ingredientes.ingrediente.nombre }}</td>
+                                                              <td>{{ detalle_ingredientes.cantidad }} {{ detalle_ingredientes.ingrediente.unidadmedida.nombre }}</td>
+                                                          </tr>
+                                                      {% endfor %}
+                                                  </tbody>
+                                              </table>
+                                            {% else %}
+                                                <p>Sin ingredientes extras</p>
+                                            {% endif %}
+                                        {% endif %}
                                       </td>
                                   </tr>
                               {% endfor %}

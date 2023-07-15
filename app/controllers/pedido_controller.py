@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
-from models.database import Pedido, PedidoEstado, Producto, Categoria, Receta, RecetaDetalle, PedidoDetalle, PedidoDetalleIngrediente, Ingrediente, Venta, db_session
+from models.database import Pedido, PedidoEstado, Producto, Categoria, Receta, RecetaDetalle, PedidoDetalle, PedidoDetalleIngrediente, Ingrediente, MetodoPago, Venta, db_session
 from sqlalchemy import or_
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -25,10 +25,13 @@ def create_pedido_blueprint():
     # Definir las rutas y las funciones controladoras
     @pedido_blueprint.route('/pedidos')
     def listar():
+        detalle_ingredientes_producto = []
         try:
-            pedidos = db_session.query(Pedido).filter(Pedido.estado_id == 1).all()
+            pedidos = db_session.query(Pedido).filter(Pedido.notificacion == True, Pedido.estado_id == 1).all()
             estado_pedido = db_session.query(PedidoEstado).all()
-            pedido_detalle_ingredientes = db_session.query(PedidoDetalleIngrediente).join(PedidoDetalle).join(Pedido).filter(Pedido.estado_id == 1).all()
+            pedido_detalle_ingredientes = db_session.query(PedidoDetalleIngrediente).join(PedidoDetalle).join(Pedido).all()
+            detalle_pedido = pedidos[0].detalles[0]
+            detalle_ingredientes_producto = db_session.query(PedidoDetalleIngrediente).filter_by(pedido_detalle_id=detalle_pedido.id).all()
 
             for pedido in pedidos:
                 pedido.total_pedido = calcular_total_pedido(pedido)
@@ -37,7 +40,10 @@ def create_pedido_blueprint():
             flash("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
             db_session.rollback()
 
-        return render_template('pedido/listar.html', pedidos=pedidos, estado_pedido=estado_pedido, pedido_detalle_ingredientes=pedido_detalle_ingredientes)
+        return render_template('pedido/listar.html', pedidos=pedidos, 
+                               estado_pedido=estado_pedido, 
+                               pedido_detalle_ingredientes=pedido_detalle_ingredientes, 
+                               detalle_ingredientes_producto=detalle_ingredientes_producto)
 
     @pedido_blueprint.route('/finalizados')
     def finalizados():
@@ -78,20 +84,37 @@ def create_pedido_blueprint():
                 flash("ERROR: Debes haber iniciado sesión para esta función.")
                 return redirect(url_for('sesion.login'))
             
-            if request.method == 'POST':
-                nombre_cliente = request.form['nombre_cliente']
-                delivery = True if request.form['delivery'] == "True" else False
-                pedido = Pedido(persona_id=session['id'], nombre_cliente=nombre_cliente, delivery=delivery)
+            else:
+                pedido = Pedido(persona_id=session['id'])
                 db_session.add(pedido)
                 db_session.commit()
                 return redirect(url_for('pedido.editar', id=pedido.id))
-            return render_template('pedido/nuevo.html')
         
         except:
             db_session.rollback()
             flash("ERROR: Ocurrió un error al procesar la solicitud.")
             return redirect(url_for('sesion.login'))
 
+    @pedido_blueprint.route('/pedido/actualizar_datos/<int:id>', methods=['GET', 'POST'])
+    def actualizar_datos(id):
+        pedido = db_session.query(Pedido).filter_by(id=id).one()
+        try:
+            pedido = db_session.query(Pedido).filter_by(id=id).one()
+            nombre_cliente = request.form['nombre_cliente']
+            delivery = True if request.form['delivery'] == "True" else False
+            metodopago_id = request.form['metodopago_id']
+            metodopago = db_session.query(MetodoPago).filter_by(id=metodopago_id).first()
+            if metodopago_id:
+                pedido.metodopago = metodopago
+            if nombre_cliente:
+                pedido.nombre_cliente = nombre_cliente
+            pedido.delivery = delivery
+            db_session.commit()
+            flash('Se han actualizado los datos del pedido de forma exitosa.')
+        except:
+            flash('Hubo un error en actualizar los datos del pedido, vuelva a intentarlo.')
+        return redirect(url_for('pedido.editar', id=pedido.id))
+        
     @pedido_blueprint.route('/pedido/editar/<int:id>', methods=['GET', 'POST'])
     def editar(id):
         try:
@@ -99,7 +122,10 @@ def create_pedido_blueprint():
             producto_busqueda = request.form.get('producto_busqueda')
             pedido_detalle_ingredientes = []
             detalle_ingredientes = []
-            
+            metodopago = db_session.query(MetodoPago).filter(MetodoPago.activo == True).all()
+            detalle_pedido = db_session.query(PedidoDetalle).filter_by(id=id).first()
+            detalle_ingredientes_producto = db_session.query(PedidoDetalleIngrediente).filter_by(pedido_detalle_id=detalle_pedido.id).all()
+
             if request.method == 'POST' and producto_busqueda:
                 productos = db_session.query(Producto).join(Categoria).filter(
                     or_(Producto.nombre.ilike(f'%{producto_busqueda}%'),
@@ -146,7 +172,10 @@ def create_pedido_blueprint():
             flash("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
             db_session.rollback()
 
-        return render_template('pedido/editar.html', productos=productos, producto_busqueda=producto_busqueda, pedido=pedido, pedido_detalle_ingredientes=pedido_detalle_ingredientes, detalle_ingredientes=detalle_ingredientes)
+        return render_template('pedido/editar.html', metodopago=metodopago, 
+                               productos=productos, producto_busqueda=producto_busqueda, 
+                               pedido=pedido, pedido_detalle_ingredientes=pedido_detalle_ingredientes, 
+                               detalle_ingredientes=detalle_ingredientes, detalle_ingredientes_producto=detalle_ingredientes_producto)
     
     @pedido_blueprint.route('/actualizar_pedido/<int:id>', methods=['GET', 'POST'])
     def actualizar_pedido(id):
@@ -256,7 +285,7 @@ def create_pedido_blueprint():
     def editar_extra(id):
         try:
             pedido_detalle = db_session.query(PedidoDetalle).filter_by(id=id).one()
-            ingrediente = db_session.query(Ingrediente).filter(Ingrediente.activo == True).all()
+            ingrediente = db_session.query(Ingrediente).filter(Ingrediente.activo == True).order_by(Ingrediente.nombre).all()
             pedido_detalle_ingrediente = db_session.query(PedidoDetalleIngrediente).filter_by(pedido_detalle_id=id).all()
             total_pedido = pedido_detalle.producto.precio
             ingrediente_busqueda = request.form.get('ingrediente_busqueda')
@@ -394,7 +423,7 @@ def create_pedido_blueprint():
 
             if pedido.estado_id == 3:  # Verificar si el pedido está anulado previamente
                 pedido.estado_id = 1  # Actualizar el estado del pedido a "En proceso"
-
+                pedido.notificacion = True
                 # Descontar ingredientes nuevamente basándose en la receta de cada producto en el pedido
                 for detalle in pedido.detalles:
                     producto = detalle.producto
@@ -437,41 +466,52 @@ def create_pedido_blueprint():
     def finalizar(id):
         try:
             pedido = db_session.query(Pedido).filter_by(id=id).one()
+            pedido.estado_id = 2  # Actualizar el estado del pedido a "Finalizado"
+            pedido.notificacion = False
 
-            if pedido.estado_id == 1:  # Verificar si el pedido está en proceso
-                pedido.estado_id = 2  # Actualizar el estado del pedido a "Finalizado"
+            # Descontar ingredientes basándose en la receta de cada producto en el pedido
+            for detalle in pedido.detalles:
+                producto = detalle.producto
 
-                # Descontar ingredientes basándose en la receta de cada producto en el pedido
-                for detalle in pedido.detalles:
-                    producto = detalle.producto
+                if producto.tiene_receta:
+                    receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
+                    receta_detalles = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id).all()
 
-                    if producto.tiene_receta:
-                        receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
-                        receta_detalles = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id).all()
+                    for detalle_receta in receta_detalles:
+                        ingrediente = detalle_receta.ingrediente
+                        cantidad_necesaria = detalle_receta.cantidad * detalle.cantidad
 
-                        for detalle_receta in receta_detalles:
-                            ingrediente = detalle_receta.ingrediente
-                            cantidad_necesaria = detalle_receta.cantidad * detalle.cantidad
+                        # Descontar la cantidad de ingredientes en base a la receta
+                        ingrediente.cantidad -= cantidad_necesaria
 
-                            # Descontar la cantidad de ingredientes en base a la receta
-                            ingrediente.cantidad -= cantidad_necesaria
+                        # Sumar los ingredientes de pedido_detalle_ingrediente
 
-                            # Sumar los ingredientes de pedido_detalle_ingrediente
+            pedido_detalle_ingredientes = db_session.query(PedidoDetalleIngrediente).join(PedidoDetalle).join(Pedido).filter(
+                PedidoDetalle.pedido_id == pedido.id).all()
 
-                pedido_detalle_ingredientes = db_session.query(PedidoDetalleIngrediente).join(PedidoDetalle).join(Pedido).filter(
-                    PedidoDetalle.pedido_id == pedido.id).all()
+            for detalle_ingrediente in pedido_detalle_ingredientes:
+                ingrediente = detalle_ingrediente.ingrediente
+                cantidad = detalle_ingrediente.cantidad
 
-                for detalle_ingrediente in pedido_detalle_ingredientes:
-                    ingrediente = detalle_ingrediente.ingrediente
-                    cantidad = detalle_ingrediente.cantidad
+                # Sumar la cantidad de ingredientes
+                ingrediente.cantidad -= cantidad
 
-                    # Sumar la cantidad de ingredientes
-                    ingrediente.cantidad -= cantidad
+            venta_existente = db_session.query(Venta).filter_by(id=id).first()
 
-                db_session.commit()
-                flash(f'El pedido {id} se ha finalizado correctamente.', 'success')
+            pedido.total_pedido = calcular_total_pedido(pedido)
+            
+            if venta_existente:
+                venta_existente.total = pedido.total_pedido
+                venta_existente.activo = True
+
             else:
-                flash(f'El pedido {id} no se encuentra en proceso.', 'error')
+                nueva_venta = Venta(id=id,
+                                    pedido_id=id, 
+                                    total=pedido.total_pedido)
+                db_session.add(nueva_venta)
+
+            db_session.commit()
+            flash(f'El pedido {id} se ha finalizado correctamente.', 'success')
         
         except:
             flash("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
@@ -487,41 +527,45 @@ def create_pedido_blueprint():
     def anular(id):
         try:
             pedido = db_session.query(Pedido).filter_by(id=id).one()
+            pedido.estado_id = 3  # Actualizar el estado del pedido a "Anulado"
+            pedido.notificacion = False
+            # Sumar ingredientes basándose en la receta de cada producto en el pedido
+            for detalle in pedido.detalles:
+                producto = detalle.producto
 
-            if pedido.estado_id == 1:  # Verificar si el pedido está en proceso
-                pedido.estado_id = 3  # Actualizar el estado del pedido a "Anulado"
+                if producto.tiene_receta:
+                    receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
+                    receta_detalles = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id).all()
 
-                # Sumar ingredientes basándose en la receta de cada producto en el pedido
-                for detalle in pedido.detalles:
-                    producto = detalle.producto
+                    for detalle_receta in receta_detalles:
+                        ingrediente = detalle_receta.ingrediente
+                        cantidad_necesaria = detalle_receta.cantidad * detalle.cantidad
 
-                    if producto.tiene_receta:
-                        receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
-                        receta_detalles = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id).all()
+                        # Sumar la cantidad de ingredientes en base a la receta
+                        ingrediente.cantidad += cantidad_necesaria
 
-                        for detalle_receta in receta_detalles:
-                            ingrediente = detalle_receta.ingrediente
-                            cantidad_necesaria = detalle_receta.cantidad * detalle.cantidad
+                        # Restar los ingredientes de pedido_detalle_ingrediente
 
-                            # Sumar la cantidad de ingredientes en base a la receta
-                            ingrediente.cantidad += cantidad_necesaria
+            pedido_detalle_ingredientes = db_session.query(PedidoDetalleIngrediente).join(PedidoDetalle).join(Pedido).filter(
+                PedidoDetalle.pedido_id == pedido.id).all()
 
-                            # Restar los ingredientes de pedido_detalle_ingrediente
+            for detalle_ingrediente in pedido_detalle_ingredientes:
+                ingrediente = detalle_ingrediente.ingrediente
+                cantidad = detalle_ingrediente.cantidad
 
-                pedido_detalle_ingredientes = db_session.query(PedidoDetalleIngrediente).join(PedidoDetalle).join(Pedido).filter(
-                    PedidoDetalle.pedido_id == pedido.id).all()
+                # Restar la cantidad de ingredientes
+                ingrediente.cantidad += cantidad
 
-                for detalle_ingrediente in pedido_detalle_ingredientes:
-                    ingrediente = detalle_ingrediente.ingrediente
-                    cantidad = detalle_ingrediente.cantidad
+            venta_existente = db_session.query(Venta).filter_by(id=id).first()
 
-                    # Restar la cantidad de ingredientes
-                    ingrediente.cantidad += cantidad
+            pedido.total_pedido = calcular_total_pedido(pedido)
 
-                db_session.commit()
-                flash(f'El pedido {id} se ha anulado correctamente.', 'success')
-            else:
-                flash(f'El pedido {id} no se encuentra en proceso.', 'error')
+            if venta_existente:
+                venta_existente.total = pedido.total_pedido
+                venta_existente.activo = False
+
+            db_session.commit()
+            flash(f'El pedido {id} se ha anulado correctamente.', 'success')
         
         except:
             flash("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
@@ -539,10 +583,9 @@ def create_pedido_blueprint():
             pedidos = db_session.query(Pedido).filter(Pedido.notificacion == True).all()
             estado_pedido = db_session.query(PedidoEstado).all()
             pedido_detalle_ingredientes = db_session.query(PedidoDetalleIngrediente).join(PedidoDetalle).join(Pedido).filter(Pedido.estado_id == 1).all()
-            
-            # Confirmar la transacción
-            db_session.commit()
-            
+            detalle_pedido = pedidos[0].detalles[0]
+            detalle_ingredientes_producto = db_session.query(PedidoDetalleIngrediente).filter_by(pedido_detalle_id=detalle_pedido.id).all()
+
         except SQLAlchemyError as e:
             # Revertir la transacción en caso de error
             db_session.rollback()
@@ -550,7 +593,10 @@ def create_pedido_blueprint():
             # Manejar el error de alguna manera, como mostrar un mensaje de error al usuario
             return render_template('error.html', error_message="Error al obtener los pedidos")
 
-        return render_template('notificaciones.html', pedidos=pedidos, estado_pedido=estado_pedido, pedido_detalle_ingredientes=pedido_detalle_ingredientes)
+        return render_template('notificaciones.html', pedidos=pedidos, 
+                               estado_pedido=estado_pedido, 
+                               pedido_detalle_ingredientes=pedido_detalle_ingredientes, 
+                               detalle_ingredientes_producto=detalle_ingredientes_producto)
     
     @pedido_blueprint.route('/notificar/<int:id>', methods=['GET', 'POST'])
     def notificar(id):

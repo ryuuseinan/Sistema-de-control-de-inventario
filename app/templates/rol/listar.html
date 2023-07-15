@@ -24,6 +24,7 @@
         <table class="table is-striped is-hoverable">
           <thead>
             <tr>
+              <th>ID</th>
               <th>Nombre</th>
               <th>Fecha de creación</th>
               <th>Ultima modificación</th>
@@ -33,6 +34,7 @@
           <tbody>
             {% for rol in roles %}
                 <tr>
+                  <td>{{ rol.id }}</td>
                   <td>{{ rol.nombre }}</td>
                   <td>{{ arrow.get(rol.fecha_creacion).format('DD-MM-YYYY HH:mm') if rol.fecha_creacion else None }}</td>
                   <td>{{ arrow.get(rol.ultima_modificacion).format('DD-MM-YYYY HH:mm') if rol.ultima_modificacion != rol.fecha_creacion else 'Nunca modificado' }}</td>
