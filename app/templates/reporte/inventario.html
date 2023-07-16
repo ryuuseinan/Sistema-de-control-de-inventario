@@ -140,7 +140,7 @@
                                             <tr>
                                                 <td>{{ ingrediente.nombre }}</td>
                                                 <td>El stock es de {{ ingrediente.cantidad }} {{ ingrediente.unidadmedida.nombre }}, lo cual es inferior al valor de alerta de stock establecido en {{ ingrediente.alerta_stock }} {{ ingrediente.unidadmedida.nombre }}</td>
-                                                <td>{{ ingrediente.ultima_modificacion }}</td>
+                                                <td>{{ arrow.get(ingrediente.ultima_modificacion).format('DD-MM-YYYY HH:mm') if ingrediente.ultima_modificacion != ingrediente.fecha_creacion else 'Nunca modificado' }}</td>
                                                 <td>
                                                     <a href="{{ url_for('ingrediente.ingresar_stock', id=ingrediente.id) }}" class="button is-warning is-small">
                                                         <span class="icon is-small"><i class="fas fa-plus"></i><i class="fas fa-pepper-hot"></i></span>
@@ -164,40 +164,55 @@
                             <p><strong>Total de productos:</strong> {{ total_productos }}</p>
                             <p><strong>Productos Críticos:</strong> {{ producto_alerta_stock }}</p>
                             {% if productos_criticos %}
-                            <table>
+                            <table class="table is-striped is-hoverable">
                                 <thead>
                                     <tr>
                                         <th>Nombre</th>
                                         <th>Stock</th>
-                                        <th>Última modificación</th>
                                         <th>Ingresar stock</th>
+                                        <th>Fecha modificación</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for productos_criticos in productos_criticos %}
-                                    <tr>
-                                        <td>{{ productos_criticos.nombre }} ({{ productos_criticos.categoria.nombre }})</td>
-                                            {% if productos_criticos.tiene_receta == True %}
-                                                <td>El stock es de {{ productos_criticos.stock_disponible }} unidad(es) preparable(s), lo cual es inferior al valor de alerta de stock establecido en {{ productos_criticos.alerta_stock }} unidad(es)</td>
+                                    {% for producto in productos_criticos %}
+                                        <tr>
+                                            <td>{{ producto.nombre }} ({{ producto.categoria.nombre }})</td>
+                                            {% if producto.tiene_receta == True %}
+                                                <td>El stock es de {{ producto.stock_disponible }} unidad(es) preparable(s), porque estos ingredientes son críticos:
+                                                    {% if producto.receta %}
+                                                    <table class="table is-striped is-hoverable">
+                                                        <tbody>
+                                                            <ul>
+                                                            {% for receta_detalle in producto.receta_detalles %}
+                                                                {% if receta_detalle.ingrediente.cantidad <= receta_detalle.ingrediente.alerta_stock %}
+                                                                <li>{{ receta_detalle.ingrediente.nombre }}</li>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                            </ul>
+                                                        </tbody>
+                                                    </table>
+                                                {% else %}
+                                                    No se encontraron ingredientes
+                                                {% endif %}
+                                                </td>
                                             {% else %}
-                                                <td>El stock es de {{ productos_criticos.stock_disponible }} unidad(es), lo cual es inferior al valor de alerta de stock establecido en {{ productos_criticos.alerta_stock }} unidad(es)</td>
+                                                <td>El stock es de {{ producto.stock_disponible }} unidad(es), lo cual es inferior al valor de alerta de stock establecido en {{ producto.alerta_stock }} unidad(es)</td>
                                             {% endif %}
-                                        <td>{{ productos_criticos.ultima_modificacion }}</td>
-                                        <td>
-                                            {% if productos_criticos.tiene_receta == True %}
-                                                <a href="{{ url_for('producto.ingresar_stock', id=productos_criticos.id) }}" class="button is-warning is-small">
-                                                    <span class="icon is-small"><i class="fas fa-plus"></i><i class="fas fa-pepper-hot"></i></span>
-                                                </a>
-                                            {% else %}
-                                                <a href="{{ url_for('producto.ingresar_stock', id=productos_criticos.id) }}" class="button is-warning is-small">
-                                                    <span class="icon is-small"><i class="fas fa-plus"></i><i class="fas fa-pepper-hot"></i></span>
-                                                </a>
-                                            {% endif %}
-                                        </td>
-                                    </tr>
+                                            <td>
+                                                {% if producto.tiene_receta == True %}
+                                                    Ingresar en tabla de ingredientes
+                                                {% else %}
+                                                    <a href="{{ url_for('producto.ingresar_stock_reporte', id=producto.id) }}" class="button is-warning is-small">
+                                                        <span class="icon is-small"><i class="fas fa-plus"></i><i class="fas fa-pepper-hot"></i></span>
+                                                    </a>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ arrow.get(producto.ultima_modificacion).format('DD-MM-YYYY HH:mm') if producto.ultima_modificacion != producto.fecha_creacion else 'Nunca modificado' }}</td>
+                                        </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
+                            
                         {% else %}
                             <p>No hay productos críticos.</p>
                         {% endif %}

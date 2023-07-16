@@ -27,7 +27,7 @@ def create_pedido_blueprint():
     def listar():
         detalle_ingredientes_producto = []
         try:
-            pedidos = db_session.query(Pedido).filter(Pedido.notificacion == True, Pedido.estado_id == 1).all()
+            pedidos = db_session.query(Pedido).filter(Pedido.estado_id == 1).all()
             estado_pedido = db_session.query(PedidoEstado).all()
             pedido_detalle_ingredientes = db_session.query(PedidoDetalleIngrediente).join(PedidoDetalle).join(Pedido).all()
             detalle_pedido = pedidos[0].detalles[0]
@@ -48,7 +48,7 @@ def create_pedido_blueprint():
     @pedido_blueprint.route('/finalizados')
     def finalizados():
         try:
-            pedidos = db_session.query(Pedido).filter(Pedido.estado_id == 2).all()
+            pedidos = db_session.query(Pedido).filter(Pedido.estado_id == 2).order_by(-Pedido.id).all()
             estado_pedido = db_session.query(PedidoEstado).all()
             pedido_detalle_ingredientes = db_session.query(PedidoDetalleIngrediente).join(PedidoDetalle).join(Pedido).filter(Pedido.estado_id == 2).all()
 
@@ -64,7 +64,7 @@ def create_pedido_blueprint():
     @pedido_blueprint.route('/anulados')
     def anulados():
         try:
-            pedidos = db_session.query(Pedido).filter(Pedido.estado_id == 3).all()
+            pedidos = db_session.query(Pedido).filter(Pedido.estado_id == 3).order_by(-Pedido.id).all()
             estado_pedido = db_session.query(PedidoEstado).all()
             pedido_detalle_ingredientes = db_session.query(PedidoDetalleIngrediente).join(PedidoDetalle).join(Pedido).filter(Pedido.estado_id == 3).all()
 
@@ -404,7 +404,8 @@ def create_pedido_blueprint():
                 if venta_existente:
                     venta_existente.activo = False
 
-                pedido.estado_id = 1  # Actualizar el estado del pedido a "En proceso"
+                pedido.estado_id = 1  
+                pedido.notificacion = True
                 db_session.commit()
                 flash(f'El pedido {id} se ha marcado como "en progreso" correctamente.', 'success')
             else:
@@ -583,8 +584,13 @@ def create_pedido_blueprint():
             pedidos = db_session.query(Pedido).filter(Pedido.notificacion == True).all()
             estado_pedido = db_session.query(PedidoEstado).all()
             pedido_detalle_ingredientes = db_session.query(PedidoDetalleIngrediente).join(PedidoDetalle).join(Pedido).filter(Pedido.estado_id == 1).all()
-            detalle_pedido = pedidos[0].detalles[0]
-            detalle_ingredientes_producto = db_session.query(PedidoDetalleIngrediente).filter_by(pedido_detalle_id=detalle_pedido.id).all()
+            
+            detalle_pedido = None
+            detalle_ingredientes_producto = []
+            
+            if pedidos and pedidos[0].detalles:
+                detalle_pedido = pedidos[0].detalles[0]
+                detalle_ingredientes_producto = db_session.query(PedidoDetalleIngrediente).filter_by(pedido_detalle_id=detalle_pedido.id).all()
 
         except SQLAlchemyError as e:
             # Revertir la transacción en caso de error

@@ -116,6 +116,7 @@ def create_producto_blueprint():
                 # Obtener los datos del formulario
                 codigo_barra = request.form['codigo_barra']
                 nombre = request.form['nombre']
+                stock = request.form['stock']
                 categoria_id = request.form['categoria_id']
                 descripcion = request.form['descripcion']
                 precio = request.form['precio']
@@ -127,6 +128,8 @@ def create_producto_blueprint():
                     producto.codigo_barra = codigo_barra
                 if nombre:
                     producto.nombre = nombre
+                if stock:
+                    producto.stock = stock
                 if categoria_id:
                     producto.categoria_id = categoria_id
                 if descripcion:
@@ -181,7 +184,7 @@ def create_producto_blueprint():
                 db_session.commit()
 
                 # Redireccionar al listado de productos
-                return redirect(url_for('reporte.inventario'))
+                return redirect(url_for('producto.listar'))
         except Exception as e:
             # Manejo de excepciones
             db_session.rollback()
@@ -190,6 +193,36 @@ def create_producto_blueprint():
         # Renderizar la plantilla de edición de productos
         else:
             return render_template('producto/ingresar_stock.html', producto=producto)
+        
+    @producto_blueprint.route('/reporte/ingresar_stock/<int:id>', methods=['GET', 'POST'])
+    def ingresar_stock_reporte(id):
+        try:
+            # Obtener el producto a editar de la base de datos
+            producto = db_session.query(Producto).filter_by(id=id).one()
+            if request.method == 'POST':
+                # Obtener los datos del formulario
+                cantidad = request.form['cantidad']
+
+                # Actualizar los datos del producto con los nuevos datos del formulario
+                if cantidad:
+                    producto.stock = producto.stock + int(cantidad)
+                    
+                # Registrar ultima modificación
+                producto.ultima_modificacion = datetime.now()
+                
+                # Guardar los cambios en la base de datos
+                db_session.commit()
+
+                # Redireccionar al listado de productos
+                return redirect(url_for('reporte.inventario'))
+        except Exception as e:
+            # Manejo de excepciones
+            db_session.rollback()
+            return render_template('error.html', error=str(e))
+
+        # Renderizar la plantilla de edición de productos
+        else:
+            return render_template('producto/ingresar_stock_reporte.html', producto=producto)
 
     @producto_blueprint.route('/producto/eliminar/<int:id>', methods=['GET', 'POST'])
     def eliminar(id):

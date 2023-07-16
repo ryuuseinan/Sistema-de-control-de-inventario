@@ -18,6 +18,16 @@
           <input class="input" type="text" name="nombre" value="{{ producto.nombre }}" minlength="3" maxlength="30" required>
         </div>
       </div>
+      {% if producto.tiene_receta == False %}
+      <div class="field">
+        <label class="label">Stock (en unidades)</label>
+        <div class="control">
+          <input class="input" type="number" name="stock" value="{{ producto.stock }}" min="0" required>
+        </div>
+      </div>
+      {% else %}
+        <input type="hidden" name="stock" value="0">
+      {% endif %}
       <div class="field">
         <label class="label">Categoría</label><p class="help">Si no encuentras la categoría del producto, ¡puedes crearla <a href="/categorias">aqui</a>!</p>
         <div class="control">
