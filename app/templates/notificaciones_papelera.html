@@ -9,12 +9,12 @@
     <div class="columns">
       <div class="column">
         <div class="column">
-          <!--<div class="column">
+          <div class="column">
             <div class="buttons is-pulled-right">
-              <a href="{{ url_for('pedido.notificaciones_papelera') }}" class="button is-link is-light">Ir a papelera</a>
+              <a href="{{ url_for('pedido.notificaciones') }}" class="button is-link is-light">Volver</a>
             </div>
-          </div>-->
-          <h1 class="title">Notificaciones</h1>
+          </div>
+          <h1 class="title">Papelera de notificaciones</h1>
           {% if pedidos %}
           {% include 'messages.html' %}
           {% for pedido in pedidos %}
@@ -108,21 +108,12 @@
                     </tbody>
                   </table>
                 </div>
-                <a id="ocultarMostrarBtn" class="button is-fullwidth is-info" onclick="mostrarBotones()">Mostrar/Ocultar botones</a>
-                <div id="buttonContainer">
-                  <form id="botonxd" action="{{ url_for('pedido.finalizar', id=pedido.id) }}" method="POST">
-                    <input type="hidden" name="pagina" value="notificaciones">
-                    <button id="boton1" type="submit" class="button is-fullwidth is-info is-success is-light oculto">
-                      <span class="icon is-small"><i class="fas fa-check" aria-hidden="true"></i></span>
-                    </button>
-                  </form>
-                  <form id="botonxd" action="{{ url_for('pedido.anular', id=pedido.id) }}" method="POST">
-                    <input type="hidden" name="pagina" value="notificaciones">
-                    <button id="boton2" type="submit" class="button is-fullwidth is-danger is-light oculto">
-                      <span class="icon is-small"><i class="fas fa-times" aria-hidden="true"></i></span>
-                    </button>
-                  </form>
-                </div>
+                <form action="{{ url_for('pedido.restaurar', id=pedido.id) }}" method="POST">
+                  <input type="hidden" name="pagina" value="notificaciones">
+                  <button type="submit" class="button is-fullwidth is-info is-light">
+                    <span class="icon is-small"><i class="fas fa-undo" aria-hidden="true"></i></span>
+                  </button>
+                </form>
               </div>
             {% endfor %}
             {% endif %}
@@ -132,23 +123,15 @@
     </div>
   </div>
 </section>
-<style>
-  #buttonContainer {
-  display: none;
-}
-</style>
 <script>
-  function mostrarBotones() {
-  var buttonContainer = document.getElementById("buttonContainer");
-  
-  if (buttonContainer.style.display === "block") {
-    buttonContainer.style.display = "none";
-  } else {
-    buttonContainer.style.display = "block";
+  // Función para recargar la página cada 10 segundos
+  function reloadPage() {
+    setTimeout(function () {
+      location.reload();
+    }, 10000);
   }
-}
-</script>
-<script>
-
+  document.addEventListener('DOMContentLoaded', function () {
+    reloadPage();
+  });
 </script>
 {% endblock %}

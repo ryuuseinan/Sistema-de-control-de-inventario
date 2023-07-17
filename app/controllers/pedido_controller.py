@@ -414,8 +414,12 @@ def create_pedido_blueprint():
         except:
             flash("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
             db_session.rollback()
-
-        return redirect(url_for('pedido.finalizados'))
+            
+        pagina = request.form.get('pagina')
+        if pagina == 'notificaciones':
+            return redirect(url_for('pedido.notificaciones'))
+        else:
+            return redirect(url_for('pedido.finalizados'))
 
     @pedido_blueprint.route('/restaurar/<int:id>', methods=['GET', 'POST'])
     def restaurar(id):
@@ -600,6 +604,33 @@ def create_pedido_blueprint():
             return render_template('error.html', error_message="Error al obtener los pedidos")
 
         return render_template('notificaciones.html', pedidos=pedidos, 
+                               estado_pedido=estado_pedido, 
+                               pedido_detalle_ingredientes=pedido_detalle_ingredientes, 
+                               detalle_ingredientes_producto=detalle_ingredientes_producto)
+    
+    @pedido_blueprint.route('/notificaciones_papelera')
+    def notificaciones_papelera():
+        try:
+            pedidos = db_session.query(Pedido).filter(Pedido.notificacion == False).order_by(-Pedido.id).all()
+            
+            estado_pedido = db_session.query(PedidoEstado).all()
+            pedido_detalle_ingredientes = db_session.query(PedidoDetalleIngrediente).join(PedidoDetalle).join(Pedido).filter(Pedido.estado_id == 1).all()
+            
+            detalle_pedido = None
+            detalle_ingredientes_producto = []
+            
+            if pedidos and pedidos[0].detalles:
+                detalle_pedido = pedidos[0].detalles[0]
+                detalle_ingredientes_producto = db_session.query(PedidoDetalleIngrediente).filter_by(pedido_detalle_id=detalle_pedido.id).all()
+
+        except SQLAlchemyError as e:
+            # Revertir la transacción en caso de error
+            db_session.rollback()
+            print(f"Error al obtener los pedidos: {e}")
+            # Manejar el error de alguna manera, como mostrar un mensaje de error al usuario
+            return render_template('error.html', error_message="Error al obtener los pedidos")
+
+        return render_template('notificaciones_papelera.html', pedidos=pedidos, 
                                estado_pedido=estado_pedido, 
                                pedido_detalle_ingredientes=pedido_detalle_ingredientes, 
                                detalle_ingredientes_producto=detalle_ingredientes_producto)
