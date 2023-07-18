@@ -227,46 +227,58 @@
                                     No se encontraron ingredientes
                                 {% endif %}
                             </td>
-                            <form method="post" action="{{ url_for('pedido.actualizar_pedido', id=pedido.id) }}">
-                            <input type="hidden" name="producto_id" value="{{ producto.id }}">
-                            <input type="hidden" name="unidades_preparables" value="{{ producto.stock_disponible }}">
                             <div class="field is-grouped">
                                 {% if producto.tiene_receta == True %}
-                                <td>
-                                    <div class="control">
+                                <td></td>
+                                <form method="post" action="{{ url_for('pedido.agregar_producto', id=pedido.id) }}">
+                                    <td>
+                                        <input type="hidden" name="producto_id" value="{{ producto.id }}">
+                                        <input type="hidden" name="unidades_preparables" value="{{ producto.stock_disponible }}">
                                         <input type="hidden" name="cantidad" class="input" value="1">
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="control">
-                                        <button type="submit" name="action" value="agregar" class="button is-primary"><i class="fas fa-plus"></i></button>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="control">
-                                        <button type="submit" name="action" value="quitar" class="button is-danger"><i class="fas fa-minus"></i></button>
-                                    </div>
-                                </td>
+                                        <button type="submit" class="button is-primary">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </td>
+                                </form>
+                                <form method="post" action="{{ url_for('pedido.quitar_producto', id=pedido.id) }}">
+                                    <td>
+                                        <input type="hidden" name="producto_id" value="{{ producto.id }}">
+                                        <input type="hidden" name="unidades_preparables" value="{{ producto.stock_disponible }}">
+                                        <input type="hidden" name="cantidad" class="input" value="1">
+                                        <button type="submit" class="button is-danger">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                    </td>
+                                </form>
                                 {% endif %}
                                 {% if producto.tiene_receta == False %}
                                 <td>
                                     <div class="control">
-                                        <input type="number" name="cantidad" class="input" value="1" min="1" max="9999">
+                                        <input type="number" id="cantidad-input" class="input" value="1" min="1" max="9999">
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="control">
-                                        <button type="submit" name="action" value="agregar" class="button is-primary"><i class="fas fa-plus"></i></button>
-                                    </div>
+                                    <form id="agregar-form" method="post" action="{{ url_for('pedido.agregar_producto', id=pedido.id) }}">
+                                        <input type="hidden" name="producto_id" value="{{ producto.id }}">
+                                        <input type="hidden" name="unidades_preparables" value="{{ producto.stock_disponible }}">
+                                        <input type="hidden" id="agregar-cantidad" name="cantidad" value="">
+                                        <button type="submit" class="button is-primary">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </form>
                                 </td>
                                 <td>
-                                    <div class="control">
-                                        <button type="submit" name="action" value="quitar" class="button is-danger"><i class="fas fa-minus"></i></button>
-                                    </div>
+                                    <form id="quitar-form" method="post" action="{{ url_for('pedido.quitar_producto', id=pedido.id) }}">
+                                        <input type="hidden" name="producto_id" value="{{ producto.id }}">
+                                        <input type="hidden" name="unidades_preparables" value="{{ producto.stock_disponible }}">
+                                        <input type="hidden" id="quitar-cantidad" name="cantidad" value="">
+                                        <button type="submit" class="button is-danger">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                    </form>
                                 </td>
                                 {% endif %}
                             </div> 
-                            </form>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -279,26 +291,22 @@
     </div>
 </section>
 <script>
-    function sendNotification() {
-        if ("Notification" in window) {
-            if (Notification.permission === "granted") {
-                var notification = new Notification("Actualizar página", {
-                    body: "Se ha añadido/actualizado un pedido. Por favor, refresque la página 'notificaciones.html'.",
-                });
-            } else if (Notification.permission !== "denied") {
-                Notification.requestPermission().then(function (permission) {
-                    if (permission === "granted") {
-                        var notification = new Notification("Actualizar página", {
-                            body: "Se ha añadido/actualizado un pedido. Por favor, refresque la página 'notificaciones.html'.",
-                        });
-                    }
-                });
-            }
-        }
-    }
-    // Llama a la función para mostrar la notificación cuando se carga la página
-    document.addEventListener('DOMContentLoaded', function () {
-        sendNotification();
+    const cantidadInput = document.getElementById('cantidad-input');
+    const agregarForm = document.getElementById('agregar-form');
+    const agregarCantidadInput = document.getElementById('agregar-cantidad');
+    const quitarForm = document.getElementById('quitar-form');
+    const quitarCantidadInput = document.getElementById('quitar-cantidad');
+
+    agregarForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        agregarCantidadInput.value = cantidadInput.value;
+        agregarForm.submit();
+    });
+
+    quitarForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        quitarCantidadInput.value = cantidadInput.value;
+        quitarForm.submit();
     });
 </script>
 
