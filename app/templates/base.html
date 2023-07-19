@@ -3,6 +3,7 @@
 <head>
     {% include 'head.html' %}
 </head>
+{% if session.logged_in %}
 <div id="body_lista_opciones">
 	<div id="columnas" class="columns">
 		<!-- Vista para PC -->
@@ -78,4 +79,7 @@
         <span id="qr-close-btn"></span>
     </div>
 </div>
+{% else %}
+	<script>window.location.href = "{{ url_for('sesion.login') }}";</script>
+{% endif %}
 </html>
