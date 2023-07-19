@@ -72,9 +72,10 @@ def create_reporte_blueprint():
                                 productos_cerca_alerta=productos_cerca_alerta,
                                 productos_criticos=productos_criticos,
                                 productos=productos)
-        except Exception as e:
-            # Manejo de excepciones
-            return render_template('error.html', error=str(e))
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
+            db_session.rollback()
+            return redirect(request.path)
     
     @reporte_blueprint.route('/reporte/ventas')
     def ventas():
@@ -147,9 +148,10 @@ def create_reporte_blueprint():
                     resultados[mes] = {metodo_pago_id: cantidad}
 
             return render_template('reporte/ventas.html', ventas=ventas, meses_ventas=meses_ventas, ventas_por_mes=ventas_por_mes, metodos_pago=metodos_pago, resultados=resultados, mes_nombre=mes_nombre, fecha_actual=fecha_actual, get_dias_sin_ventas=get_dias_sin_ventas, monthrange=monthrange, date=date)
-        except Exception as e:
-            # Manejo de excepciones
-            return render_template('error.html', error=str(e))
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
+            db_session.rollback()
+            return redirect(request.path)
 
     def mes_nombre(mes):
         traducciones = {

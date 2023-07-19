@@ -32,6 +32,7 @@
               <th>Stock/Receta</th>
               <th>Alerta de stock</th>
               <th>Editar</th>
+              <th>Duplicar</th>
               <th>Eliminar</th>
             </tr>
           </thead>
@@ -39,7 +40,7 @@
             {% for producto in productos %}
               <tr>
                 <td>{{ producto.codigo_barra }}</td>
-                <td><img src="{{ url_for('static', filename='img/') }}{{ producto.imagen }}" alt="{{ producto.nombre }}" style="max-height: 50px;">
+                <td><img src="{{ url_for('static', filename='img/') }}{{ producto.imagen }}" alt="{{ producto.nombre }}" style="max-height: 50px;max-width: 50px;">
                 </td>
                 <td>{{ producto.nombre }}</td>
                 <td>{{ producto.categoria.nombre }}</td>
@@ -67,7 +68,12 @@
                 <td>{{ producto.alerta_stock }} unidad(es)</td>
                 <td>
                   <a href="{{ url_for('producto.editar', id=producto.id) }}" class="button is-info is-light">
-                    <span class="icon is-small"><i class="fa fa-pencil-alt" aria-hidden="true"></i></i></span>
+                    <span class="icon is-small"><i class="fa fa-pencil-alt" aria-hidden="true"></i></span>
+                  </a>
+                </td>
+                <td>
+                  <a href="{{ url_for('producto.duplicar', id=producto.id) }}" class="button is-light">
+                    <span class="icon is-small"><i class="fas fa-clone"></i></span>
                   </a>
                 </td>
                 <td>

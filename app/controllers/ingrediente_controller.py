@@ -15,9 +15,10 @@ def create_ingrediente_blueprint():
             # Obtenemos todas los ingredientes de la base de datos
             ingredientes = db_session.query(Ingrediente).filter(Ingrediente.activo == True).order_by(asc(Ingrediente.nombre)).all()
             return render_template('ingrediente/listar.html', ingredientes=ingredientes)
-        except Exception as e:
-            # Manejo de excepciones
-            return render_template('error.html', error=str(e))
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
+            db_session.rollback()
+            return redirect(request.path)
 
     @ingrediente_blueprint.route('/ingrediente_papelera')
     def papelera():
@@ -25,9 +26,10 @@ def create_ingrediente_blueprint():
             # Obtenemos todas los ingredientes de la base de datos
             ingredientes = db_session.query(Ingrediente).filter(Ingrediente.activo == False).order_by(asc(Ingrediente.nombre)).all()
             return render_template('ingrediente/papelera.html', ingredientes=ingredientes)
-        except Exception as e:
-            # Manejo de excepciones
-            return render_template('error.html', error=str(e))
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
+            db_session.rollback()
+            return redirect(request.path)
 
     @ingrediente_blueprint.route('/ingrediente_nuevo', methods=['GET', 'POST'])
     def nuevo():
@@ -61,11 +63,10 @@ def create_ingrediente_blueprint():
                 # Redireccionar al listado de productos
                 return redirect(url_for('ingrediente.listar'))
             return render_template('ingrediente/nuevo.html', unidadmedida=unidadmedida)
-        except Exception as e:
-            # Manejo de excepciones
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
             db_session.rollback()
-            flash('Error al crear el ingrediente', 'error')
-            return render_template('error.html', error=str(e))
+            return redirect(request.path)
 
     @ingrediente_blueprint.route('/ingrediente_editar/<int:id>', methods=['GET', 'POST'])
     def editar(id):
@@ -109,11 +110,10 @@ def create_ingrediente_blueprint():
                 # Redireccionar al listado de ingredientes
                 return redirect(url_for('ingrediente.listar'))
             return render_template('ingrediente/editar.html', ingrediente=ingrediente, unidadmedida=unidadmedida)
-        except Exception as e:
-            # Manejo de excepciones
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
             db_session.rollback()
-            flash('Error al editar el ingrediente', 'error')
-            return render_template('error.html', error=str(e))
+            return redirect(request.path)
 
     @ingrediente_blueprint.route('/ingrediente_eliminar/<int:id>', methods=['GET', 'POST'])
     def eliminar(id):
@@ -127,11 +127,10 @@ def create_ingrediente_blueprint():
 
                 return redirect(url_for('ingrediente.listar'))
             return render_template('ingrediente/eliminar.html', ingrediente=ingrediente)
-        except Exception as e:
-            # Manejo de excepciones
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
             db_session.rollback()
-            return render_template('error.html', error=str(e))
-
+            return redirect(request.path)
     @ingrediente_blueprint.route('/ingrediente/restaurar/<int:id>', methods=['GET', 'POST'])
     def restaurar(id):
         try:
@@ -143,10 +142,10 @@ def create_ingrediente_blueprint():
                 return redirect(url_for('ingrediente.listar'))
 
             return render_template('ingrediente/restaurar.html', ingrediente=ingrediente)
-        except Exception as e:
-            # Manejo de excepciones
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
             db_session.rollback()
-            return render_template('error.html', error=str(e))
+            return redirect(request.path)
     
     @ingrediente_blueprint.route('/ingrediente/ingresar_stock/<int:id>', methods=['GET', 'POST'])
     def ingresar_stock(id):
@@ -172,10 +171,10 @@ def create_ingrediente_blueprint():
                 return redirect(url_for('reporte.inventario'))
 
             return render_template('ingrediente/ingresar_stock.html', ingrediente=ingrediente, unidadmedida=unidadmedida)
-        except Exception as e:
-            # Manejo de excepciones
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
             db_session.rollback()
-            return render_template('error.html', error=str(e))
+            return redirect(request.path)
 
     # Devolver el blueprint
     return ingrediente_blueprint

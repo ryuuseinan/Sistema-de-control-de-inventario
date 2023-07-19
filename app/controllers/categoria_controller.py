@@ -15,9 +15,10 @@ def create_categoria_blueprint():
             # Obtenemos todas las categorías de la base de datos
             categorias = db_session.query(Categoria).filter(Categoria.activo == True).order_by(asc(Categoria.nombre)).all()
             return render_template('categoria/listar.html', categorias=categorias)
-        except Exception as e:
-            # Manejo de excepciones
-            return render_template('error.html', error=str(e))
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
+            db_session.rollback()
+            return redirect(request.path)
 
     @categoria_blueprint.route('/categoria/nueva', methods=['GET', 'POST'])
     def nueva():
@@ -35,9 +36,10 @@ def create_categoria_blueprint():
 
                 return redirect(url_for('categoria.listar'))
             return render_template('categoria/nueva.html')
-        except Exception as e:
-            # Manejo de excepciones
-            return render_template('error.html', error=str(e))
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
+            db_session.rollback()
+            return redirect(request.path)
 
     @categoria_blueprint.route('/categoria/editar/<int:id>', methods=['GET', 'POST'])
     def editar(id):
@@ -51,9 +53,10 @@ def create_categoria_blueprint():
                 return redirect(url_for('categoria.listar'))
             else:
                 return render_template('categoria/editar.html', categoria=categoria)
-        except Exception as e:
-            # Manejo de excepciones
-            return render_template('error.html', error=str(e))
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
+            db_session.rollback()
+            return redirect(request.path)
 
     @categoria_blueprint.route('/categoria/eliminar/<int:id>', methods=['GET', 'POST'])
     def eliminar(id):
@@ -65,9 +68,10 @@ def create_categoria_blueprint():
                 return redirect(url_for('categoria.listar'))
             else:
                 return render_template('categoria/eliminar.html', categoria=categoria)
-        except Exception as e:
-            # Manejo de excepciones
-            return render_template('error.html', error=str(e))
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
+            db_session.rollback()
+            return redirect(request.path)
 
     @categoria_blueprint.route('/categorias/papelera')
     def papelera():
@@ -75,9 +79,10 @@ def create_categoria_blueprint():
             # Obtenemos todas los categorias de la base de datos
             categorias = db_session.query(Categoria).filter(Categoria.activo == False).order_by(asc(Categoria.nombre)).all()
             return render_template('categoria/papelera.html', categorias=categorias)
-        except Exception as e:
-            # Manejo de excepciones
-            return render_template('error.html', error=str(e))
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
+            db_session.rollback()
+            return redirect(request.path)
 
     @categoria_blueprint.route('/categoria/restaurar/<int:id>', methods=['GET', 'POST'])
     def restaurar(id):
@@ -89,9 +94,10 @@ def create_categoria_blueprint():
                 return redirect(url_for('categoria.listar'))
             else:
                 return render_template('categoria/restaurar.html', categoria=categoria)
-        except Exception as e:
-            # Manejo de excepciones
-            return render_template('error.html', error=str(e))
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
+            db_session.rollback()
+            return redirect(request.path)
     
     # Devolver el blueprint
     return categoria_blueprint

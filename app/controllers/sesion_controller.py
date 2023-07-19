@@ -17,9 +17,10 @@ def create_sesion_blueprint():
             flash('Has cerrado sesión', 'success')
             # Redirecciona al usuario a la página de inicio de sesión después de cerrar sesión
             return redirect(url_for('sesion.login'))
-        except Exception as e:
-            # Manejo de excepciones
-            return render_template('error.html', error=str(e))
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
+            db_session.rollback()
+            return redirect(request.path)
 
     @sesion_blueprint.route('/login', methods=['GET', 'POST'])
     def login():
@@ -53,9 +54,10 @@ def create_sesion_blueprint():
                     return redirect(url_for('sesion.login'))
 
             return render_template('sesion/login.html')
-        except Exception as e:
-            # Manejo de excepciones
-            return render_template('error.html', error=str(e))
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
+            db_session.rollback()
+            return redirect(request.path)
 
     # Devolver el blueprint
     return sesion_blueprint

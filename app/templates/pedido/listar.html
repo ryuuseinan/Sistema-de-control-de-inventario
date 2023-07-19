@@ -28,7 +28,7 @@
               <th>Tipo de pedido</th>
               <th>Fecha</th>
               <th>Total</th>
-              <th>Estado</th>
+              <th>Metodo de pago</th>
               <th>Editar</th>
               <th>Finalizar</th>
               <th>Anular</th>
@@ -73,7 +73,7 @@
                                             {% else %}
                                                 <p>Sin ingredientes extras</p>
                                             {% endif %}
-                                        {% endif %}
+                                          {% endif %}
                                       </td>
                                   </tr>
                               {% endfor %}
@@ -92,7 +92,7 @@
                 </td>
                 <td>{{ arrow.get(pedido.fecha_creacion).format('DD-MM-YYYY HH:mm') if pedido.fecha_creacion else None }}</td>
                 <td>${{ pedido.total_pedido }}</td>
-                <td>{{ pedido.pedido_estado.nombre }}</td>
+                <td>{{ pedido.metodopago.nombre }}</td>
                 <td>
                   <a href="{{ url_for('pedido.editar', id=pedido.id) }}" class="button is-info is-light">
                     <span class="icon is-small"><i class="fa fa-pencil-alt" aria-hidden="true"></i></i></span>

@@ -19,9 +19,10 @@ def create_producto_blueprint():
             # Obtenemos todas los productos de la base de datos
             productos = db_session.query(Producto).filter(Producto.activo == True).order_by(asc(Producto.nombre)).all()
             return render_template('producto/listar.html', productos=productos)
-        except Exception as e:
-            # Manejo de excepciones
-            return render_template('error.html', error=str(e))
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
+            db_session.rollback()
+            return redirect(request.path)
 
     @producto_blueprint.route('/productos/papelera')
     def papelera():
@@ -29,9 +30,10 @@ def create_producto_blueprint():
             # Obtenemos todas los productos de la base de datos
             productos = db_session.query(Producto).filter(Producto.activo == False).order_by(asc(Producto.nombre)).all()
             return render_template('producto/papelera.html', productos=productos)
-        except Exception as e:
-            # Manejo de excepciones
-            return render_template('error.html', error=str(e))
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
+            db_session.rollback()
+            return redirect(request.path)
 
     #@roles_required('Administrdor')
     @producto_blueprint.route('/producto/nuevo', methods=['GET', 'POST'])
@@ -83,10 +85,10 @@ def create_producto_blueprint():
                     db_session.rollback()
                     flash('El código de barras ya está en uso. Por favor, elija otro.', 'error')
                     return redirect(url_for('producto.nuevo'))
-        except Exception as e:
-            # Manejo de excepciones
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
             db_session.rollback()
-            return render_template('error.html', error=str(e))
+            return redirect(request.path)
 
         # Renderizar la plantilla de nuevo producto
         return render_template('producto/nuevo.html', categorias=categorias)
@@ -101,10 +103,10 @@ def create_producto_blueprint():
                 return redirect(url_for('producto.listar'))
             else:
                 return render_template('producto/restaurar.html', producto=producto)
-        except Exception as e:
-            # Manejo de excepciones
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
             db_session.rollback()
-            return render_template('error.html', error=str(e))
+            return redirect(request.path)
 
     @producto_blueprint.route('/producto/editar/<int:id>', methods=['GET', 'POST'])
     def editar(id):
@@ -156,13 +158,61 @@ def create_producto_blueprint():
 
                 # Redireccionar al listado de productos
                 return redirect(url_for('producto.listar'))
-        except Exception as e:
-            # Manejo de excepciones
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
             db_session.rollback()
-            return render_template('error.html', error=str(e))
+            return redirect(request.path)
 
         # Renderizar la plantilla de edición de productos
         return render_template('producto/editar.html', producto=producto, categoria=categoria)
+    
+    @producto_blueprint.route('/producto/duplicar/<int:id>', methods=['GET', 'POST'])
+    def duplicar(id):
+        try:
+            # Obtener el producto original de la base de datos
+            producto_original = db_session.query(Producto).filter_by(id=id).one()
+            categoria = db_session.query(Categoria).filter(Categoria.activo == True).all()
+
+            if request.method == 'POST':
+                # Crear una instancia de Producto con los datos del formulario
+                nuevo_producto = Producto()
+                nuevo_producto.codigo_barra = request.form['codigo_barra']
+                nuevo_producto.nombre = request.form['nombre']
+                nuevo_producto.stock = request.form['stock']
+                nuevo_producto.categoria_id = request.form['categoria_id']
+                nuevo_producto.descripcion = request.form['descripcion']
+                nuevo_producto.precio = request.form['precio']
+                nuevo_producto.alerta_stock = request.form['alerta_stock']
+                nuevo_producto.tiene_receta = True if request.form['tiene_receta'] == "True" else False
+                nuevo_producto.imagen = producto_original.imagen
+
+                producto_existente = db_session.query(Producto).filter_by(codigo_barra=nuevo_producto.codigo_barra).first()
+                if producto_existente:
+                    flash('El código de barras ya está en uso. Por favor, elija otro.', 'error')
+                    return render_template('producto/duplicar.html', producto=producto_original, categoria=categoria)
+
+                imagen = request.files['imagen']
+                if imagen and imagen.filename:
+                    filename = secure_filename(imagen.filename)
+                    imagen.save(os.path.join('app', 'static', 'img', 'productos', filename))
+                    nuevo_producto.imagen = '/productos/' + filename
+                
+                # Registrar fecha de creación
+                nuevo_producto.fecha_creacion = datetime.now()
+
+                # Guardar el nuevo producto en la base de datos
+                db_session.add(nuevo_producto)
+                db_session.commit()
+
+                # Redireccionar al listado de productos
+                return redirect(url_for('producto.listar'))
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
+            db_session.rollback()
+            return redirect(request.path)
+
+        # Renderizar la plantilla de duplicación de productos
+        return render_template('producto/duplicar.html', producto=producto_original, categoria=categoria)
 
     @producto_blueprint.route('/producto/ingresar_stock/<int:id>', methods=['GET', 'POST'])
     def ingresar_stock(id):
@@ -185,10 +235,10 @@ def create_producto_blueprint():
 
                 # Redireccionar al listado de productos
                 return redirect(url_for('producto.listar'))
-        except Exception as e:
-            # Manejo de excepciones
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
             db_session.rollback()
-            return render_template('error.html', error=str(e))
+            return redirect(request.path)
 
         # Renderizar la plantilla de edición de productos
         else:
@@ -215,10 +265,10 @@ def create_producto_blueprint():
 
                 # Redireccionar al listado de productos
                 return redirect(url_for('reporte.inventario'))
-        except Exception as e:
-            # Manejo de excepciones
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
             db_session.rollback()
-            return render_template('error.html', error=str(e))
+            return redirect(request.path)
 
         # Renderizar la plantilla de edición de productos
         else:
@@ -234,10 +284,10 @@ def create_producto_blueprint():
                 return redirect(url_for('producto.listar'))
             else:
                 return render_template('producto/eliminar.html', producto=producto)
-        except Exception as e:
-            # Manejo de excepciones
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
             db_session.rollback()
-            return render_template('error.html', error=str(e))
+            return redirect(request.path)
 
     # Devolver el blueprint
     return producto_blueprint

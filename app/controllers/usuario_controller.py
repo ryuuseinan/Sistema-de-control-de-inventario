@@ -15,17 +15,12 @@ def create_usuario_blueprint():
         try:
             rol = db_session.query(Rol).filter(Rol.activo == True).all()
             usuarios = db_session.query(Usuario).filter(Usuario.activo == True).all()
-            for usuario in usuarios:
-                fecha_creacion = arrow.get(usuario.fecha_creacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if usuario.fecha_creacion else None
-                ultima_modificacion = arrow.get(usuario.ultima_modificacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if usuario.ultima_modificacion else None
             return render_template('usuario/listar.html', usuarios=usuarios, rol=rol)
-        except Exception as e:
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
             db_session.rollback()
-            # Manejar el error de alguna manera, como imprimirlo en la consola o mostrar un mensaje al usuario
-            print(f"Error: {e}")
-            # Renderizar un template de error o redirigir a una página de error
-            return render_template('error.html', error_message=str(e))
-
+            return redirect(request.path)
+            
     @usuario_blueprint.route('/usuario/nuevo', methods=['GET', 'POST'])
     def nuevo():
         try:
@@ -73,13 +68,11 @@ def create_usuario_blueprint():
                             error = "El nombre de usuario o correo electrónico ya están en uso"
 
             return render_template('usuario/nuevo.html', error=error, rol=rol)
-        except Exception as e:
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
             db_session.rollback()
-            # Manejar el error de alguna manera, como imprimirlo en la consola o mostrar un mensaje al usuario
-            print(f"Error: {e}")
-            # Renderizar un template de error o redirigir a una página de error
-            return render_template('error.html', error_message=str(e))
-        
+            return redirect(request.path)
+                    
     @usuario_blueprint.route('/usuarios/papelera')
     def papelera():
         try:
@@ -87,13 +80,11 @@ def create_usuario_blueprint():
             # Obtenemos todos los usuarios de la base de datos
             usuarios = db_session.query(Usuario).filter(Usuario.activo == False).all()
             return render_template('usuario/papelera.html', usuarios=usuarios)
-        except Exception as e:
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
             db_session.rollback()
-            # Manejar el error de alguna manera, como imprimirlo en la consola o mostrar un mensaje al usuario
-            print(f"Error: {e}")
-            # Renderizar un template de error o redirigir a una página de error
-            return render_template('error.html', error_message=str(e))
-
+            return redirect(request.path)
+            
     @usuario_blueprint.route('/usuario/restaurar/<int:id>', methods=['GET', 'POST'])
     def restaurar(id):
         try:
@@ -105,13 +96,11 @@ def create_usuario_blueprint():
                 return redirect(url_for('usuario.listar'))
             else:
                 return render_template('usuario/restaurar.html', usuario=usuario)
-        except Exception as e:
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
             db_session.rollback()
-            # Manejar el error de alguna manera, como imprimirlo en la consola o mostrar un mensaje al usuario
-            print(f"Error: {e}")
-            # Renderizar un template de error o redirigir a una página de error
-            return render_template('error.html', error_message=str(e))
-
+            return redirect(request.path)
+            
     @usuario_blueprint.route('/usuario/editar/<int:id>', methods=['GET', 'POST'])
     def editar(id):
         try:
@@ -176,13 +165,11 @@ def create_usuario_blueprint():
                     # Renderizar un template de error o redirigir a una página de error
                     return render_template('error.html', error_message=str(e))
             return render_template('usuario/editar.html', usuario=usuario, rol=rol, persona=persona)
-        except Exception as e:
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
             db_session.rollback()
-            # Manejar el error de alguna manera, como imprimirlo en la consola o mostrar un mensaje al usuario
-            print(f"Error: {e}")
-            # Renderizar un template de error o redirigir a una página de error
-            return render_template('error.html', error_message=str(e))
-
+            return redirect(request.path)
+            
     @usuario_blueprint.route('/usuario/eliminar/<int:id>', methods=['GET', 'POST'])
     def eliminar(id):
         try:
@@ -193,12 +180,10 @@ def create_usuario_blueprint():
                 return redirect(url_for('usuario.listar'))
             else:
                 return render_template('usuario/eliminar.html', usuario=usuario)
-        except Exception as e:
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
             db_session.rollback()
-            # Manejar el error de alguna manera, como imprimirlo en la consola o mostrar un mensaje al usuario
-            print(f"Error: {e}")
-            # Renderizar un template de error o redirigir a una página de error
-            return render_template('error.html', error_message=str(e))
-
+            return redirect(request.path)
+            
     # Devolver el blueprint
     return usuario_blueprint

@@ -14,9 +14,10 @@ def create_unidadmedida_blueprint():
             # Obtenemos todas los unidadmedidas de la base de datos
             unidadmedidas = db_session.query(UnidadMedida).filter(UnidadMedida.activo == True).all()
             return render_template('unidadmedida/listar.html', unidadmedidas=unidadmedidas)
-        except Exception as e:
-            # Manejo de excepciones
-            return render_template('error.html', error=str(e))
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
+            db_session.rollback()
+            return redirect(request.path)
 
     @unidadmedida_blueprint.route('/unidadmedida_papelera')
     def papelera():
@@ -24,9 +25,10 @@ def create_unidadmedida_blueprint():
             # Obtenemos todas los unidadmedidas de la base de datos
             unidadmedidas = db_session.query(UnidadMedida).filter(UnidadMedida.activo == False).all()
             return render_template('unidadmedida/papelera.html', unidadmedidas=unidadmedidas)
-        except Exception as e:
-            # Manejo de excepciones
-            return render_template('error.html', error=str(e))
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
+            db_session.rollback()
+            return redirect(request.path)
 
     @unidadmedida_blueprint.route('/unidadmedida_nuevo', methods=['GET', 'POST'])
     def nuevo():
@@ -48,9 +50,10 @@ def create_unidadmedida_blueprint():
             
             # Renderizar la plantilla unidadmedida
             return render_template('unidadmedida/nuevo.html')
-        except Exception as e:
-            # Manejo de excepciones
-            return render_template('error.html', error=str(e))
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
+            db_session.rollback()
+            return redirect(request.path)
 
     @unidadmedida_blueprint.route('/unidadmedida_editar/<int:id>', methods=['GET', 'POST'])
     def editar(id):
@@ -77,9 +80,10 @@ def create_unidadmedida_blueprint():
 
             # Renderizar la plantilla de edición de unidadmedida
             return render_template('unidadmedida/editar.html', unidadmedida=unidadmedida)
-        except Exception as e:
-            # Manejo de excepciones
-            return render_template('error.html', error=str(e))
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
+            db_session.rollback()
+            return redirect(request.path)
 
     @unidadmedida_blueprint.route('/unidadmedida_eliminar/<int:id>', methods=['GET', 'POST'])
     def eliminar(id):
@@ -96,9 +100,10 @@ def create_unidadmedida_blueprint():
 
             # Renderizar la plantilla de confirmación de eliminación de unidadmedida
             return render_template('unidadmedida/eliminar.html', unidadmedida=unidadmedida)
-        except Exception as e:
-            # Manejo de excepciones
-            return render_template('error.html', error=str(e))
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
+            db_session.rollback()
+            return redirect(request.path)
 
     @unidadmedida_blueprint.route('/unidadmedida/restaurar/<int:id>', methods=['GET', 'POST'])
     def restaurar(id):
@@ -110,9 +115,10 @@ def create_unidadmedida_blueprint():
                 return redirect(url_for('unidadmedida.listar'))
             else:
                 return render_template('unidadmedida/restaurar.html', unidadmedida=unidadmedida)
-        except Exception as e:
-            # Manejo de excepciones
-            return render_template('error.html', error=str(e))
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
+            db_session.rollback()
+            return redirect(request.path)
 
     # Devolver el blueprint
     return unidadmedida_blueprint

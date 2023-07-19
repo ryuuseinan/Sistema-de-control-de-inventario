@@ -18,17 +18,18 @@
         {% if pedidos %}
         <h1 class="title">Lista de pedidos anulados</h1>
         {% include 'messages.html' %}
-        <table class="table is-striped is-hoverable">
+        <table class="table is-striped is-hoverable is-fullwidth">
           <thead>
             <tr>
               <th>ID</th>
-              <th>Vendedor</th>
-              <th>Detalle</th>
+              <th>Atendido por</th>
+              <th>Nombre del cliente</th>
+              <th>Detalle del pedido</th>
+              <th>Tipo de pedido</th>
               <th>Fecha</th>
-              <th>Precio</th>
-              <th>Estado</th>
+              <th>Total</th>
+              <th>Metodo de pago</th>
               <th>Restaurar</th>
-              <!--<th>Marcar como "en progreso"</th>-->
             </tr>
           </thead>
           <tbody>
@@ -36,6 +37,7 @@
               <tr>
                 <td>{{ pedido.id }}</td>
                 <td>{{ pedido.persona.nombre }} {{ pedido.persona.apellido_paterno }} {{ pedido.persona.apellido_materno}}</td>
+                <td>{{ pedido.nombre_cliente }}</td>
                 <td>
                   {% if pedido.detalles %}
                       <table class="table is-striped is-hoverable">
@@ -49,19 +51,26 @@
                                               {{ detalle_pedido.cantidad }} unidad(es)<br>
                                           {% endif %}
                                           {% if detalle_pedido.producto.tiene_receta == True %}
-                                              {% set detalle_ingredientes_producto = pedido_detalle_ingredientes | selectattr('pedido_detalle_id', 'equalto', detalle_pedido.id) %}
-                                              {% if detalle_ingredientes_producto %}
-                                                  <table class="table is-striped is-hoverable">
-                                                      <tbody>
-                                                          {% for detalle_ingredientes in detalle_ingredientes_producto %}
-                                                              <tr>
-                                                                  <td>{{ loop.index }}. {{ detalle_ingredientes.ingrediente.nombre }}</td>
-                                                                  <td>{{ detalle_ingredientes.cantidad }} {{ detalle_ingredientes.ingrediente.unidadmedida.nombre }}</td>
-                                                              </tr>
-                                                          {% endfor %}
-                                                      </tbody>
-                                                  </table>
-                                              {% endif %}
+                                            {% if detalle_ingredientes_producto %}
+                                              <table class="table is-striped is-hoverable">
+                                                  <thead>
+                                                      <tr>
+                                                          <th>Ingrediente extra</th>
+                                                          <th>Cantidad</th>
+                                                      </tr>
+                                                  </thead>
+                                                  <tbody>
+                                                      {% for detalle_ingredientes in detalle_ingredientes_producto %}
+                                                          <tr>
+                                                              <td>{{ loop.index }}. {{ detalle_ingredientes.ingrediente.nombre }}</td>
+                                                              <td>{{ detalle_ingredientes.cantidad }} {{ detalle_ingredientes.ingrediente.unidadmedida.nombre }}</td>
+                                                          </tr>
+                                                      {% endfor %}
+                                                  </tbody>
+                                              </table>
+                                            {% else %}
+                                                <p>Sin ingredientes extras</p>
+                                            {% endif %}
                                           {% endif %}
                                       </td>
                                   </tr>
@@ -71,10 +80,17 @@
                   {% else %}
                       <p>No se han añadido productos al pedido.</p>
                   {% endif %}
-              </td>
+                </td>
+                <td>
+                  {% if not pedido.delivery %}
+                    Retiro en local
+                  {% else %}
+                    Delivery
+                  {% endif %}
+                </td>
                 <td>{{ arrow.get(pedido.fecha_creacion).format('DD-MM-YYYY HH:mm') if pedido.fecha_creacion else None }}</td>
                 <td>${{ pedido.total_pedido }}</td>
-                <td>{{ pedido.pedido_estado.nombre }}</td>
+                <td>{{ pedido.metodopago.nombre }}</td>
                 <td>
                   <a href="{{ url_for('pedido.restaurar', id=pedido.id) }}" class="button is-link is-light">
                     <span class="icon is-small"><i class="fas fa-undo" aria-hidden="true"></i></span>

@@ -109,7 +109,7 @@
                   </table>
                 </div>
                 <a id="ocultarMostrarBtn" class="button is-fullwidth is-info" onclick="mostrarBotones()">Mostrar/Ocultar botones</a>
-                <div id="buttonContainer">
+                <div class="buttonContainer">
                   <form id="botonxd" action="{{ url_for('pedido.finalizar', id=pedido.id) }}" method="POST">
                     <input type="hidden" name="pagina" value="notificaciones">
                     <button id="boton1" type="submit" class="button is-fullwidth is-info is-success is-light oculto">
@@ -133,22 +133,30 @@
   </div>
 </section>
 <style>
-  #buttonContainer {
+  .buttonContainer {
   display: none;
 }
 </style>
 <script>
-  function mostrarBotones() {
-  var buttonContainer = document.getElementById("buttonContainer");
+function mostrarBotones() {
+  var buttonContainers = document.getElementsByClassName("buttonContainer");
   
-  if (buttonContainer.style.display === "block") {
-    buttonContainer.style.display = "none";
-  } else {
-    buttonContainer.style.display = "block";
+  for (var i = 0; i < buttonContainers.length; i++) {
+    var buttonContainer = buttonContainers[i];
+    if (buttonContainer.style.display === "block") {
+      buttonContainer.style.display = "none";
+    } else {
+      buttonContainer.style.display = "block";
+    }
   }
 }
-</script>
-<script>
-
+  function reloadPage() {
+    setTimeout(function () {
+      location.reload();
+    }, 10000);
+  }
+  document.addEventListener('DOMContentLoaded', function () {
+    reloadPage();
+  });
 </script>
 {% endblock %}

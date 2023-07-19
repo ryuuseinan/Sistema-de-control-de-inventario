@@ -14,9 +14,10 @@ def create_rol_blueprint():
             # Obtenemos todas los roles de la base de datos
             roles = db_session.query(Rol).filter(Rol.activo == True).all()
             return render_template('rol/listar.html', roles=roles)
-        except Exception as e:
-            # Manejo de excepciones
-            return render_template('error.html', error=str(e))
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
+            db_session.rollback()
+            return redirect(request.path)
 
     @rol_blueprint.route('/rol_papelera')
     def papelera():
@@ -24,9 +25,10 @@ def create_rol_blueprint():
             # Obtenemos todas los roles de la base de datos
             roles = db_session.query(Rol).filter(Rol.activo == False).all()
             return render_template('rol/papelera.html', roles=roles)
-        except Exception as e:
-            # Manejo de excepciones
-            return render_template('error.html', error=str(e))
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
+            db_session.rollback()
+            return redirect(request.path)
 
     @rol_blueprint.route('/rol_nuevo', methods=['GET', 'POST'])
     def nuevo():
@@ -48,9 +50,10 @@ def create_rol_blueprint():
             
             # Renderizar la plantilla de nuevo rol
             return render_template('rol/nuevo.html')
-        except Exception as e:
-            # Manejo de excepciones
-            return render_template('error.html', error=str(e))
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
+            db_session.rollback()
+            return redirect(request.path)
 
     @rol_blueprint.route('/rol_editar/<int:id>', methods=['GET', 'POST'])
     def editar(id):
@@ -77,9 +80,10 @@ def create_rol_blueprint():
 
             # Renderizar la plantilla de edición de rol
             return render_template('rol/editar.html', rol=rol)
-        except Exception as e:
-            # Manejo de excepciones
-            return render_template('error.html', error=str(e))
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
+            db_session.rollback()
+            return redirect(request.path)
 
     @rol_blueprint.route('/rol_eliminar/<int:id>', methods=['GET', 'POST'])
     def eliminar(id):
@@ -96,9 +100,10 @@ def create_rol_blueprint():
 
             # Renderizar la plantilla de confirmación de eliminación de rol
             return render_template('rol/eliminar.html', rol=rol)
-        except Exception as e:
-            # Manejo de excepciones
-            return render_template('error.html', error=str(e))
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
+            db_session.rollback()
+            return redirect(request.path)
 
     @rol_blueprint.route('/rol/restaurar/<int:id>', methods=['GET', 'POST'])
     def restaurar(id):
@@ -110,9 +115,10 @@ def create_rol_blueprint():
                 return redirect(url_for('rol.listar'))
             else:
                 return render_template('rol/restaurar.html', rol=rol)
-        except Exception as e:
-            # Manejo de excepciones
-            return render_template('error.html', error=str(e))
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
+            db_session.rollback()
+            return redirect(request.path)
         
     # Devolver el blueprint
     return rol_blueprint

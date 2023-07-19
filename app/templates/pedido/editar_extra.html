@@ -3,12 +3,23 @@
 {% block title %}Vender{% endblock %}
 
 {% block content %}
+<style>
+  .input{
+      width: 100%;
+  }
+  .radio{
+      padding-top: 5%;
+  }
+</style>
 <section class="section">
   <div class="container">
     <div class="columns">
       <div class="column">
         <div class="buttons is-pulled-right">
-          <a href="{{ url_for('pedido.editar', id=pedido_detalle.pedido_id) }}" class="button is-link is-light">Volver</a>
+          
+          <form action="{{ url_for('pedido.editar', id=pedido_detalle.pedido_id) }}">
+            <a href="{{ url_for('pedido.editar', id=pedido_detalle.pedido_id) }}" class="button is-link is-light">Volver</a>
+          </form>
         </div>
         <h1 class="title">Añadir ingredientes extras al producto</h1>
           {% include 'messages.html' %}
@@ -28,7 +39,7 @@
         <div class="column">
           <div class="column">
           </div>
-        <table class="table is-striped is-hoverable">
+        <table class="table is-striped is-hoverable is-fullwidth">
           <thead>
             <tr>
               <th>Nombre</th>
@@ -41,46 +52,44 @@
           </thead>
           <tbody>
               {% for ingrediente in ingrediente %}
-                {% if ingrediente.precio > 0 %}
-                  <tr>
-                    <td>{{ ingrediente.nombre }}</td>
-                    <td>${{ ingrediente.precio }}</td>
+                <tr>
+                  <td>{{ ingrediente.nombre }}</td>
+                  <td>${{ ingrediente.precio }}</td>
+                  <td>
+                    {% if ingrediente.cantidad != 0 %}
+                      {{ ingrediente.cantidad }} {{ ingrediente.unidadmedida.nombre }}
+                    {% else %}
+                      <p>No hay stock disponible</p>
+                    {% endif %}
+                  </td>
+                  <td>
                     <td>
-                      {% if ingrediente.cantidad != 0 %}
-                        {{ ingrediente.cantidad }} {{ ingrediente.unidadmedida.nombre }}
-                      {% else %}
-                        <p>No hay stock disponible</p>
-                      {% endif %}
-                    </td>
-                    <td>
-                      <td>
-                        <form method="post" action="{{ url_for('pedido.agregar_extra', id=pedido_detalle.id) }}">
-                        <input type="hidden" name="ingrediente_id" value="{{ ingrediente.id }}">
-                        <input type="hidden" name="nombre" value="{{ ingrediente.nombre }}">
-                        <input type="hidden" name="unidadmedida" value="{{ ingrediente.unidadmedida.nombre }}">
-                        <div class="field is-grouped">
-                          <div class="control">
-                              <span>{{ ingrediente.extra_mediana }} {{ ingrediente.unidadmedida.nombre }}</span><br>
-                              <button type="submit" name="extra_mediana" value="{{ ingrediente.extra_mediana }}" class="button is-primary">
-                                <i class="fas fa-plus"></i>
-                              </button>
-                          </div>
+                      <form method="post" action="{{ url_for('pedido.agregar_extra', id=pedido_detalle.id) }}">
+                      <input type="hidden" name="ingrediente_id" value="{{ ingrediente.id }}">
+                      <input type="hidden" name="nombre" value="{{ ingrediente.nombre }}">
+                      <input type="hidden" name="unidadmedida" value="{{ ingrediente.unidadmedida.nombre }}">
+                      <div class="field is-grouped">
+                        <div class="control">
+                            <span>{{ ingrediente.extra_mediana }} {{ ingrediente.unidadmedida.nombre }}</span><br>
+                            <button type="submit" name="extra_mediana" value="{{ ingrediente.extra_mediana }}" class="button is-primary">
+                              <i class="fas fa-plus"></i>
+                            </button>
                         </div>
-                      </td>
-                      <td>
-                        <div class="field is-grouped">
-                          <div class="control">
-                              <span>{{ ingrediente.extra_familiar }} {{ ingrediente.unidadmedida.nombre }}</span><br>
-                              <button type="submit" name="extra_familiar" value="{{ ingrediente.extra_familiar }}" class="button is-primary">
-                                <i class="fas fa-plus"></i>
-                              </button>
-                          </div>
-                        </div> 
-                        </form>
-                      </td>
+                      </div>
                     </td>
-                  </tr>
-                  {% endif %}
+                    <td>
+                      <div class="field is-grouped">
+                        <div class="control">
+                            <span>{{ ingrediente.extra_familiar }} {{ ingrediente.unidadmedida.nombre }}</span><br>
+                            <button type="submit" name="extra_familiar" value="{{ ingrediente.extra_familiar }}" class="button is-primary">
+                              <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                      </div> 
+                      </form>
+                    </td>
+                  </td>
+                </tr>
           {% endfor %}
         </tbody>
     </table>
@@ -93,7 +102,7 @@
             <div class="column">
             </div>
           </div>
-          <table class="table is-striped is-hoverable">
+          <table class="table is-striped is-hoverable is-fullwidth">
             <thead>
               <tr>
                 <th>Imagen</th>
@@ -108,17 +117,21 @@
                 <td>{{ pedido_detalle.producto.nombre }} ({{ pedido_detalle.producto.categoria.nombre }})</td>
                 <td>${{ total_pedido }}</td>
                 <td>
-                  <table class="table is-striped is-hoverable">
+                {% if pedido_detalle_ingrediente|length > 0 %}
+                  <table class="table is-striped is-hoverable is-fullwidth">
                     <tbody>
-                      {% for detalle_ingrediente in pedido_detalle_ingrediente %}
-                      <tr>
-                        <td>{{ loop.index }}. {{ detalle_ingrediente.ingrediente.nombre }}</td>
-                        <td>{{ detalle_ingrediente.cantidad }} {{ detalle_ingrediente.ingrediente.unidadmedida.nombre }}</td>
-                        <td><a href="{{ url_for('pedido.eliminar_extra', id=detalle_ingrediente.id) }}">Eliminar</a></td>
-                      </tr>
-                      {% endfor %}
+                        {% for detalle_ingrediente in pedido_detalle_ingrediente %}
+                          <tr>
+                            <td>{{ loop.index }}. {{ detalle_ingrediente.ingrediente.nombre }}</td>
+                            <td>{{ detalle_ingrediente.cantidad }} {{ detalle_ingrediente.ingrediente.unidadmedida.nombre }}</td>
+                            <td><a href="{{ url_for('pedido.eliminar_extra', id=detalle_ingrediente.id) }}">Eliminar</a></td>
+                          </tr>
+                        {% endfor %}
                   </tbody>
                 </table>
+                {% else %}
+                 <p>Sin ingredientes extras</p>
+                {% endif %}
               </td>
             </tr>
           </tbody>

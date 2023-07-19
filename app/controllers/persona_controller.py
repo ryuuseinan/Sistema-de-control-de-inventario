@@ -17,12 +17,13 @@ def create_persona_blueprint():
             usuario = db_session.query(Usuario).filter(Usuario.activo == True).all()
             personas = db_session.query(Persona).filter(Persona.activo == True).order_by(asc(Persona.rut)).all()
             for usuario in personas:
-                fecha_creacion = arrow.get(usuario.fecha_creacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if usuario.fecha_creacion else None
-                ultima_modificacion = arrow.get(usuario.ultima_modificacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if usuario.ultima_modificacion else None
+                fecha_creacion = arrow.get(usuario.fecha_creacion).format('DD-MM-YYYY HH:mm') if usuario.fecha_creacion else None
+                ultima_modificacion = arrow.get(usuario.ultima_modificacion).format('DD-MM-YYYY HH:mm') if usuario.ultima_modificacion else None
             return render_template('persona/listar.html', personas=personas, usuario=usuario)
-        except Exception as e:
-            # Manejo de excepciones
-            return render_template('error.html', error=str(e))
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
+            db_session.rollback()
+            return redirect(request.path)
 
     @persona_blueprint.route('/persona/nuevo', methods=['GET', 'POST'])
     def nueva():
@@ -51,10 +52,10 @@ def create_persona_blueprint():
                         db_session.rollback()
                         error = "El nombre de persona o correo electrónico ya están en uso"
             return render_template('persona/nuevo.html', error=error, rol=rol)
-        except Exception as e:
-            # Manejo de excepciones
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
             db_session.rollback()
-            return render_template('error.html', error=str(e))
+            return redirect(request.path)
         
     @persona_blueprint.route('/personas/papelera')
     def papelera():
@@ -62,9 +63,10 @@ def create_persona_blueprint():
             rol = db_session.query(Rol).filter(Rol.activo == True).all()
             personas = db_session.query(Persona).filter(Persona.activo == False).all()
             return render_template('persona/papelera.html', personas=personas)
-        except Exception as e:
-            # Manejo de excepciones
-            return render_template('error.html', error=str(e))
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
+            db_session.rollback()
+            return redirect(request.path)
 
     @persona_blueprint.route('/persona/restaurar/<int:id>', methods=['GET', 'POST'])
     def restaurar(id):
@@ -77,10 +79,10 @@ def create_persona_blueprint():
                 return redirect(url_for('persona.listar'))
             else:
                 return render_template('persona/restaurar.html', persona=persona)
-        except Exception as e:
-            # Manejo de excepciones
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
             db_session.rollback()
-            return render_template('error.html', error=str(e))
+            return redirect(request.path)
 
     @persona_blueprint.route('/persona/editar/<int:id>', methods=['GET', 'POST'])
     def editar(id):
@@ -120,10 +122,10 @@ def create_persona_blueprint():
                     flash('persona actualizado exitosamente', 'success')
                     return redirect(url_for('persona.listar'))
             return render_template('persona/editar.html', persona=persona, rol=rol)
-        except Exception as e:
-            # Manejo de excepciones
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
             db_session.rollback()
-            return render_template('error.html', error=str(e))
+            return redirect(request.path)
 
     @persona_blueprint.route('/persona/eliminar/<int:id>', methods=['GET', 'POST'])
     def eliminar(id):
@@ -135,11 +137,10 @@ def create_persona_blueprint():
                 return redirect(url_for('persona.listar'))
             else:
                 return render_template('persona/eliminar.html', persona=persona)
-        except Exception as e:
-            # Manejo de excepciones
+        except:
+            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
             db_session.rollback()
-            return render_template('error.html', error=str(e))
-        
-    
+            return redirect(request.path)
+
     # Devolver el blueprint
     return persona_blueprint

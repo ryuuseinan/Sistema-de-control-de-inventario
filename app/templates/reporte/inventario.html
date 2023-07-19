@@ -11,7 +11,7 @@
                         <h1 class="title">Ingredientes críticos cercanos</h1>
                         {% if ingredientes_cerca_alerta %}
                         <canvas id="grafico_ingredientes"></canvas>
-                        <!--<table class="table is-striped is-hoverable">
+                        <!--<table class="table is-striped is-hoverable is-fullwidth">
                             <thead>
                               <tr>
                                 <th>Nombre</th>
@@ -46,7 +46,7 @@
                         <h1 class="title">Productos críticos cercanos</h1>
                         {% if productos_cerca_alerta %}
                         <canvas id="grafico_productos"></canvas>
-                        <!--<table class="table is-striped is-hoverable">
+                        <!--<table class="table is-striped is-hoverable is-fullwidth">
                             <thead>
                               <tr>
                                 <th>Nombre</th>
@@ -164,9 +164,10 @@
                             <p><strong>Total de productos:</strong> {{ total_productos }}</p>
                             <p><strong>Productos Críticos:</strong> {{ producto_alerta_stock }}</p>
                             {% if productos_criticos %}
-                            <table class="table is-striped is-hoverable">
+                            <table class="table is-striped is-hoverable is-fullwidth">
                                 <thead>
                                     <tr>
+                                        <th>Imagen</th>
                                         <th>Nombre</th>
                                         <th>Stock</th>
                                         <th>Ingresar stock</th>
@@ -176,11 +177,14 @@
                                 <tbody>
                                     {% for producto in productos_criticos %}
                                         <tr>
+                                            <td>
+                                                <img src="{{ url_for('static', filename='img/') }}{{ producto.imagen }}" alt=" " style="max-height: 50px;">
+                                            </td>
                                             <td>{{ producto.nombre }} ({{ producto.categoria.nombre }})</td>
                                             {% if producto.tiene_receta == True %}
                                                 <td>El stock es de {{ producto.stock_disponible }} unidad(es) preparable(s), porque estos ingredientes son críticos:
                                                     {% if producto.receta %}
-                                                    <table class="table is-striped is-hoverable">
+                                                    <table class="table is-striped is-hoverable is-fullwidth">
                                                         <tbody>
                                                             <ul>
                                                             {% for receta_detalle in producto.receta_detalles %}

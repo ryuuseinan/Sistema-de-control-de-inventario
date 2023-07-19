@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <h1 class="title">Nuevo Producto</h1>
+    {% include 'messages.html' %}
+    <form method="post" enctype="multipart/form-data">
+      <div class="field">
+        <label class="label">Código de barras</label>
+        <div class="control">
+          <input class="input" type="text" name="codigo_barra" value="{{ producto.codigo_barra }}" minlength="1" maxlength="30" required>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Nombre</label>
+        <div class="control">
+          <input class="input" type="text" name="nombre" value="{{ producto.nombre }}" minlength="3" maxlength="30" required>
+        </div>
+      </div>
+      {% if producto.tiene_receta == False %}
+      <div class="field">
+        <label class="label">Stock (en unidades)</label>
+        <div class="control">
+          <input class="input" type="number" name="stock" value="{{ producto.stock }}" min="0" required>
+        </div>
+      </div>
+      {% else %}
+        <input type="hidden" name="stock" value="0">
+      {% endif %}
+      <div class="field">
+        <label class="label">Categoría</label><p class="help">Si no encuentras la categoría del producto, ¡puedes crearla <a href="/categorias">aqui</a>!</p>
+        <div class="control">
+          <div class="select">
+            <select name="categoria_id">
+              {% for categoria in categoria %}
+              {% if categoria.id == producto.categoria_id %}
+              <option value="{{ categoria.id }}" selected>{{ categoria.nombre }}</option>
+              {% else %}
+              <option value="{{ categoria.id }}">{{ categoria.nombre }}</option>
+              {% endif %}
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Descripción</label>
+        <div class="control">
+          <textarea class="textarea" name="descripcion">{{ producto.descripcion }}</textarea>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Precio</label>
+        <div class="control">
+          <p class="control has-icons-left has-icons-right">
+            <input class="input" type="number" name="precio" value="{{ producto.precio }}" min="0" max="999999" required>
+            <span class="icon is-small is-left">
+              <i class="fas fa-dollar-sign"></i>
+            </span>
+          </p>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Alerta de stock</label>
+        <div class="control">
+          <input class="input" type="number" name="alerta_stock" value="{{ producto.alerta_stock }}" min="0" required>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">¿Tiene receta de preparación?</label>
+        <div class="control">
+          <label class="radio">
+            {% if producto.tiene_receta == True %}
+              <input type="radio" name="tiene_receta" value="True" checked>
+            {% else %}
+              <input type="radio" name="tiene_receta" value="True">
+            {% endif %}
+            Sí
+          </label>
+          <label class="radio">
+            {% if producto.tiene_receta == False %}
+              <input type="radio" name="tiene_receta" value="False" checked>
+            {% else %}
+              <input type="radio" name="tiene_receta" value="False">
+            {% endif %}
+            No
+          </label>
+          <p class="help">La opción "Sí" permitirá configurar una receta para el producto con los ingredientes existentes dentro de la base de datos, la opción "No" permitirá configurar stock del producto.</p>
+        </div>
+      </div>  
+      <div class="field">
+        <label class="label">Imagen</label>
+        <img src="{{ url_for('static', filename='img/') }}{{ producto.imagen }}" alt="{{ producto.nombre }}" style="max-height: 180px;">
+        <div class="control">
+          <div class="file">
+            <label class="file-label">
+              <input class="file-input" type="file" name="imagen">
+              <span class="file-cta">
+                <span class="file-icon">
+                  <i class="fas fa-upload"></i>
+                </span>
+                <span class="file-label">
+                  Elige un archivo…
+                </span>
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="field is-grouped">
+        <div class="control">
+          <button type="submit" class="button is-link">Guardar</button>
+        </div>
+        <div class="control">
+          <a href="{{ url_for('producto.listar') }}" class="button is-link is-light">Cancelar</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}
