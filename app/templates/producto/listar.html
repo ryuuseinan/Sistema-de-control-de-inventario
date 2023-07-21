@@ -23,7 +23,6 @@
         <table class="table is-striped is-hoverable is-fullwidth">
           <thead>
             <tr>
-              <th>Código</th>
               <th>Imagen</th>
               <th>Nombre</th>
               <th>Categoría</th>
@@ -39,7 +38,6 @@
           <tbody>
             {% for producto in productos %}
               <tr>
-                <td>{{ producto.codigo_barra }}</td>
                 <td><img src="{{ url_for('static', filename='img/') }}{{ producto.imagen }}" alt="{{ producto.nombre }}" style="max-height: 50px;max-width: 50px;">
                 </td>
                 <td>{{ producto.nombre }}</td>
@@ -72,7 +70,7 @@
                   </a>
                 </td>
                 <td>
-                  <a href="{{ url_for('producto.duplicar', id=producto.id) }}" class="button is-light">
+                  <a href="{{ url_for('producto.duplicar', id=producto.id) }}" class="button is-warning is-light">
                     <span class="icon is-small"><i class="fas fa-clone"></i></span>
                   </a>
                 </td>

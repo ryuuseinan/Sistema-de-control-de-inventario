@@ -73,7 +73,7 @@ class Producto(Base):
     __tablename__ = 'producto'
     id = Column(Integer, primary_key=True)
     imagen = Column(String(255))
-    codigo_barra = Column(String(30), unique=True)
+    #codigo_barra = Column(String(30))
     nombre = Column(String(30), nullable=False)
     descripcion = Column(Text)
     precio = Column(Integer, nullable=False)
