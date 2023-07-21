@@ -39,64 +39,61 @@ def create_producto_blueprint():
     #@roles_required('Administrdor')
     @producto_blueprint.route('/producto/nuevo', methods=['GET', 'POST'])
     def nuevo():
-        try:
-            # Obtener las categorías para mostrarlas en el formulario
-            categorias = db_session.query(Categoria).filter(Categoria.activo == True).all()
 
-            if request.method == 'POST':
-                # Obtener los datos del formulario
-                imagen = request.files['imagen']
-                codigo_barra = request.form['codigo_barra']
-                nombre = request.form['nombre']
-                descripcion = request.form['descripcion']
-                categoria_id = request.form['categoria_id']
-                precio = request.form['precio']
-                alerta_stock = request.form['alerta_stock'] 
-                tiene_receta = True if request.form['tiene_receta'] == "True" else False
+        # Obtener las categorías para mostrarlas en el formulario
+        categorias = db_session.query(Categoria).filter(Categoria.activo == True).all()
 
+        if request.method == 'POST':
+            # Obtener los datos del formulario
+            imagen = request.files['imagen']
+            codigo_barra = request.form['codigo_barra']
+            nombre = request.form['nombre']
+            descripcion = request.form['descripcion']
+            categoria_id = request.form['categoria_id']
+            precio = request.form['precio']
+            alerta_stock = request.form['alerta_stock'] 
+            tiene_receta = True if request.form['tiene_receta'] == "True" else False
+            
+            if not codigo_barra:
+                codigo_barra = None
+
+            # Crear una nueva instancia de Producto con los datos del formulario
+    
                 # Crear una nueva instancia de Producto con los datos del formulario
-                try:
-                    # Crear una nueva instancia de Producto con los datos del formulario
-                    nuevo_producto = Producto(codigo_barra=codigo_barra, 
-                                            nombre=nombre, 
-                                            descripcion=descripcion, 
-                                            categoria_id=categoria_id, 
-                                            precio=precio,
-                                            tiene_receta=tiene_receta,
-                                            alerta_stock=alerta_stock,
-                                            fecha_creacion=datetime.now())
-                                                
-                    # Resto del código para guardar el producto en la base de datos
-                    if imagen and imagen.filename:
-                        # Cambiar el nombre del archivo de la imagen al nombre del producto con extensión ".webp"
-                        filename = secure_filename(f"{nombre}.webp")
-                        image_path = os.path.join('app', 'static', 'img', 'productos', filename)
-                        imagen.save(image_path)
-                        
-                        # Redimensionar y guardar la imagen en formato WebP
-                        with Image.open(image_path) as img:
-                            img.thumbnail((128, 128))
-                            img.save(image_path, format='WEBP')
+                nuevo_producto = Producto(codigo_barra=codigo_barra, 
+                                        nombre=nombre, 
+                                        descripcion=descripcion, 
+                                        categoria_id=categoria_id, 
+                                        precio=precio,
+                                        tiene_receta=tiene_receta,
+                                        alerta_stock=alerta_stock,
+                                        fecha_creacion=datetime.now())
+                                            
+                # Resto del código para guardar el producto en la base de datos
+                if imagen and imagen.filename:
+                    # Cambiar el nombre del archivo de la imagen al nombre del producto con extensión ".webp"
+                    filename = secure_filename(f"{nombre}.webp")
+                    image_path = os.path.join('app', 'static', 'img', 'productos', filename)
+                    imagen.save(image_path)
+                    
+                    # Redimensionar y guardar la imagen en formato WebP
+                    with Image.open(image_path) as img:
+                        img.thumbnail((128, 128))
+                        img.save(image_path, format='WEBP')
 
-                        nuevo_producto.imagen = '/productos/' + filename
-                    else:
-                        nuevo_producto.imagen = None
+                    nuevo_producto.imagen = '/productos/' + filename
+                else:
+                    nuevo_producto.imagen = None
 
-                    # Agregar el producto a la base de datos
-                    db_session.add(nuevo_producto)
-                    db_session.commit()
+                # Agregar el producto a la base de datos
+                db_session.add(nuevo_producto)
+                db_session.commit()
 
-                    # Redireccionar al listado de productos
-                    return redirect(url_for('producto.listar'))
-                except IntegrityError:
-                    # Mostrar mensaje de error
-                    db_session.rollback()
-                    flash('El código de barras ya está en uso. Por favor, elija otro.', 'error')
-                    return redirect(url_for('producto.nuevo'))
-        except:
-            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
-            db_session.rollback()
-            return redirect(request.path)
+                # Redireccionar al listado de productos
+                return redirect(url_for('producto.listar'))
+                
+
+
 
         # Renderizar la plantilla de nuevo producto
         return render_template('producto/nuevo.html', categorias=categorias)
