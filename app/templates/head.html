@@ -1,12 +1,9 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ appName() }} - Sistema de control de inventario y venta</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cdnjs.cloudflare.com_ajax_libs_bulma_0.9.3_css_bulma.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/js/bulma.min.js"></script>
-    <script defer src="https://use.fontawesome.com/releases/v5.15.3/js/all.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='js/code.jquery.com_jquery-3.6.0.min.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/use.fontawesome.com_releases_v5.15.3_js_all.js') }}"></script>
 </head>
 {% block content %}{% endblock %}

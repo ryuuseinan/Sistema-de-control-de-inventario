@@ -5,6 +5,7 @@ from werkzeug.utils import secure_filename
 import os
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import asc
+from PIL import Image
 
 producto_controller = Blueprint('producto_controller', __name__)
 def create_producto_blueprint():
@@ -67,11 +68,18 @@ def create_producto_blueprint():
                                                 
                     # Resto del código para guardar el producto en la base de datos
                     if imagen and imagen.filename:
-                        filename = secure_filename(imagen.filename)
-                        imagen.save(os.path.join('app', 'static', 'img', 'productos', filename))
+                        # Cambiar el nombre del archivo de la imagen al nombre del producto con extensión ".webp"
+                        filename = secure_filename(f"{nombre}.webp")
+                        image_path = os.path.join('app', 'static', 'img', 'productos', filename)
+                        imagen.save(image_path)
+                        
+                        # Redimensionar y guardar la imagen en formato WebP
+                        with Image.open(image_path) as img:
+                            img.thumbnail((128, 128))
+                            img.save(image_path, format='WEBP')
+
                         nuevo_producto.imagen = '/productos/' + filename
                     else:
-                        filename = None
                         nuevo_producto.imagen = None
 
                     # Agregar el producto a la base de datos
@@ -145,11 +153,22 @@ def create_producto_blueprint():
 
                 # Actualizar la imagen del producto si se ha enviado una nueva
                 imagen = request.files['imagen']
+
                 if imagen and imagen.filename:
-                    filename = secure_filename(imagen.filename)
-                    imagen.save(os.path.join('app', 'static', 'img', 'productos', filename))
-                    producto.imagen = '/productos/' + filename
-                
+                # Cambiar el nombre del archivo de la imagen al nombre del producto con extensión ".webp"
+                    filename = secure_filename(f"{nombre}.webp")
+                    image_path = os.path.join('app', 'static', 'img', 'productos', filename)
+                    
+                    # Guardar la imagen original en el servidor
+                    imagen.save(image_path)
+                    
+                    # Redimensionar y guardar la imagen en formato WebP
+                    with Image.open(image_path) as img:
+                        img.thumbnail((128, 128))
+                        img.save(image_path, format='WEBP')
+
+                producto.imagen = '/productos/' + filename
+
                 # Registrar ultima modificación
                 producto.ultima_modificacion = datetime.now()
                 
@@ -192,11 +211,22 @@ def create_producto_blueprint():
                     return render_template('producto/duplicar.html', producto=producto_original, categoria=categoria)
 
                 imagen = request.files['imagen']
-                if imagen and imagen.filename:
-                    filename = secure_filename(imagen.filename)
-                    imagen.save(os.path.join('app', 'static', 'img', 'productos', filename))
-                    nuevo_producto.imagen = '/productos/' + filename
                 
+                if imagen and imagen.filename:
+                    # Cambiar el nombre del archivo de la imagen al nombre del producto con extensión ".webp"
+                    filename = secure_filename(f"{nombre}.webp")
+                    image_path = os.path.join('app', 'static', 'img', 'productos', filename)
+                    
+                    # Guardar la imagen original en el servidor
+                    imagen.save(image_path)
+                    
+                    # Redimensionar y guardar la imagen en formato WebP
+                    with Image.open(image_path) as img:
+                        img.thumbnail((128, 128))
+                        img.save(image_path, format='WEBP')
+
+                    producto.imagen = '/productos/' + filename
+                    
                 # Registrar fecha de creación
                 nuevo_producto.fecha_creacion = datetime.now()
 

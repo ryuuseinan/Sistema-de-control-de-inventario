@@ -7,10 +7,10 @@ from config import *
 # Crear objeto de base de datos SQLAlchemy
 db = SQLAlchemy()
 
-url = f"mysql+pymysql://{mysql['usuario_db']}:{mysql['contrasena_db']}@{mysql['host_db']}:{mysql['puerto_db']}/{mysql['nombre_base_datos_db']}"
+sqlite_db_file = "sqlite/sqlite_database.db"
 
 # Crea una instancia de la clase create_engine
-engine = create_engine(url)
+engine = create_engine(f"sqlite:///{sqlite_db_file}")
 
 # Crea una clase que se utilizará para crear objetos de sesión de base de datos
 Session = sessionmaker(bind=engine)
@@ -19,9 +19,7 @@ Session = sessionmaker(bind=engine)
 db_session = Session()
 
 Base = declarative_base()
-
-# Usar una base de datos en utf8mb4_general_ci para no tener problemas con el rut.
-
+ 
 # Creamos tabla para almacenar usuarios
 class Usuario(Base):
     __tablename__ = 'usuario'
@@ -49,7 +47,8 @@ class Persona(Base):
     __tablename__ = 'persona'
     id = Column(Integer, primary_key=True)
     usuario_id = Column(Integer, ForeignKey('usuario.id'))
-    rut = Column(String(12, collation='utf8mb4_general_ci'), unique=True, nullable=False) 
+    # Usar una base de datos en utf8mb4_general_ci para no tener problemas con el rut.
+    rut = Column(String(12), unique=True, nullable=False) 
     nombre = Column(String(30), nullable=False)
     apellido_paterno = Column(String(30), nullable=False)
     apellido_materno = Column(String(30), nullable=False)
@@ -291,7 +290,7 @@ if not rol_empleado:
     db_session.add(rol_empleado)
 
 # Verificar si el usuario ya existe
-usuario_existente = db_session.query(Usuario).filter_by(nombre_usuario='galvezluis').first()
+usuario_existente = db_session.query(Usuario).filter_by(nombre_usuario='admin').first()
 
 if usuario_existente:
     print("El usuario ya existe en la base de datos.")
@@ -300,7 +299,7 @@ else:
     rol = db_session.query(Rol).filter_by(id=1).first()
 
     if rol:
-        usuario = Usuario(nombre_usuario='galvezluis', correo='galvezluis72@gmail.com', contrasena='$2b$12$NJ/4JWBugLVU0pJjIfMcne9NqDk/.zLpotKLUAqXUes4FG7GZ/..O', rol_id=rol.id, fecha_creacion=datetime.now(), ultima_modificacion=datetime.now(), activo=True)
+        usuario = Usuario(nombre_usuario='admin', correo='admin@pizzeriafratelli.cl', contrasena='$2b$12$NJ/4JWBugLVU0pJjIfMcne9NqDk/.zLpotKLUAqXUes4FG7GZ/..O', rol_id=rol.id, fecha_creacion=datetime.now(), ultima_modificacion=datetime.now(), activo=True)
         db_session.merge(usuario)
         db_session.commit()
     else:
@@ -316,7 +315,7 @@ if usuario:
     if persona_existente:
         print("La persona ya existe en la base de datos.")
     else:
-        persona = Persona(usuario_id=usuario.id, rut='20704339-7', nombre='Luis', apellido_paterno='Gálvez', apellido_materno='González', celular='935257778', activo=True)
+        persona = Persona(usuario_id=usuario.id, rut='1', nombre='Lorem', apellido_paterno='Ipsum', apellido_materno='', celular='', activo=True)
         db_session.merge(persona)
         db_session.commit()
 else:

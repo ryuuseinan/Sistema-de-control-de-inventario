@@ -6,114 +6,78 @@
 {% if session.logged_in %}
 <div id="body_lista_opciones">
 	<div id="columnas" class="columns">
-		<div id="lista_de_opciones" class="column is-one-fifth">
-			<aside class="menu">
-				<nav id="nav-superior" class="navbar navbar-pink" role="navigation" aria-label="main navigation">
-					<div class="navbar-menu">
-						<div class="navbar-brand">
-							<a class="navbar-item" href="{{ url_for('index') }}">
-								<h2 style="color: #ccc;">{{ appName() }}</h2>
-							</a>
-							<a id="qr-icon" class="navbar-item" href="#">
-								<i class="fas fa-qrcode"></i>
-							</a>
-						</div>
-					</div>
-				</nav>
-			<ul class="menu-list">
-				<li>
-				<a href="{{ url_for('index') }}">
-					<span class="icon is-small"><i class="fas fa-home"></i></span>
-					<span>Inicio</span>
-				</a>
-				</li>
-				<li>
-					<a href="{{ url_for('pedido.listar') }}">
-						<span class="icon is-small"><i class="fas fa-shopping-cart"></i></span>
-						<span>Pedidos</span>
-					</a>
-				</li>
-				<li>
-					<a href="{{ url_for('pedido.notificaciones') }}">
-						<span class="icon is-small"><i class="fas fa-shopping-cart"></i></span>
-						<span>Notificaciones</span>
-					</a>
-				</li>
-				<li>
-			</ul>
-				<p id=admin class="menu-label">Reportes</p>
-				<ul class="menu-list">
-					<li>
-					<a href="{{ url_for('reporte.inventario') }}">
-						<span class="icon is-small"><i class="fas fa-chart-bar"></i></span>
-						<span>Inventario</span>
-					</a>
-					</li>
-					<li>
-					<a href="{{ url_for('reporte.ventas') }}">
-						<span class="icon is-small"><i class="fas fa-dollar-sign"></i></span>
-						<span>Ver ventas</span>
-					</a>
-					</li>
-				</ul>
-				<p id=admin class="menu-label">Configuración</p>
-				<ul class="menu-list">
-					<li>
-					<a href="{{ url_for('producto.listar') }}">
-						<span class="icon is-small"><i class="fas fa-utensils"></i></span>
-						<span>Productos</span>
-					</a>
-					</li>
-					<li>
-					<a href="{{ url_for('categoria.listar') }}">
-						<span class="icon is-small"><i class="fas fa-list"></i></span>
-						<span>Categorías</span>
-					</a>
-					</li>
-					<li>
-						<a href="{{ url_for('ingrediente.listar') }}">
-							<span class="icon is-small"><i class="fas fa-pepper-hot"></i></span>
-							<span>Ingredientes</span>
-						</a>
-					</li>
-				</ul>
-				<p id=admin class="menu-label">Administración</p>
-				<ul class="menu-list">
-					<li>
-					<a href="{{ url_for('usuario.listar') }}">
-						<span class="icon is-small"><i class="fas fa-users"></i></span>
-						<span>Usuarios</span>
-					</a>
-					</li>
-					<li>
-						<a href="{{ url_for('persona.listar') }}">
-							<span class="icon is-small"><i class="fas fa-user-circle"></i></span>
-							<span>Personas</span>
-						</a>
-					</li>
-				</ul>
-			<div class="side-menu-footer">
-				<center>
-					<p>
-						<i class="fas fa-user"></i>
-						{{ session['nombre'] }} 
-						{{ session['apellido'] }}
-						({{ session['rol_nombre'] }})
-					</p>
-					<a class="navbar-item" href="{{ url_for('sesion.logout') }}">
-						<span class="icon is-small"><i class="fas fa-sign-out-alt"></i></span>
-						<span>Cerrar sesión</span>
-					</a>
-				</center>
-			</div>
-			</aside>
+		<!-- Vista para PC -->
+		<div class="is-hidden-touch">
+			{% include 'navbar/desktop.html' %}
 		</div>
+		<!------------------->
+
+		<!-- Vista para dispositivos móviles -->
+		<div class="section is-hidden-desktop" style="padding: 0;">
+			{% include 'navbar/smartphone.html' %}
+		</div>
+		
 		<body>
-			<div class="column">
+			<div class="column" id="padding_pc">
 				{% block content %}{% endblock %}
 			</div>
 		</body>
 	</div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var qrIcon = document.getElementById('qr-icon');
+        var qrPopup = document.getElementById('qr-popup');
+        var qrCloseBtn = document.getElementById('qr-close-btn');
+        var qrPopupContent = document.getElementById('qr-popup-content');
+
+        qrIcon.addEventListener('click', function (event) {
+            event.preventDefault();
+            qrPopup.style.display = 'block';
+        });
+
+        qrCloseBtn.addEventListener('click', function () {
+            qrPopup.style.display = 'none';
+        });
+
+        qrPopupContent.addEventListener('click', function (event) {
+            event.stopPropagation();
+            qrPopup.style.display = 'none';
+        });
+    });
+</script>
+<style>
+    #qr-popup {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+    }
+
+    #qr-popup-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+    }
+
+    #qr-popup img {
+        max-width: 80%;
+        max-height: 80%;
+        border: 2px solid #fff;
+        border-radius: 5px;
+    }
+</style>
+<div id="qr-popup">
+    <div id="qr-popup-content">
+        <img src="data:image/png;base64,{{ generate_qr_code(address) }}" alt="Código QR">
+        <span id="qr-close-btn"></span>
+    </div>
 </div>
 {% else %}
 	<script>window.location.href = "{{ url_for('sesion.login') }}";</script>

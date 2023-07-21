@@ -8,7 +8,7 @@ import io
 import qrcode
 import base64
 import webbrowser
-import threading
+from flask_compress import Compress
 
 from controllers.categoria_controller import create_categoria_blueprint
 from controllers.producto_controller import create_producto_blueprint
@@ -25,10 +25,12 @@ from controllers.reporte_controller import create_reporte_blueprint
 # Configurar la aplicación
 app = Flask(__name__)
 app.debug = debug_cfg
-app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{mysql['usuario_db']}:{mysql['contrasena_db']}@{mysql['host_db']}:{mysql['puerto_db']}/{mysql['nombre_base_datos_db']}"
+sqlite_db_file = "sqlite_database.db"
+app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{sqlite_db_file}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.secret_key = secret_key_cfg
 app.jinja_env.filters['b64encode'] = base64.b64encode
+Compress(app)
 
 # Forzar eliminación de caché
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
