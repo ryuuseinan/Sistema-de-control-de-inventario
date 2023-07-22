@@ -34,8 +34,8 @@
             {% for unidadmedida in unidadmedidas %}
                 <tr>
                   <td>{{ unidadmedida.nombre }}</td>
-                  <td>{{ arrow.get(unidadmedida.fecha_creacion).format('DD-MM-YYYY HH:mm') if unidadmedida.fecha_creacion else None }}</td>
-                  <td>{{ arrow.get(unidadmedida.ultima_modificacion).format('DD-MM-YYYY HH:mm') if unidadmedida.ultima_modificacion != unidadmedida.fecha_creacion else 'Nunca modificado' }}</td>
+                  <td>{{ unidadmedida.fecha_creacion_cl() if unidadmedida.fecha_creacion else None }}</td>
+                  <td>{{ unidadmedida.ultima_modificacion_cl() if unidadmedida.ultima_modificacion != unidadmedida.fecha_creacion else 'Nunca modificado' }}</td>
                   <td>
                     <a href="{{ url_for('unidadmedida.editar', id=unidadmedida.id) }}" class="button is-warning is-small">
                       <span class="icon is-small"><i class="fa fa-pencil-alt" aria-hidden="true"></i></i></span>

@@ -36,8 +36,8 @@
                 <tr>
                   <td>{{ rol.id }}</td>
                   <td>{{ rol.nombre }}</td>
-                  <td>{{ arrow.get(rol.fecha_creacion).format('DD-MM-YYYY HH:mm') if rol.fecha_creacion else None }}</td>
-                  <td>{{ arrow.get(rol.ultima_modificacion).format('DD-MM-YYYY HH:mm') if rol.ultima_modificacion != rol.fecha_creacion else 'Nunca modificado' }}</td>
+                  <td>{{ rol.fecha_creacion_cl() if rol.fecha_creacion else None }}</td>
+                  <td>{{ rol.ultima_modificacion_cl() if rol.ultima_modificacion != rol.fecha_creacion else 'Nunca modificado' }}</td>
                   <td>
                     <a href="{{ url_for('rol.editar', id=rol.id) }}" class="button is-warning is-small">
                       <span class="icon is-small"><i class="fa fa-pencil-alt" aria-hidden="true"></i></i></span>

@@ -3,14 +3,15 @@ from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from config import *
+from datetime import datetime
 
 # Crear objeto de base de datos SQLAlchemy
 db = SQLAlchemy()
 
-sqlite_db_file = "sqlite/sqlite_database.db"
+url = f"mysql+pymysql://{mysql['usuario_db']}:{mysql['contrasena_db']}@{mysql['host_db']}:{mysql['puerto_db']}/{mysql['nombre_base_datos_db']}"
 
 # Crea una instancia de la clase create_engine
-engine = create_engine(f"sqlite:///{sqlite_db_file}")
+engine = create_engine(url)
 
 # Crea una clase que se utilizará para crear objetos de sesión de base de datos
 Session = sessionmaker(bind=engine)
@@ -30,6 +31,10 @@ class Usuario(Base):
     rol_id = Column(Integer, ForeignKey('rol.id'))
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
     ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
+    def fecha_creacion_cl(self):
+        return self.fecha_creacion.strftime('%d-%m-%Y %H:%M')
+    def ultima_modificacion_cl(self):
+        return self.ultima_modificacion.strftime('%d-%m-%Y %H:%M')
     activo = Column(Boolean, default=True, nullable=False)
     # Crea la relación con Rol
     rol = relationship('Rol')
@@ -41,6 +46,10 @@ class Rol(Base):
     activo = Column(Boolean, default=True, nullable=False)
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
     ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
+    def fecha_creacion_cl(self):
+        return self.fecha_creacion.strftime('%d-%m-%Y %H:%M')
+    def ultima_modificacion_cl(self):
+        return self.ultima_modificacion.strftime('%d-%m-%Y %H:%M')
 
 # Creamos tabla para almacenar personas
 class Persona(Base):
@@ -55,6 +64,10 @@ class Persona(Base):
     celular = Column(String(12), unique=True, nullable=False)
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
     ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
+    def fecha_creacion_cl(self):
+        return self.fecha_creacion.strftime('%d-%m-%Y %H:%M')
+    def ultima_modificacion_cl(self):
+        return self.ultima_modificacion.strftime('%d-%m-%Y %H:%M')
     activo = Column(Boolean, default=True, nullable=False)
     # Crea la relación con Usuario
     usuario = relationship('Usuario')
@@ -66,6 +79,10 @@ class Categoria(Base):
     nombre = Column(String(50), unique=True, nullable=False)
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
     ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
+    def fecha_creacion_cl(self):
+        return self.fecha_creacion.strftime('%d-%m-%Y %H:%M')
+    def ultima_modificacion_cl(self):
+        return self.ultima_modificacion.strftime('%d-%m-%Y %H:%M')
     activo = Column(Boolean, default=True, nullable=False)
 
 # Creamos tabla para almacenar productos
@@ -83,6 +100,10 @@ class Producto(Base):
     categoria_id = Column(Integer, ForeignKey('categoria.id'))
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
     ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
+    def fecha_creacion_cl(self):
+        return self.fecha_creacion.strftime('%d-%m-%Y %H:%M')
+    def ultima_modificacion_cl(self):
+        return self.ultima_modificacion.strftime('%d-%m-%Y %H:%M')
     activo = Column(Boolean, default=True, nullable=False)
     # Crea la relación con Categoría
     categoria = relationship('Categoria')
@@ -100,6 +121,10 @@ class Ingrediente(Base):
     activo = Column(Boolean, default=True, nullable=False)
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
     ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
+    def fecha_creacion_cl(self):
+        return self.fecha_creacion.strftime('%d-%m-%Y %H:%M')
+    def ultima_modificacion_cl(self):
+        return self.ultima_modificacion.strftime('%d-%m-%Y %H:%M')
     unidadmedida_id = Column(Integer, ForeignKey('unidadmedida.id'))
     # Crea la relación con UnidadMedida
     unidadmedida = relationship('UnidadMedida')
@@ -111,6 +136,10 @@ class UnidadMedida(Base):
     activo = Column(Boolean, default=True, nullable=False)
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
     ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
+    def fecha_creacion_cl(self):
+        return self.fecha_creacion.strftime('%d-%m-%Y %H:%M')
+    def ultima_modificacion_cl(self):
+        return self.ultima_modificacion.strftime('%d-%m-%Y %H:%M')
     
 class Receta(Base):
     __tablename__ = 'receta'
@@ -118,6 +147,10 @@ class Receta(Base):
     producto_id = Column(Integer, ForeignKey('producto.id'))
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
     ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
+    def fecha_creacion_cl(self):
+        return self.fecha_creacion.strftime('%d-%m-%Y %H:%M')
+    def ultima_modificacion_cl(self):
+        return self.ultima_modificacion.strftime('%d-%m-%Y %H:%M')
     producto = relationship('Producto')
     detalles = relationship('RecetaDetalle', backref='receta')
 
@@ -136,6 +169,10 @@ class RecetaDetalle(Base):
     ingrediente_id = Column(Integer, ForeignKey('ingrediente.id'))
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
     ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
+    def fecha_creacion_cl(self):
+        return self.fecha_creacion.strftime('%d-%m-%Y %H:%M')
+    def ultima_modificacion_cl(self):
+        return self.ultima_modificacion.strftime('%d-%m-%Y %H:%M')
     # Crea la relación con Ingrediente
     ingrediente = relationship('Ingrediente')
 
@@ -150,6 +187,10 @@ class Pedido(Base):
     notificacion = Column(Boolean, default=False, nullable=False)
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
     ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
+    def fecha_creacion_cl(self):
+        return self.fecha_creacion.strftime('%d-%m-%Y %H:%M')
+    def ultima_modificacion_cl(self):
+        return self.ultima_modificacion.strftime('%d-%m-%Y %H:%M')
     # Crea la relación con persona
     persona = relationship('Persona')
     pedido_estado = relationship('PedidoEstado')
@@ -176,6 +217,10 @@ class PedidoDetalle(Base):
     cantidad = Column(Integer, nullable=False)
     fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
     ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
+    def fecha_creacion_cl(self):
+        return self.fecha_creacion.strftime('%d-%m-%Y %H:%M')
+    def ultima_modificacion_cl(self):
+        return self.ultima_modificacion.strftime('%d-%m-%Y %H:%M')
 
     producto = relationship('Producto')
 
@@ -260,6 +305,8 @@ if not pedido_estado_2:
 categoria_pizzamediana = db_session.query(Categoria).filter_by(nombre='Pizza mediana').first()
 categoria_pizzafamiliar = db_session.query(Categoria).filter_by(nombre='Pizza familiar').first()
 categoria_bebestibles = db_session.query(Categoria).filter_by(nombre='Bebestibles').first()
+categoria_comidarapida = db_session.query(Categoria).filter_by(nombre='Comida rápida').first()
+categoria_sandwiches = db_session.query(Categoria).filter_by(nombre='Sandwiches').first()
 
 if not categoria_pizzamediana:
     categoria_pizzamediana = Categoria(nombre='Pizza mediana')
@@ -272,6 +319,14 @@ if not categoria_pizzafamiliar:
 if not categoria_bebestibles:
     categoria_bebestibles = Categoria(nombre='Bebestibles')
     db_session.add(categoria_bebestibles)
+
+if not categoria_comidarapida:
+    categoria_comidarapida = Categoria(nombre='Comida rápida')
+    db_session.add(categoria_comidarapida)
+
+if not categoria_sandwiches:
+    categoria_sandwiches = Categoria(nombre='Sandwiches')
+    db_session.add(categoria_sandwiches)
     
 rol_administrador = db_session.query(Rol).filter_by(nombre='Administrador').first()
 rol_caja = db_session.query(Rol).filter_by(nombre='Personal de caja').first()

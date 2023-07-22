@@ -37,8 +37,8 @@
                                 <td>{{ persona.nombre }}</td>
                                 <td>{{ persona.apellido_paterno }} {{ persona.apellido_materno }}</td>
                                 <td>{{ persona.celular }}</td>
-                                <td>{{ arrow.get(persona.fecha_creacion).format('DD-MM-YYYY HH:mm') if persona.fecha_creacion else None }}</td>
-                                <td>{{ arrow.get(persona.ultima_modificacion).format('DD-MM-YYYY HH:mm') if persona.ultima_modificacion != persona.fecha_creacion else 'Nunca modificado' }}</td>
+                                <td>{{ persona.fecha_creacion_cl() if persona.fecha_creacion else None }}</td>
+                                <td>{{ persona.ultima_modificacion_cl() if persona.ultima_modificacion != persona.fecha_creacion else 'Nunca modificado' }}</td>
                                 <td>{{ 'Sí' if persona.activo else 'No' }}</td>
                                 <td>
                                     <a href="{{ url_for('usuario.editar', id=persona.id) }}" class="button is-info is-light">

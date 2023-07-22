@@ -18,7 +18,7 @@ mysql = {
     'nombre_base_datos_db': 'test',
     'host_db': 'localhost',
     'usuario_db': 'root',
-    'contrasena_db': '',
+    'contrasena_db': 'root',
     'puerto_db': 3306
 }
 

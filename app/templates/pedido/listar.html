@@ -90,7 +90,7 @@
                     Delivery
                   {% endif %}
                 </td>
-                <td>{{ arrow.get(pedido.fecha_creacion).format('DD-MM-YYYY HH:mm') if pedido.fecha_creacion else None }}</td>
+                <td>{{ pedido.fecha_creacion_cl() if pedido.fecha_creacion else None }}</td>
                 <td>${{ pedido.total_pedido }}</td>
                 <td>{{ pedido.metodopago.nombre }}</td>
                 <td>

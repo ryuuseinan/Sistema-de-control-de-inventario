@@ -3,6 +3,7 @@ from models.database import Pedido, PedidoEstado, Producto, Categoria, Receta, R
 from datetime import datetime
 from sqlalchemy import or_
 from sqlalchemy.exc import SQLAlchemyError
+import arrow
 
 pedido_controller = Blueprint('pedido_controller', __name__)
 def create_pedido_blueprint():
@@ -174,39 +175,24 @@ def create_pedido_blueprint():
 
     @pedido_blueprint.route('/agregar_producto/<int:id>', methods=['POST'])
     def agregar_producto(id):
-        try:
-            pedido = db_session.query(Pedido).filter_by(id=id).one()
-            producto_id = request.form.getlist('producto_id')  # Obtener una lista de los IDs de productos
-            cantidades = request.form.getlist('cantidad')  # Obtener una lista de cantidades
-            unidades_preparables = request.form.getlist('unidades_preparables')
-            test = int(unidades_preparables[0]) - int(cantidades[0])
+        pedido = db_session.query(Pedido).filter_by(id=id).one()
+        producto_id = request.form.getlist('producto_id')  # Obtener una lista de los IDs de productos
+        cantidades = request.form.getlist('cantidad')  # Obtener una lista de cantidades
+        unidades_preparables = request.form.getlist('unidades_preparables')
+        test = int(unidades_preparables[0]) - int(cantidades[0])
 
-            print(f'Preparables: {unidades_preparables} - {cantidades} = {test}')
-            producto = db_session.query(Producto).filter_by(id=producto_id).first()
+        print(f'Preparables: {unidades_preparables} - {cantidades} = {test}')
+        producto = db_session.query(Producto).filter_by(id=producto_id).first()
 
-            if unidades_preparables >= cantidades or unidades_preparables <= cantidades:
-                for producto_id, cantidad in zip(producto_id, cantidades):
-                    producto_existente = db_session.query(PedidoDetalle).filter_by(pedido_id=pedido.id,
-                                                                                    producto_id=producto.id).all()
+        if unidades_preparables >= cantidades or unidades_preparables <= cantidades:
+            for producto_id, cantidad in zip(producto_id, cantidades):
+                producto_existente = db_session.query(PedidoDetalle).filter_by(pedido_id=pedido.id,
+                                                                                producto_id=producto.id).all()
 
-                    if producto_existente and producto.tiene_receta is False:
-                        flash(f'El producto "{producto.nombre} ({producto.categoria.nombre})" ya existe en la pedido, por lo que se ha(n) añadido {int(cantidades[0])} unidad(es) adicional(es).', 'error')
-                        for pedido_detalle in producto_existente:
-                            pedido_detalle.cantidad += int(cantidad)
-                            if producto.tiene_receta:
-                                receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
-                                receta_detalles = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id).all()
-                                for detalle in receta_detalles:
-                                    ingrediente = detalle.ingrediente
-                                    cantidad_necesaria = detalle.cantidad * int(cantidad)
-                                    ingrediente.cantidad -= cantidad_necesaria
-                            else:
-                                producto.stock -= int(cantidad)
-                    else:
-                        flash(f'Se ha añadido una unidad de "{producto.nombre} ({producto.categoria.nombre})" al pedido.', 'error')
-                        pedido_detalle = PedidoDetalle(pedido_id=pedido.id, producto_id=producto_id,
-                                                        cantidad=int(cantidad))
-
+                if producto_existente and producto.tiene_receta is False:
+                    flash(f'El producto "{producto.nombre} ({producto.categoria.nombre})" ya existe en la pedido, por lo que se ha(n) añadido {int(cantidades[0])} unidad(es) adicional(es).', 'error')
+                    for pedido_detalle in producto_existente:
+                        pedido_detalle.cantidad += int(cantidad)
                         if producto.tiene_receta:
                             receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
                             receta_detalles = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id).all()
@@ -216,16 +202,26 @@ def create_pedido_blueprint():
                                 ingrediente.cantidad -= cantidad_necesaria
                         else:
                             producto.stock -= int(cantidad)
+                else:
+                    flash(f'Se ha añadido una unidad de "{producto.nombre} ({producto.categoria.nombre})" al pedido.', 'error')
+                    pedido_detalle = PedidoDetalle(pedido_id=pedido.id, producto_id=producto_id,
+                                                    cantidad=int(cantidad))
 
-                        db_session.add(pedido_detalle)
-                        db_session.commit()
-            else:
-                flash(f'No hay stock suficiente para agregar { producto.nombre } al pedido.', 'error')
+                    if producto.tiene_receta:
+                        receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
+                        receta_detalles = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id).all()
+                        for detalle in receta_detalles:
+                            ingrediente = detalle.ingrediente
+                            cantidad_necesaria = detalle.cantidad * int(cantidad)
+                            ingrediente.cantidad -= cantidad_necesaria
+                    else:
+                        producto.stock -= int(cantidad)
 
-        except:
-                print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
-                db_session.rollback()
-            
+                    db_session.add(pedido_detalle)
+                    db_session.commit()
+        else:
+            flash(f'No hay stock suficiente para agregar { producto.nombre } al pedido.', 'error')
+        
         return redirect(url_for('pedido.editar', id=pedido.id))
 
     @pedido_blueprint.route('/quitar_producto/<int:id>', methods=['POST'])
