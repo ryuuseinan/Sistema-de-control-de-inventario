@@ -117,61 +117,56 @@ def create_pedido_blueprint():
             
     @pedido_blueprint.route('/pedido/editar/<int:id>', methods=['GET', 'POST'])
     def editar(id):
-        try:
-            pedido = db_session.query(Pedido).filter_by(id=id).one()
-            producto_busqueda = request.form.get('producto_busqueda')
+        pedido = db_session.query(Pedido).filter_by(id=id).one()
+        producto_busqueda = request.form.get('producto_busqueda')
 
-            metodopago = db_session.query(MetodoPago).filter(MetodoPago.activo == True).all()
-            if request.method == 'POST' and producto_busqueda:
-                productos = db_session.query(Producto).join(Categoria).filter(
-                    or_(Producto.nombre.ilike(f'%{producto_busqueda}%'),
-                        Categoria.nombre.ilike(f'%{producto_busqueda}%'),
-                        Producto.codigo_barra == producto_busqueda),
-                    Producto.activo == True).all()
-                if not productos:
-                    flash("No se encontraron productos con ese criterio de búsqueda", "error")
-                    productos = db_session.query(Producto).filter(Producto.activo == True).all()
-            elif request.method == 'POST' and not producto_busqueda:
-                flash("Por favor, ingrese el nombre o código de barras de un producto", "error")
+        metodopago = db_session.query(MetodoPago).filter(MetodoPago.activo == True).all()
+        if request.method == 'POST' and producto_busqueda:
+            productos = db_session.query(Producto).join(Categoria).filter(
+                or_(Producto.nombre.ilike(f'%{producto_busqueda}%'),
+                    Categoria.nombre.ilike(f'%{producto_busqueda}%')),
+                Producto.activo == True).all()
+            if not productos:
+                flash("No se encontraron productos con ese criterio de búsqueda", "error")
                 productos = db_session.query(Producto).filter(Producto.activo == True).all()
-            else:
-                productos = db_session.query(Producto).filter(Producto.activo == True).all()
+        elif request.method == 'POST' and not producto_busqueda:
+            flash("Por favor, ingrese el nombre o código de barras de un producto", "error")
+            productos = db_session.query(Producto).filter(Producto.activo == True).all()
+        else:
+            productos = db_session.query(Producto).filter(Producto.activo == True).all()
 
-            for producto in productos:
-                receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
-                if receta:
-                    receta_detalles = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id).all()
-                    ingredientes = [detalle.ingrediente for detalle in receta_detalles]
-                    producto.receta = receta
-                    producto.receta_detalles = receta_detalles
-                    producto.ingredientes = ingredientes
-                    producto.stock_disponible = (
-                        producto.stock if not producto.tiene_receta else min(
-                            [ingrediente.cantidad // detalle.cantidad for ingrediente, detalle in
-                            zip(ingredientes, receta_detalles)])
+        for producto in productos:
+            receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
+            if receta:
+                receta_detalles = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id).all()
+                ingredientes = [detalle.ingrediente for detalle in receta_detalles]
+                producto.receta = receta
+                producto.receta_detalles = receta_detalles
+                producto.ingredientes = ingredientes
+                producto.stock_disponible = (
+                    producto.stock if not producto.tiene_receta else min(
+                        [ingrediente.cantidad // detalle.cantidad for ingrediente, detalle in zip(ingredientes, receta_detalles)],
+                        default=0
                     )
+                )
 
-                else:
-                    producto.receta = None
-                    producto.receta_detalles = []
-                    producto.ingredientes = []
-                    producto.stock_disponible = producto.stock
-
-            pedido.total_pedido = calcular_total_pedido(pedido)
-
-            pedido_detalle_ingredientes = db_session.query(PedidoDetalleIngrediente).join(PedidoDetalle).join(Pedido).all()
-            detalle_pedido = db_session.query(PedidoDetalle).filter_by(pedido_id=pedido.id).first()
-
-            if detalle_pedido is not None:
-                detalle_ingredientes_producto = db_session.query(PedidoDetalleIngrediente).filter_by(
-                    pedido_detalle_id=detalle_pedido.id).all()
             else:
-                detalle_ingredientes_producto = []
-        except:
-            print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")
-            db_session.rollback()
-            return redirect(request.path)
+                producto.receta = None
+                producto.receta_detalles = []
+                producto.ingredientes = []
+                producto.stock_disponible = producto.stock
 
+        pedido.total_pedido = calcular_total_pedido(pedido)
+
+        pedido_detalle_ingredientes = db_session.query(PedidoDetalleIngrediente).join(PedidoDetalle).join(Pedido).all()
+        detalle_pedido = db_session.query(PedidoDetalle).filter_by(pedido_id=pedido.id).first()
+
+        if detalle_pedido is not None:
+            detalle_ingredientes_producto = db_session.query(PedidoDetalleIngrediente).filter_by(
+                pedido_detalle_id=detalle_pedido.id).all()
+        else:
+            detalle_ingredientes_producto = []
+            
         return render_template('pedido/editar.html', productos=productos, metodopago=metodopago,
                             producto_busqueda=producto_busqueda, pedido=pedido,
                             pedido_detalle_ingredientes=pedido_detalle_ingredientes, 
