@@ -27,7 +27,7 @@
                                     <td>{{ ingrediente.nombre }}</td>
                                     <td>{{ ingrediente.cantidad }} {{ ingrediente.unidadmedida.nombre }}</td>
                                     <td>{{ ingrediente.alerta_stock }} {{ ingrediente.unidadmedida.nombre }}</td>
-                                    <td>{{ arrow.get(ingrediente.ultima_modificacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if ingrediente.ultima_modificacion != ingrediente.fecha_creacion else 'Nunca modificado' }}</td>
+                                    <td>{{ ingrediente.ultima_modificacion_cl() if ingrediente.ultima_modificacion != ingrediente.fecha_creacion else 'Nunca modificado' }}</td>
                                     <td>
                                         <a href="{{ url_for('ingrediente.ingresar_stock', id=ingrediente.id) }}" class="button is-warning is-small">
                                             <span class="icon is-small"><i class="fas fa-plus"></i><i class="fas fa-pepper-hot"></i></span>
@@ -66,7 +66,7 @@
                                         <td>{{ producto.stock_disponible }} unidad(es)</td>
                                     {% endif %}
                                     <td>{{ producto.alerta_stock }}</td>
-                                    <td>{{ arrow.get(producto.ultima_modificacion).to('America/Santiago').format('DD-MM-YYYY HH:mm') if producto.ultima_modificacion != producto.fecha_creacion else 'Nunca modificado' }}</td>
+                                    <td>{{ producto.ultima_modificacion_cl() if producto.ultima_modificacion != producto.fecha_creacion else 'Nunca modificado' }}</td>
                                     <td>
                                       <a href="{{ url_for('producto.editar', id=producto.id) }}" class="button is-warning is-small">
                                         <span class="icon is-small"><i class="fa fa-pencil-alt" aria-hidden="true"></i></i></span>
@@ -140,7 +140,7 @@
                                             <tr>
                                                 <td>{{ ingrediente.nombre }}</td>
                                                 <td>El stock es de {{ ingrediente.cantidad }} {{ ingrediente.unidadmedida.nombre }}, lo cual es inferior al valor de alerta de stock establecido en {{ ingrediente.alerta_stock }} {{ ingrediente.unidadmedida.nombre }}</td>
-                                                <td>{{ arrow.get(ingrediente.ultima_modificacion).format('DD-MM-YYYY HH:mm') if ingrediente.ultima_modificacion != ingrediente.fecha_creacion else 'Nunca modificado' }}</td>
+                                                <td>{{ ingrediente.ultima_modificacion_cl() if ingrediente.ultima_modificacion != ingrediente.fecha_creacion else 'Nunca modificado' }}</td>
                                                 <td>
                                                     <a href="{{ url_for('ingrediente.ingresar_stock', id=ingrediente.id) }}" class="button is-warning is-small">
                                                         <span class="icon is-small"><i class="fas fa-plus"></i><i class="fas fa-pepper-hot"></i></span>
@@ -211,7 +211,7 @@
                                                     </a>
                                                 {% endif %}
                                             </td>
-                                            <td>{{ arrow.get(producto.ultima_modificacion).format('DD-MM-YYYY HH:mm') if producto.ultima_modificacion != producto.fecha_creacion else 'Nunca modificado' }}</td>
+                                            <td>{{ producto.ultima_modificacion_cl() if producto.ultima_modificacion != producto.fecha_creacion else 'Nunca modificado' }}</td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>

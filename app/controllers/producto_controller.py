@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from models.database import Producto, Categoria, db_session
+from models.database import Producto, Categoria, Receta, RecetaDetalle, db_session
 from datetime import datetime
 from werkzeug.utils import secure_filename
 import os
@@ -19,6 +19,21 @@ def create_producto_blueprint():
         try:
             # Obtenemos todas los productos de la base de datos
             productos = db_session.query(Producto).filter(Producto.activo == True).order_by(asc(Producto.nombre)).all()
+            for producto in productos:
+                receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
+                if receta:
+                    receta_detalles = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id).all()
+                    ingredientes = [detalle.ingrediente for detalle in receta_detalles]
+                    producto.receta = receta
+                    producto.receta_detalles = receta_detalles
+                    producto.ingredientes = ingredientes
+
+                else:
+                    producto.receta = None
+                    producto.receta_detalles = []
+                    producto.ingredientes = []
+                    producto.stock_disponible = producto.stock
+
             return render_template('producto/listar.html', productos=productos)
         except:
             print("ERROR DESCONOCIDO: informe con el desarrollador sobre este problema.")

@@ -177,7 +177,6 @@
             <table class="table is-striped is-hoverable is-fullwidth">
                     <thead>
                         <tr>
-                            <th>Código de barras</th>
                             <th>Imagen</th>
                             <th>Nombre</th>
                             <th>Precio</th>
@@ -191,7 +190,6 @@
                     <tbody>
                         {% for producto in productos %}
                         <tr>
-                            <td>{{ producto.codigo_barra }}</td>
                             <td><img src="{{ url_for('static', filename='img/') }}{{ producto.imagen }}" alt=" " style="max-height: 50px;">
                             </td>
                             <td>{{ producto.nombre }} ({{ producto.categoria.nombre }})</td>
@@ -227,7 +225,6 @@
                                     No se encontraron ingredientes
                                 {% endif %}
                             </td>
-                            <div class="field is-grouped">
                                 {% if producto.tiene_receta == True %}
                                 <td></td>
                                 <form method="post" action="{{ url_for('pedido.agregar_producto', id=pedido.id) }}">
@@ -278,7 +275,6 @@
                                     </form>
                                 </td>
                                 {% endif %}
-                            </div> 
                         </tr>
                         {% endfor %}
                     </tbody>

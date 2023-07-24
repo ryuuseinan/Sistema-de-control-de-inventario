@@ -25,9 +25,9 @@
             <tr>
               <th>Imagen</th>
               <th>Nombre</th>
-              <th>Categoría</th>
               <th>Precio</th>
               <th>Descripción</th>
+              <th>Receta</th>
               <th>Stock/Receta</th>
               <th>Alerta de stock</th>
               <th>Editar</th>
@@ -40,10 +40,29 @@
               <tr>
                 <td><img src="{{ url_for('static', filename='img/') }}{{ producto.imagen }}" alt="{{ producto.nombre }}" style="max-height: 50px;max-width: 50px;">
                 </td>
-                <td>{{ producto.nombre }}</td>
-                <td>{{ producto.categoria.nombre }}</td>
+                <td>{{ producto.nombre }} ({{ producto.categoria.nombre }})</td>
                 <td>${{ producto.precio }}</td>
                 <td class="descripcion">{{ producto.descripcion }}</td>
+                <td>
+                  {% if producto.receta %}
+                  <table class="table is-striped is-hoverable is-fullwidth">
+                      <tbody>
+                        <tr>
+                          <th>Ingrediente</th>
+                          <th>Cantidad</th>
+                        </tr>
+                      {% for receta_detalle in producto.receta_detalles %}
+                      <tr>
+                          <td>{{ loop.index }}. {{ receta_detalle.ingrediente.nombre }}</td>
+                          <td>{{ receta_detalle.cantidad }} {{ receta_detalle.ingrediente.unidadmedida.nombre }}<br></td>
+                      </tr>
+                      {% endfor %}
+                      </tbody>
+                  </table>
+                  {% else %}
+                      No se encontraron ingredientes
+                  {% endif %}
+              </td>
                 <td>
                 {% if not producto.tiene_receta %}
                   {% if producto.stock %}

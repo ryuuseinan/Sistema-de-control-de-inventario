@@ -145,12 +145,6 @@ class Receta(Base):
     __tablename__ = 'receta'
     id = Column(Integer, primary_key=True)
     producto_id = Column(Integer, ForeignKey('producto.id'))
-    fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
-    ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
-    def fecha_creacion_cl(self):
-        return self.fecha_creacion.strftime('%d-%m-%Y %H:%M')
-    def ultima_modificacion_cl(self):
-        return self.ultima_modificacion.strftime('%d-%m-%Y %H:%M')
     producto = relationship('Producto')
     detalles = relationship('RecetaDetalle', backref='receta')
 
@@ -167,12 +161,6 @@ class RecetaDetalle(Base):
     cantidad = Column(Integer, nullable=False)
     receta_id = Column(Integer, ForeignKey('receta.id'))
     ingrediente_id = Column(Integer, ForeignKey('ingrediente.id'))
-    fecha_creacion = Column(DateTime, default=datetime.now(), nullable=False)
-    ultima_modificacion = Column(DateTime, default=datetime.now(), nullable=False)
-    def fecha_creacion_cl(self):
-        return self.fecha_creacion.strftime('%d-%m-%Y %H:%M')
-    def ultima_modificacion_cl(self):
-        return self.ultima_modificacion.strftime('%d-%m-%Y %H:%M')
     # Crea la relación con Ingrediente
     ingrediente = relationship('Ingrediente')
 

@@ -193,32 +193,28 @@ def create_pedido_blueprint():
                     flash(f'El producto "{producto.nombre} ({producto.categoria.nombre})" ya existe en la pedido, por lo que se ha(n) añadido {int(cantidades[0])} unidad(es) adicional(es).', 'error')
                     for pedido_detalle in producto_existente:
                         pedido_detalle.cantidad += int(cantidad)
-                        if producto.tiene_receta:
-                            receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
+
+                else:
+                    pedido_detalle = PedidoDetalle(pedido_id=pedido.id, producto_id=producto_id,
+                                                    cantidad=int(cantidad))
+
+                    if producto.tiene_receta:
+                        receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
+                        if receta is not None:
                             receta_detalles = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id).all()
                             for detalle in receta_detalles:
                                 ingrediente = detalle.ingrediente
                                 cantidad_necesaria = detalle.cantidad * int(cantidad)
                                 ingrediente.cantidad -= cantidad_necesaria
                         else:
-                            producto.stock -= int(cantidad)
-                else:
-                    flash(f'Se ha añadido una unidad de "{producto.nombre} ({producto.categoria.nombre})" al pedido.', 'error')
-                    pedido_detalle = PedidoDetalle(pedido_id=pedido.id, producto_id=producto_id,
-                                                    cantidad=int(cantidad))
-
-                    if producto.tiene_receta:
-                        receta = db_session.query(Receta).filter_by(producto_id=producto.id).first()
-                        receta_detalles = db_session.query(RecetaDetalle).filter_by(receta_id=receta.id).all()
-                        for detalle in receta_detalles:
-                            ingrediente = detalle.ingrediente
-                            cantidad_necesaria = detalle.cantidad * int(cantidad)
-                            ingrediente.cantidad -= cantidad_necesaria
+                            flash(f'El producto "{producto.nombre} ({producto.categoria.nombre})" no tiene una receta asociada.', 'warning')
+                            return redirect(url_for('pedido.editar', id=pedido.id))
                     else:
                         producto.stock -= int(cantidad)
 
                     db_session.add(pedido_detalle)
                     db_session.commit()
+                    flash(f'Se ha añadido una unidad de "{producto.nombre} ({producto.categoria.nombre})" al pedido.', 'error')
         else:
             flash(f'No hay stock suficiente para agregar { producto.nombre } al pedido.', 'error')
         
