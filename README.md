@@ -20,9 +20,9 @@ https://lafratelli.com/prueba23/
 # Instalacion de dependencias
 `pip install -r requirements.txt`
 
-# Dependencias
+# Generar dependencias
 ```
-mysqlclient pymysql
+pip freeze > requirements.txt
 ```
 
 # MySQL config
