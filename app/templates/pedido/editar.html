@@ -226,18 +226,24 @@
                                 {% endif %}
                             </td>
                                 {% if producto.tiene_receta == True %}
-                                <td></td>
-                                <form method="post" action="{{ url_for('pedido.agregar_producto', id=pedido.id) }}">
+                                    <td></td>
                                     <td>
-                                        <input type="hidden" name="producto_id" value="{{ producto.id }}">
-                                        <input type="hidden" name="unidades_preparables" value="{{ producto.stock_disponible }}">
-                                        <input type="hidden" name="cantidad" class="input" value="1">
-                                        <button type="submit" class="button is-primary">
+                                    {% if producto.stock_disponible > 0 %}
+                                        <form method="post" action="{{ url_for('pedido.agregar_producto', id=pedido.id) }}">
+                                            <input type="hidden" name="producto_id" value="{{ producto.id }}">
+                                            <input type="hidden" name="unidades_preparables" value="{{ producto.stock_disponible }}">
+                                            <input type="hidden" name="cantidad" class="input" value="1">
+                                            <button type="submit" class="button is-primary">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <button type="submit" class="button is-primary" disabled>
                                             <i class="fas fa-plus"></i>
                                         </button>
+                                    {% endif %}
                                     </td>
-                                </form>
-                                <form method="post" action="{{ url_for('pedido.quitar_producto', id=pedido.id) }}">
+                                    <form method="post" action="{{ url_for('pedido.quitar_producto', id=pedido.id) }}">
                                     <td>
                                         <input type="hidden" name="producto_id" value="{{ producto.id }}">
                                         <input type="hidden" name="unidades_preparables" value="{{ producto.stock_disponible }}">
@@ -246,35 +252,41 @@
                                             <i class="fas fa-minus"></i>
                                         </button>
                                     </td>
-                                </form>
-                                {% endif %}
-                                {% if producto.tiene_receta == False %}
+                                    </form>
+                                {% else %}
                                 <td>
                                     <div class="control">
-                                        <input type="number" id="cantidad-input" class="input" value="1" min="1" max="9999">
+                                        <input type="number" name="cantidad" class="input" value="1" min="1" max="9999" id="inputCantidad">
                                     </div>
                                 </td>
-                                <td>
-                                    <form id="agregar-form" method="post" action="{{ url_for('pedido.agregar_producto', id=pedido.id) }}">
-                                        <input type="hidden" name="producto_id" value="{{ producto.id }}">
-                                        <input type="hidden" name="unidades_preparables" value="{{ producto.stock_disponible }}">
-                                        <input type="hidden" id="agregar-cantidad" name="cantidad" value="">
-                                        <button type="submit" class="button is-primary">
-                                            <i class="fas fa-plus"></i>
-                                        </button>
-                                    </form>
-                                </td>
-                                <td>
-                                    <form id="quitar-form" method="post" action="{{ url_for('pedido.quitar_producto', id=pedido.id) }}">
-                                        <input type="hidden" name="producto_id" value="{{ producto.id }}">
-                                        <input type="hidden" name="unidades_preparables" value="{{ producto.stock_disponible }}">
-                                        <input type="hidden" id="quitar-cantidad" name="cantidad" value="">
-                                        <button type="submit" class="button is-danger">
+                                <form method="post" action="{{ url_for('pedido.agregar_producto', id=pedido.id) }}" id="agregarProductoForm">
+                                    <input type="hidden" name="producto_id" value="{{ producto.id }}">
+                                    <input type="hidden" name="unidades_preparables" value="{{ producto.stock_disponible }}">
+                                    <input type="hidden" name="producto_cantidad" value="" id="productoCantidadAgregar">
+                                    <td>
+                                        {% if producto.stock_disponible > 0 %}
+                                            <button type="button" class="button is-primary" onclick="agregarProducto()">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        {% else %}
+                                            <button type="button" class="button is-primary" disabled>
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        {% endif %}
+                                    </td>
+                                </form>
+                                <form method="post" action="{{ url_for('pedido.quitar_producto', id=pedido.id) }}" id="quitarProductoForm">
+                                    <input type="hidden" name="producto_id" value="{{ producto.id }}">
+                                    <input type="hidden" name="unidades_preparables" value="{{ producto.stock_disponible }}">
+                                    <input type="hidden" name="producto_cantidad" value="" id="productoCantidadQuitar">
+                                    <td>
+                                        <button type="button" class="button is-danger" onclick="quitarProducto()">
                                             <i class="fas fa-minus"></i>
                                         </button>
-                                    </form>
-                                </td>
-                                {% endif %}
+                                    </td>
+                                </form>
+                                
+                            {% endif %}
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -287,23 +299,16 @@
     </div>
 </section>
 <script>
-    const cantidadInput = document.getElementById('cantidad-input');
-    const agregarForm = document.getElementById('agregar-form');
-    const agregarCantidadInput = document.getElementById('agregar-cantidad');
-    const quitarForm = document.getElementById('quitar-form');
-    const quitarCantidadInput = document.getElementById('quitar-cantidad');
+    function agregarProducto() {
+        var cantidad = document.getElementById('inputCantidad').value;
+        document.getElementById('productoCantidadAgregar').value = cantidad;
+        document.getElementById('agregarProductoForm').submit();
+    }
 
-    agregarForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        agregarCantidadInput.value = cantidadInput.value;
-        agregarForm.submit();
-    });
-
-    quitarForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        quitarCantidadInput.value = cantidadInput.value;
-        quitarForm.submit();
-    });
+    function quitarProducto() {
+        var cantidad = document.getElementById('inputCantidad').value;
+        document.getElementById('productoCantidadQuitar').value = cantidad;
+        document.getElementById('quitarProductoForm').submit();
+    }
 </script>
-
 {% endblock %}
