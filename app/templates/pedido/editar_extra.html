@@ -68,14 +68,14 @@
                     {% endif %}
                   </td>
                   <td>
-                    <form method="post" action="{{ url_for('pedido.agregar_extra', id=pedido_detalle.id) }}">
-                  <div class="control">
-                    <p class="control has-icons-left has-icons-right">
-                      <input type="number" name="precio" class="input" value="{{ ingrediente.precio }}" min="0" max="9999" required>
-                      <span class="icon is-small is-left">
-                        <i class="fas fa-dollar-sign"></i>
-                      </span>
-                    </p>
+                  <form method="post" action="{{ url_for('pedido.agregar_extra', id=pedido_detalle.id) }}">
+                    <div class="control">
+                      <p class="control has-icons-left has-icons-right">
+                        <input type="number" name="precio" class="input" value="{{ ingrediente.precio }}" min="0" max="9999" required>
+                        <span class="icon is-small is-left">
+                          <i class="fas fa-dollar-sign"></i>
+                        </span>
+                      </p>
                     </div>
                   </td>
                   <td>
