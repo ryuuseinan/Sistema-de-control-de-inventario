@@ -227,6 +227,7 @@ class PedidoDetalleIngrediente(Base):
     pedido_detalle_id = Column(Integer, ForeignKey('pedido_detalle.id'))
     ingrediente_id = Column(Integer, ForeignKey('ingrediente.id'))
     cantidad = Column(Integer, nullable=False)
+    precio = Column(Integer, default=0)
     pedido_detalle = relationship('PedidoDetalle')
     ingrediente = relationship('Ingrediente')
 

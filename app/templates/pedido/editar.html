@@ -7,6 +7,9 @@
     .input{
         width: 100%;
     }
+    .button{
+        width: 100%;
+    }
     .radio{
         padding-top: 5%;
     }
@@ -182,7 +185,6 @@
                             <th>Precio</th>
                             <th>Stock</th>
                             <th>Receta</th>
-                            <th>Cantidad</th>
                             <th></th>
                             <th></th>
                         </tr>
@@ -226,7 +228,6 @@
                                 {% endif %}
                             </td>
                                 {% if producto.tiene_receta == True %}
-                                    <td></td>
                                     <td>
                                     {% if producto.stock_disponible > 0 %}
                                         <form method="post" action="{{ url_for('pedido.agregar_producto', id=pedido.id) }}">
@@ -254,38 +255,36 @@
                                     </td>
                                     </form>
                                 {% else %}
-                                <td>
-                                    <div class="control">
-                                        <input type="number" name="cantidad" class="input" value="1" min="1" max="9999" id="inputCantidad">
-                                    </div>
-                                </td>
-                                <form method="post" action="{{ url_for('pedido.agregar_producto', id=pedido.id) }}" id="agregarProductoForm">
-                                    <input type="hidden" name="producto_id" value="{{ producto.id }}">
-                                    <input type="hidden" name="unidades_preparables" value="{{ producto.stock_disponible }}">
-                                    <input type="hidden" name="producto_cantidad" value="" id="productoCantidadAgregar">
+                                <form method="post" action="{{ url_for('pedido.agregar_producto', id=pedido.id) }}">
                                     <td>
+                                        <div class="control">
+                                            <input type="number" name="cantidad" class="input" value="1" min="1" max="99">
+                                        </div>
+                                        <input type="hidden" name="producto_id" value="{{ producto.id }}">
+                                        <input type="hidden" name="unidades_preparables" value="{{ producto.stock_disponible }}">
                                         {% if producto.stock_disponible > 0 %}
-                                            <button type="button" class="button is-primary" onclick="agregarProducto()">
+                                            <button type="submit" class="button is-primary">
                                                 <i class="fas fa-plus"></i>
                                             </button>
                                         {% else %}
-                                            <button type="button" class="button is-primary" disabled>
+                                            <button type="submit" class="button is-primary" disabled>
                                                 <i class="fas fa-plus"></i>
                                             </button>
                                         {% endif %}
                                     </td>
                                 </form>
-                                <form method="post" action="{{ url_for('pedido.quitar_producto', id=pedido.id) }}" id="quitarProductoForm">
-                                    <input type="hidden" name="producto_id" value="{{ producto.id }}">
-                                    <input type="hidden" name="unidades_preparables" value="{{ producto.stock_disponible }}">
-                                    <input type="hidden" name="producto_cantidad" value="" id="productoCantidadQuitar">
+                                <form method="post" action="{{ url_for('pedido.quitar_producto', id=pedido.id) }}">
                                     <td>
-                                        <button type="button" class="button is-danger" onclick="quitarProducto()">
+                                        <div class="control">
+                                            <input type="number" name="cantidad" class="input" value="1" min="1" max="99">
+                                        </div>
+                                        <input type="hidden" name="producto_id" value="{{ producto.id }}">
+                                        <input type="hidden" name="unidades_preparables" value="{{ producto.stock_disponible }}">
+                                        <button type="submit" class="button is-danger">
                                             <i class="fas fa-minus"></i>
                                         </button>
                                     </td>
                                 </form>
-                                
                             {% endif %}
                         </tr>
                         {% endfor %}
@@ -298,17 +297,4 @@
         </div>
     </div>
 </section>
-<script>
-    function agregarProducto() {
-        var cantidad = document.getElementById('inputCantidad').value;
-        document.getElementById('productoCantidadAgregar').value = cantidad;
-        document.getElementById('agregarProductoForm').submit();
-    }
-
-    function quitarProducto() {
-        var cantidad = document.getElementById('inputCantidad').value;
-        document.getElementById('productoCantidadQuitar').value = cantidad;
-        document.getElementById('quitarProductoForm').submit();
-    }
-</script>
 {% endblock %}

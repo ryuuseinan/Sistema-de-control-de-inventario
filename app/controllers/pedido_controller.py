@@ -20,7 +20,8 @@ def create_pedido_blueprint():
             PedidoDetalle.pedido_id == pedido.id).all()
         
         for detalle_ingrediente in pedido_detalle_ingredientes:
-            total_pedido += detalle_ingrediente.ingrediente.precio
+            #total_pedido += detalle_ingrediente.ingrediente.precio # Calcular apartir de la tabla Ingredientes
+            total_pedido += detalle_ingrediente.precio # Calcular apartir de la tabla PedidoDetalleIngrediente del producto
 
         return total_pedido
 
@@ -177,7 +178,7 @@ def create_pedido_blueprint():
     def agregar_producto(id):
         pedido = db_session.query(Pedido).filter_by(id=id).one()
         producto_id = request.form.getlist('producto_id')  # Obtener una lista de los IDs de productos
-        cantidades = request.form.get('cantidad')  # Obtener una lista de cantidades
+        cantidades = request.form.getlist('cantidad')  # Obtener una lista de cantidades
         unidades_preparables = request.form.getlist('unidades_preparables')
         print(request.form)
         print(f'Preparables: {unidades_preparables} - {cantidades}')
@@ -294,7 +295,7 @@ def create_pedido_blueprint():
                 ingrediente = db_session.query(Ingrediente).filter(Ingrediente.activo == True, Ingrediente.precio > 0).order_by(Ingrediente.nombre).all()
 
             for detalle_ingrediente in pedido_detalle_ingrediente:
-                total_pedido += detalle_ingrediente.ingrediente.precio
+                total_pedido += detalle_ingrediente.precio
                 print(total_pedido)
         
         except:
@@ -311,9 +312,8 @@ def create_pedido_blueprint():
             pedido_detalle = db_session.query(PedidoDetalle).filter_by(id=id).one()
             extra_mediana = request.form.get('extra_mediana')
             extra_familiar = request.form.get('extra_familiar')
-            nombre = request.form.getlist('nombre')
+            precio = request.form.get('precio')
             ingrediente_id = request.form.getlist('ingrediente_id')
-            unidadmedida = request.form.getlist('unidadmedida')
 
             ingrediente = db_session.query(Ingrediente).filter_by(id=ingrediente_id).first()
             print(ingrediente)
@@ -338,7 +338,8 @@ def create_pedido_blueprint():
                 nuevo_pedido_detalle_ingrediente = PedidoDetalleIngrediente(
                     pedido_detalle_id=pedido_detalle.id,
                     ingrediente_id=ingrediente_id,
-                    cantidad=extra)
+                    cantidad=extra,
+                    precio=precio)
                 print(ingrediente_id)
                 ingrediente_id = int(ingrediente_id[0])
                 print(ingrediente_id)

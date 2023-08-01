@@ -7,6 +7,12 @@
   .input{
       width: 100%;
   }
+  .control.has-icons-left .input  {
+    padding-left: 2em;
+  }
+  .control.has-icons-right .input  {
+    padding-right: 0.5em;
+  }
   .radio{
       padding-top: 5%;
   }
@@ -43,8 +49,8 @@
           <thead>
             <tr>
               <th>Nombre</th>
-              <th>Precio</th>
               <th>Stock</th>
+              <th>Precio</th>
               <th></th>
               <th>Extra mediana</th>
               <th>Extra familiar</th>
@@ -54,7 +60,6 @@
               {% for ingrediente in ingrediente %}
                 <tr>
                   <td>{{ ingrediente.nombre }}</td>
-                  <td>${{ ingrediente.precio }}</td>
                   <td>
                     {% if ingrediente.cantidad != 0 %}
                       {{ ingrediente.cantidad }} {{ ingrediente.unidadmedida.nombre }}
@@ -63,8 +68,18 @@
                     {% endif %}
                   </td>
                   <td>
+                    <form method="post" action="{{ url_for('pedido.agregar_extra', id=pedido_detalle.id) }}">
+                  <div class="control">
+                    <p class="control has-icons-left has-icons-right">
+                      <input type="number" name="precio" class="input" value="{{ ingrediente.precio }}" min="0" max="9999" required>
+                      <span class="icon is-small is-left">
+                        <i class="fas fa-dollar-sign"></i>
+                      </span>
+                    </p>
+                    </div>
+                  </td>
+                  <td>
                     <td>
-                      <form method="post" action="{{ url_for('pedido.agregar_extra', id=pedido_detalle.id) }}">
                       <input type="hidden" name="ingrediente_id" value="{{ ingrediente.id }}">
                       <input type="hidden" name="nombre" value="{{ ingrediente.nombre }}">
                       <input type="hidden" name="unidadmedida" value="{{ ingrediente.unidadmedida.nombre }}">
@@ -119,10 +134,19 @@
                 <td>
                 {% if pedido_detalle_ingrediente|length > 0 %}
                   <table class="table is-striped is-hoverable is-fullwidth">
+                    <thead>
+                      <tr>
+                        <th>Nombre</th>
+                        <th>Precio</th>
+                        <th>Cantidad</th>
+                        <th></th>
+                      </tr>
+                    </thead>
                     <tbody>
                         {% for detalle_ingrediente in pedido_detalle_ingrediente %}
                           <tr>
                             <td>{{ loop.index }}. {{ detalle_ingrediente.ingrediente.nombre }}</td>
+                            <td>${{ detalle_ingrediente.precio }}</td>
                             <td>{{ detalle_ingrediente.cantidad }} {{ detalle_ingrediente.ingrediente.unidadmedida.nombre }}</td>
                             <td><a href="{{ url_for('pedido.eliminar_extra', id=detalle_ingrediente.id) }}">Eliminar</a></td>
                           </tr>
